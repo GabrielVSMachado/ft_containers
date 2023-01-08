@@ -12,6 +12,8 @@
 
 #ifndef TYPE_TRAITS
 
+#include <string>
+
 namespace ft
 {
 
@@ -59,51 +61,59 @@ namespace ft
   template<typename T>
     struct IsSame<T, T> : public trueType {};
 
-  // Define IsInteger
+  // Define IsIntegral
   template<typename T>
-    struct IsInteger : public falseType {};
+    struct IsIntegralHelper : public falseType {};
 
   template<>
-    struct IsInteger<bool> : public trueType {};
+    struct IsIntegralHelper<bool> : public trueType {};
 
   template<>
-    struct IsInteger<char> : public trueType {};
+    struct IsIntegralHelper<char> : public trueType {};
 
   template<>
-    struct IsInteger<signed char> : public trueType {};
+    struct IsIntegralHelper<signed char> : public trueType {};
 
   template<>
-    struct IsInteger<unsigned char> : public trueType {};
+    struct IsIntegralHelper<unsigned char> : public trueType {};
 
   template<>
-    struct IsInteger<wchar_t> : public trueType {};
+    struct IsIntegralHelper<wchar_t> : public trueType {};
 
   template<>
-    struct IsInteger<short> : public trueType {};
+    struct IsIntegralHelper<char16_t> : public trueType {};
 
   template<>
-    struct IsInteger<unsigned short> : public trueType {};
+    struct IsIntegralHelper<char32_t> : public trueType {};
 
   template<>
-    struct IsInteger<int> : public trueType {};
+    struct IsIntegralHelper<short> : public trueType {};
 
   template<>
-    struct IsInteger<unsigned int> : public trueType {};
+    struct IsIntegralHelper<unsigned short> : public trueType {};
 
   template<>
-    struct IsInteger<long> : public trueType {};
+    struct IsIntegralHelper<int> : public trueType {};
 
   template<>
-    struct IsInteger<unsigned long> : public trueType {};
+    struct IsIntegralHelper<unsigned int> : public trueType {};
 
   template<>
-    struct IsInteger<float> : public falseType {};
+    struct IsIntegralHelper<long> : public trueType {};
 
   template<>
-    struct IsInteger<double> : public falseType {};
+    struct IsIntegralHelper<unsigned long> : public trueType {};
 
   template<>
-    struct IsInteger<long double> : public falseType {};
+    struct IsIntegralHelper<long long> : public trueType {};
+
+  template<>
+    struct IsIntegralHelper<unsigned long long> : public trueType {};
+
+  template<typename T>
+    struct IsIntegral : public IsIntegralHelper<
+                                typename RemoveConstAndVolatile<T>::valueType
+                              > {};
 
   // Define EnableIf
   template<bool, typename T = void>
