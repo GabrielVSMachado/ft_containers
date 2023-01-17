@@ -2,6 +2,7 @@ NAME = my_containters
 
 SRC = main.cpp
 
+TESTDIR = tests
 OBJ = main.o
 DIRS = commons vector
 INCLUDES = -I $(DIRS)
@@ -19,7 +20,13 @@ clean:
 
 fclean: clean
 	$(RM) $(NAME)
+	$(MAKE) clean -C $(TESTDIR)
 
 re: fclean all
 
-.PHONY: all clean fclean re
+test:
+	$(MAKE) -C $(TESTDIR)
+	@./tests/unittests
+	@$(MAKE) fclean -C $(TESTDIR)
+
+.PHONY: all clean fclean re test
