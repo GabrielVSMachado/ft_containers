@@ -6,7 +6,7 @@
 /*   By: gvitor-s <gvitor-s@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/10 20:57:38 by gvitor-s          #+#    #+#             */
-/*   Updated: 2023/01/10 23:44:33 by gvitor-s         ###   ########.fr       */
+/*   Updated: 2023/01/17 22:58:54 by gvitor-s         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ namespace internals
       NormalIterator& operator--() { return *(--current); }
       NormalIterator& operator--(int) { return NormalIterator(current--); }
 
-      NormalIterator& operator[](differenceType const &index) {
+      NormalIterator& operator[](differenceType const &index) const {
         return current[index];
       }
 

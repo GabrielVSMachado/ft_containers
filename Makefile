@@ -26,7 +26,7 @@ re: fclean all
 
 test:
 	$(MAKE) -C $(TESTDIR)
-	@./tests/unittests
-	@$(MAKE) fclean -C $(TESTDIR)
+	./tests/unittests
+	$(MAKE) clean -C $(TESTDIR)
 
 .PHONY: all clean fclean re test
