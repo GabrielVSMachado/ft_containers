@@ -12,7 +12,10 @@ override OBJ = $(SRC:%.cpp=%.o)
 all: $(NAME)
 
 $(NAME): $(OBJ)
-	$(CXX) $(OBJ) -o $(NAME) $(LDLIBS)
+	$(CXX) $(CXXFLAGS) $(OBJ) -o $(NAME) $(LDLIBS)
+
+%.o: %.cpp
+	$(CXX) $(INCLUDES) $(CXXFLAGS) -c $< -o $@
 
 clean:
 	$(RM) $(OBJ) $(NAME)
