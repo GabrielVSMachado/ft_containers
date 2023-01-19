@@ -2,3 +2,5 @@
 my_containers
 original_containers
 unittests
+*.json
+.cache

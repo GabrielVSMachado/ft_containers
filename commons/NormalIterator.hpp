@@ -6,7 +6,7 @@
 /*   By: gvitor-s <gvitor-s@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/10 20:57:38 by gvitor-s          #+#    #+#             */
-/*   Updated: 2023/01/10 23:44:33 by gvitor-s         ###   ########.fr       */
+/*   Updated: 2023/01/17 22:58:54 by gvitor-s         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,30 +15,30 @@
 namespace internals
 {
   template<typename Iterator, typename Container>
-    class NormalIterator {
+    class normal_iterator {
 
     protected:
       Iterator current;
 
     public:
-      typedef typename ft::IteratorTraits<Iterator>::iteratorCategory
+      typedef typename ft::iterator_traits<Iterator>::iteratorCategory
                                                               iteratorCategory;
 
-      typedef typename ft::IteratorTraits<Iterator>::differenceType
+      typedef typename ft::iterator_traits<Iterator>::differenceType
                                                                 differenceType;
 
-      typedef typename ft::IteratorTraits<Iterator>::valueType valueType;
-      typedef typename ft::IteratorTraits<Iterator>::pointer pointer;
-      typedef typename ft::IteratorTraits<Iterator>::reference reference;
+      typedef typename ft::iterator_traits<Iterator>::valueType valueType;
+      typedef typename ft::iterator_traits<Iterator>::pointer pointer;
+      typedef typename ft::iterator_traits<Iterator>::reference reference;
 
       //Constructors
-      NormalIterator() : current(Iterator()) {}
+      normal_iterator() : current(Iterator()) {}
 
-      explicit NormalIterator(Iterator const &other) : current(other) {}
+      explicit normal_iterator(Iterator const &other) : current(other) {}
 
       template<typename Iter>
-        inline NormalIterator(
-            NormalIterator<Iter, Container> const &other)
+        inline normal_iterator(
+            normal_iterator<Iter, Container> const &other)
         : current(other.base()) {}
 
       //Base
@@ -47,74 +47,74 @@ namespace internals
       //Operators
       reference operator*() const { return *current; }
       pointer operator->() const { return current; }
-      NormalIterator& operator++() { return *(++current); }
-      NormalIterator& operator++(int) { return NormalIterator(current++); }
-      NormalIterator& operator--() { return *(--current); }
-      NormalIterator& operator--(int) { return NormalIterator(current--); }
+      normal_iterator& operator++() { return *(++current); }
+      normal_iterator& operator++(int) { return normal_iterator(current++); }
+      normal_iterator& operator--() { return *(--current); }
+      normal_iterator& operator--(int) { return normal_iterator(current--); }
 
-      NormalIterator& operator[](differenceType const &index) {
+      normal_iterator& operator[](differenceType const &index) const {
         return current[index];
       }
 
-      NormalIterator& operator+=(differenceType const &diff) {
+      normal_iterator& operator+=(differenceType const &diff) {
         current += diff;
         return *this;
       }
 
-      NormalIterator& operator-=(differenceType const &diff) {
+      normal_iterator& operator-=(differenceType const &diff) {
         current -= diff;
         return *this;
       }
 
-      NormalIterator& operator+(differenceType const &diff) const {
-        return NormalIterator(current + diff);
+      normal_iterator& operator+(differenceType const &diff) const {
+        return normal_iterator(current + diff);
       }
 
-      NormalIterator& operator-(differenceType const &diff) const {
-        return NormalIterator(current - diff);
+      normal_iterator& operator-(differenceType const &diff) const {
+        return normal_iterator(current - diff);
       }
     };
 
   // boolean operator to Iterator of same type
 
   template<typename Iterator, typename Container>
-    NormalIterator<Iterator, Container>&
-    operator==(NormalIterator<Iterator, Container> const &lhs,
-              NormalIterator<Iterator, Container> const &rhs) {
+    normal_iterator<Iterator, Container>&
+    operator==(normal_iterator<Iterator, Container> const &lhs,
+              normal_iterator<Iterator, Container> const &rhs) {
       return lhs.base() == rhs.base();
     }
 
   template<typename Iterator, typename Container>
-    inline bool operator>(NormalIterator<Iterator, Container> const &lhs,
-              NormalIterator<Iterator, Container> const &rhs) {
+    inline bool operator>(normal_iterator<Iterator, Container> const &lhs,
+              normal_iterator<Iterator, Container> const &rhs) {
       return lhs.base() > rhs.base();
     }
 
   template<typename Iterator, typename Container>
     inline bool operator!=(
-        NormalIterator<Iterator, Container> const &lhs,
-        NormalIterator<Iterator, Container> const &rhs) {
+        normal_iterator<Iterator, Container> const &lhs,
+        normal_iterator<Iterator, Container> const &rhs) {
       return lhs.base() != rhs.base();
     }
 
   template<typename Iterator, typename Container>
     inline bool operator<(
-        NormalIterator<Iterator, Container> const &lhs,
-        NormalIterator<Iterator, Container> const &rhs) {
+        normal_iterator<Iterator, Container> const &lhs,
+        normal_iterator<Iterator, Container> const &rhs) {
       return lhs.base() < rhs.base();
     }
 
   template<typename Iterator, typename Container>
     inline bool operator<=(
-        NormalIterator<Iterator, Container> const &lhs,
-        NormalIterator<Iterator, Container> const &rhs) {
+        normal_iterator<Iterator, Container> const &lhs,
+        normal_iterator<Iterator, Container> const &rhs) {
       return lhs.base() <= rhs.base();
     }
 
   template<typename Iterator, typename Container>
     inline bool operator>=(
-        NormalIterator<Iterator, Container> const &lhs,
-        NormalIterator<Iterator, Container> const &rhs) {
+        normal_iterator<Iterator, Container> const &lhs,
+        normal_iterator<Iterator, Container> const &rhs) {
       return lhs.base() >= rhs.base();
     }
 
@@ -122,43 +122,43 @@ namespace internals
   
   template<typename LIterator, typename RIterator, typename Container>
     inline bool operator==(
-        NormalIterator<LIterator, Container> const &lhs,
-        NormalIterator<RIterator, Container> const &rhs) {
+        normal_iterator<LIterator, Container> const &lhs,
+        normal_iterator<RIterator, Container> const &rhs) {
       return lhs.base() == rhs.base();
     }
 
   template<typename LIterator, typename RIterator, typename Container>
     inline bool operator!=(
-        NormalIterator<LIterator, Container> const &lhs,
-        NormalIterator<RIterator, Container> const &rhs) {
+        normal_iterator<LIterator, Container> const &lhs,
+        normal_iterator<RIterator, Container> const &rhs) {
       return lhs.base() != rhs.base();
     }
 
   template<typename LIterator, typename RIterator, typename Container>
     inline bool operator>(
-        NormalIterator<LIterator, Container> const &lhs,
-        NormalIterator<RIterator, Container> const &rhs) {
+        normal_iterator<LIterator, Container> const &lhs,
+        normal_iterator<RIterator, Container> const &rhs) {
       return lhs.base() > rhs.base();
     }
   
   template<typename LIterator, typename RIterator, typename Container>
     inline bool operator<(
-        NormalIterator<LIterator, Container> const &lhs,
-        NormalIterator<RIterator, Container> const &rhs) {
+        normal_iterator<LIterator, Container> const &lhs,
+        normal_iterator<RIterator, Container> const &rhs) {
       return lhs.base() < rhs.base();
     }
 
   template<typename LIterator, typename RIterator, typename Container>
     inline bool operator<=(
-        NormalIterator<LIterator, Container> const &lhs,
-        NormalIterator<RIterator, Container> const &rhs) {
+        normal_iterator<LIterator, Container> const &lhs,
+        normal_iterator<RIterator, Container> const &rhs) {
       return lhs.base() <= rhs.base();
     }
 
   template<typename LIterator, typename RIterator, typename Container>
     inline bool operator>=(
-        NormalIterator<LIterator, Container> const &lhs,
-        NormalIterator<RIterator, Container> const &rhs) {
+        normal_iterator<LIterator, Container> const &lhs,
+        normal_iterator<RIterator, Container> const &rhs) {
       return lhs.base() >= rhs.base();
     }
 }

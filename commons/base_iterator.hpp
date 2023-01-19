@@ -17,15 +17,15 @@
 
 namespace ft
 {
-  struct InputIteratorTag {};
+  struct input_iterator_tag {};
 
-  struct OutputIteratorTag {};
+  struct output_iterator_tag {};
 
-  struct ForwardIteratorTag : public InputIteratorTag {};
+  struct forward_iterator_tag : public input_iterator_tag {};
 
-  struct BidirectionalIteratorTag : public ForwardIteratorTag {};
+  struct bidirectional_iterator_tag : public forward_iterator_tag {};
 
-  struct RandomAccessIteratorTag : public BidirectionalIteratorTag {};
+  struct random_access_iterator_tag : public bidirectional_iterator_tag {};
 
 
   template<
@@ -35,41 +35,41 @@ namespace ft
     typename Pointer = T*,
     typename Reference = T&
   >
-    struct Iterator
+    struct iterator
     {
-      typedef Category iteratorCategory;
-      typedef T valueType;
-      typedef Distance differenceType;
+      typedef Category iterator_category;
+      typedef T value_type;
+      typedef Distance difference_type;
       typedef Pointer pointer;
       typedef Reference reference;
     };
 
   template<typename Iter>
-    struct IteratorTraits
+    struct iterator_traits
     {
-      typedef typename Iter::iteratorCategory iteratorCategory;
-      typedef typename Iter::valueType valueType;
-      typedef typename Iter::differenceType differenceType;
+      typedef typename Iter::iterator_category iterator_category;
+      typedef typename Iter::value_type value_type;
+      typedef typename Iter::difference_type difference_type;
       typedef typename Iter::pointer pointer;
       typedef typename Iter::reference reference;
     };
 
   template<typename T>
-    struct IteratorTraits<T*>
+    struct iterator_traits<T*>
     {
-      typedef RandomAccessIteratorTag iteratorCategory;
-      typedef T valueType;
-      typedef std::ptrdiff_t differenceType;
+      typedef random_access_iterator_tag iterator_category;
+      typedef T value_type;
+      typedef std::ptrdiff_t difference_type;
       typedef T* pointer;
       typedef T& reference;
     };
 
   template<typename T>
-    struct IteratorTraits<T const *>
+    struct iterator_traits<T const *>
     {
-      typedef RandomAccessIteratorTag iteratorCategory;
-      typedef T valueType;
-      typedef std::ptrdiff_t differenceType;
+      typedef random_access_iterator_tag iterator_category;
+      typedef T value_type;
+      typedef std::ptrdiff_t difference_type;
       typedef T* pointer;
       typedef T& reference;
     };
