@@ -6,7 +6,7 @@
 /*   By: gvitor-s <gvitor-s@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/08 15:12:11 by gvitor-s          #+#    #+#             */
-/*   Updated: 2023/01/08 16:41:16 by gvitor-s         ###   ########.fr       */
+/*   Updated: 2023/01/21 18:10:48 by gvitor-s         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,109 +18,109 @@ namespace ft
 {
 
   template<typename T, T v>
-    struct IntegralConstant
+    struct integral_constant
     {
       typedef T valueType;
-      typedef ft::IntegralConstant<T, v> type;
+      typedef ft::integral_constant<T, v> type;
       static valueType const value = v;
 
       operator valueType() const { return value; }
     };
 
-  typedef IntegralConstant<bool, true> trueType;
-  typedef IntegralConstant<bool, false> falseType;
+  typedef integral_constant<bool, true> true_type;
+  typedef integral_constant<bool, false> false_type;
 
   template<typename T>
     struct TypeIdentity { typedef T valueType; };
 
   // Define Remove Modifiers
   template<typename T>
-    struct RemoveConst : public TypeIdentity<T> {};
+    struct remove_const : public TypeIdentity<T> {};
 
   template<typename T>
-    struct RemoveConst< T const > : public TypeIdentity<T> {};
+    struct remove_const< T const > : public TypeIdentity<T> {};
 
   template<typename T>
-    struct RemoveVolatile : public TypeIdentity<T> {};
+    struct remove_volatile : public TypeIdentity<T> {};
 
   template<typename T>
-    struct RemoveVolatile<T volatile> : public TypeIdentity<T> {};
+    struct remove_volatile<T volatile> : public TypeIdentity<T> {};
 
   template<typename T>
-    struct RemoveConstAndVolatile
+    struct remove_cv
       : public TypeIdentity<
-                typename RemoveVolatile<
-                          typename RemoveConst<T>::valueType
+                typename remove_volatile<
+                          typename remove_const<T>::valueType
                         >::valueType
               > {};
 
   // Define IsSame
   template<typename T, typename U>
-    struct IsSame : public falseType {};
+    struct is_same : public false_type {};
 
   template<typename T>
-    struct IsSame<T, T> : public trueType {};
+    struct is_same<T, T> : public true_type {};
 
   // Define IsIntegral
   template<typename T>
-    struct IsIntegralHelper : public falseType {};
+    struct is_integral_helper : public false_type {};
 
   template<>
-    struct IsIntegralHelper<bool> : public trueType {};
+    struct is_integral_helper<bool> : public true_type {};
 
   template<>
-    struct IsIntegralHelper<char> : public trueType {};
+    struct is_integral_helper<char> : public true_type {};
 
   template<>
-    struct IsIntegralHelper<signed char> : public trueType {};
+    struct is_integral_helper<signed char> : public true_type {};
 
   template<>
-    struct IsIntegralHelper<unsigned char> : public trueType {};
+    struct is_integral_helper<unsigned char> : public true_type {};
 
   template<>
-    struct IsIntegralHelper<wchar_t> : public trueType {};
+    struct is_integral_helper<wchar_t> : public true_type {};
 
   template<>
-    struct IsIntegralHelper<char16_t> : public trueType {};
+    struct is_integral_helper<char16_t> : public true_type {};
 
   template<>
-    struct IsIntegralHelper<char32_t> : public trueType {};
+    struct is_integral_helper<char32_t> : public true_type {};
 
   template<>
-    struct IsIntegralHelper<short> : public trueType {};
+    struct is_integral_helper<short> : public true_type {};
 
   template<>
-    struct IsIntegralHelper<unsigned short> : public trueType {};
+    struct is_integral_helper<unsigned short> : public true_type {};
 
   template<>
-    struct IsIntegralHelper<int> : public trueType {};
+    struct is_integral_helper<int> : public true_type {};
 
   template<>
-    struct IsIntegralHelper<unsigned int> : public trueType {};
+    struct is_integral_helper<unsigned int> : public true_type {};
 
   template<>
-    struct IsIntegralHelper<long> : public trueType {};
+    struct is_integral_helper<long> : public true_type {};
 
   template<>
-    struct IsIntegralHelper<unsigned long> : public trueType {};
+    struct is_integral_helper<unsigned long> : public true_type {};
 
   template<>
-    struct IsIntegralHelper<long long> : public trueType {};
+    struct is_integral_helper<long long> : public true_type {};
 
   template<>
-    struct IsIntegralHelper<unsigned long long> : public trueType {};
+    struct is_integral_helper<unsigned long long> : public true_type {};
 
   template<typename T>
-    struct IsIntegral : public IsIntegralHelper<
-                                typename RemoveConstAndVolatile<T>::valueType
+    struct is_integral : public is_integral_helper<
+                                typename remove_cv<T>::valueType
                               > {};
 
   // Define EnableIf
   template<bool, typename T = void>
-    struct EnableIf {};
+    struct enable_if {};
 
   template<typename T>
-    struct EnableIf<true, T> : public TypeIdentity<T> {};
+    struct enable_if<true, T> : public TypeIdentity<T> {};
 }
 
 #endif // !TYPE_TRAITS
