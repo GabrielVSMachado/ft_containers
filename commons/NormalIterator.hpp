@@ -10,12 +10,17 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+
+#ifndef NORMALITERATOR_HPP
+#define NormalIterator_HPP
+
 #include "base_iterator.hpp"
 
 namespace internals
 {
   template<typename Iterator, typename Container>
-    class normal_iterator {
+    class normal_iterator
+    {
 
     protected:
       Iterator current;
@@ -73,7 +78,7 @@ namespace internals
       normal_iterator& operator-(differenceType const &diff) const {
         return normal_iterator(current - diff);
       }
-    };
+    }; // finish normal_iterator
 
   // boolean operator to Iterator of same type
 
@@ -162,3 +167,5 @@ namespace internals
       return lhs.base() >= rhs.base();
     }
 }
+
+#endif

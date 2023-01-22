@@ -20,18 +20,18 @@ namespace ft
   template<typename T, T v>
     struct integral_constant
     {
-      typedef T valueType;
+      typedef T value_type;
       typedef ft::integral_constant<T, v> type;
-      static valueType const value = v;
+      static value_type const value = v;
 
-      operator valueType() const { return value; }
+      operator value_type() const { return value; }
     };
 
   typedef integral_constant<bool, true> true_type;
   typedef integral_constant<bool, false> false_type;
 
   template<typename T>
-    struct TypeIdentity { typedef T valueType; };
+    struct TypeIdentity { typedef T value_type; };
 
   // Define Remove Modifiers
   template<typename T>
@@ -50,8 +50,8 @@ namespace ft
     struct remove_cv
       : public TypeIdentity<
                 typename remove_volatile<
-                          typename remove_const<T>::valueType
-                        >::valueType
+                          typename remove_const<T>::value_type
+                        >::value_type
               > {};
 
   // Define IsSame
@@ -112,15 +112,78 @@ namespace ft
 
   template<typename T>
     struct is_integral : public is_integral_helper<
-                                typename remove_cv<T>::valueType
+                                typename remove_cv<T>::value_type
                               > {};
 
-  // Define EnableIf
+  // Define enable_if
   template<bool, typename T = void>
     struct enable_if {};
 
   template<typename T>
     struct enable_if<true, T> : public TypeIdentity<T> {};
+
+  // Define is_floating_point
+  template<typename T>
+    struct is_floating_point
+      : public
+      ft::integral_constant<
+        bool,
+        ft::is_same<float, typename ft::remove_cv<T>::value_type>::value ||
+        ft::is_same<double, typename ft::remove_cv<T>::value_type>::value ||
+        ft::is_same<long double, typename ft::remove_cv<T>::value_type>::value
+      > {};
+
+  //Define is_arithmetic
+  template<typename T>
+    struct is_arithmetic
+    : public
+      integral_constant<
+        bool,
+        ft::is_integral<T>::value || ft::is_floating_point<T>::value
+      >
+    {};
+
+  // Define is_pointer
+  template<typename T>
+    struct is_pointer : public false_type {};
+
+  template<typename T>
+    struct is_pointer<T*> : public true_type {};
+
+  template<typename T>
+    struct is_pointer<T* const> : public true_type {};
+
+  template<typename T>
+    struct is_pointer<T* volatile> : public true_type {};
+
+  template<typename T>
+    struct is_pointer<T* const volatile> : public true_type {};
+
+  // Define is_member_pointer
+  template<typename T>
+    struct is_member_pointer_helper : public false_type {};
+
+  template<typename T, typename U>
+    struct is_member_pointer_helper<T U::*> : public true_type {};
+
+  template<typename T>
+    struct is_member_pointer
+    : public ft::is_member_pointer_helper<typename ft::remove_cv<T>::type>
+    {};
+
+  // Define is_enum
+  template<typename T>
+    struct is_enum : public integral_constant<bool, __is_enum(T)> {};
+
+  // Define is_scalar
+  template<typename T>
+    struct is_scalar
+    : public integral_constant<
+          bool,
+          ft::is_arithmetic<T>::value     ||
+          ft::is_pointer<T>::value        ||
+          ft::is_member_pointer<T>::value ||
+          ft::is_enum<T>::value> {};
 }
 
 #endif // !TYPE_TRAITS
