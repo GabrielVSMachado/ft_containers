@@ -5,7 +5,7 @@ SRC = main.cpp
 TESTDIR = tests
 OBJ = main.o
 DIRS = commons vector
-INCLUDES = -I $(DIRS)
+INCLUDES = $(addprefix -I ,$(DIRS))
 CXXFLAGS = -std=c++98 -Wall -Wextra -Werror $(INCLUDES)
 CXX = c++
 
@@ -13,7 +13,7 @@ CXX = c++
 all: $(NAME)
 
 $(NAME): $(OBJ)
-	$(CXX) $(CXXFLAGS) $(OBJ)
+	$(CXX) $(CXXFLAGS) $(OBJ) -o $@
 
 clean:
 	$(RM) $(OBJ)

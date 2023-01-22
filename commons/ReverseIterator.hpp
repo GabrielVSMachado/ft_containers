@@ -14,7 +14,6 @@
 #define REVERSERITERATOR_HPP
 
 #include "base_iterator.hpp"
-#include "NormalIterator.hpp"
 
 namespace ft
 {

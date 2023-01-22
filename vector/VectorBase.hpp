@@ -34,9 +34,9 @@ template<typename Tp>
       {
         Tp_pointer start;
         Tp_pointer finish;
-        Tp_pointer end_of_storage;
+        Tp_pointer endOfStorage;
 
-        ImplementationAllocator() : start(0), finish(0), end_of_storage(0) {}
+        ImplementationAllocator() : start(0), finish(0), endOfStorage(0) {}
       };
 
     public:
@@ -48,18 +48,18 @@ template<typename Tp>
       return *static_cast<allocator_type const *>(&this->Aimpl);
     }
 
-    VectorBase() : Aimpl() {}
+    VectorBase(allocator_type const &a) : Aimpl(a) {}
 
     VectorBase(size_t n) : Aimpl()
     {
       Aimpl.start = this->Aimpl.allocate(n);
       Aimpl.finish = Aimpl.start;
-      Aimpl.end_of_storage = Aimpl.start + n;
+      Aimpl.endOfStorage = Aimpl.start + n;
     }
 
     ~VectorBase()
     {
-      Aimpl.deallocate(Aimpl.start, Aimpl.end_of_storage - Aimpl.start);
+      Aimpl.deallocate(Aimpl.start, Aimpl.endOfStorage - Aimpl.start);
     }
 
     Tp_pointer allocate(size_t n) { return Aimpl.allocate(n); }
