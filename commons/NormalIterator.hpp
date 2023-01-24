@@ -26,13 +26,13 @@ namespace internals
       Iterator current;
 
     public:
-      typedef typename ft::iterator_traits<Iterator>::iteratorCategory
-                                                              iteratorCategory;
+      typedef typename ft::iterator_traits<Iterator>::iterator_category
+                                                              iterator_category;
 
-      typedef typename ft::iterator_traits<Iterator>::differenceType
-                                                                differenceType;
+      typedef typename ft::iterator_traits<Iterator>::difference_type
+                                                                difference_type;
 
-      typedef typename ft::iterator_traits<Iterator>::valueType valueType;
+      typedef typename ft::iterator_traits<Iterator>::value_type value_type;
       typedef typename ft::iterator_traits<Iterator>::pointer pointer;
       typedef typename ft::iterator_traits<Iterator>::reference reference;
 
@@ -57,26 +57,26 @@ namespace internals
       normal_iterator& operator--() { return *(--current); }
       normal_iterator operator--(int) const { return current--; }
 
-      normal_iterator& operator[](differenceType const &index) const {
+      normal_iterator& operator[](difference_type const &index) const {
         return current[index];
       }
 
-      normal_iterator& operator+=(differenceType const &diff) {
+      normal_iterator& operator+=(difference_type const &diff) {
         current += diff;
         return *this;
       }
 
-      normal_iterator& operator-=(differenceType const &diff) {
+      normal_iterator& operator-=(difference_type const &diff) {
         current -= diff;
         return *this;
       }
 
-      normal_iterator& operator+(differenceType const &diff) const {
-        return normal_iterator(current + diff);
+      normal_iterator operator+(difference_type const &diff) const {
+        return current + diff;
       }
 
-      normal_iterator& operator-(differenceType const &diff) const {
-        return normal_iterator(current - diff);
+      normal_iterator operator-(difference_type const &diff) const {
+        return current - diff;
       }
     }; // finish normal_iterator
 
@@ -165,6 +165,24 @@ namespace internals
         normal_iterator<LIterator, Container> const &lhs,
         normal_iterator<RIterator, Container> const &rhs) {
       return lhs.base() >= rhs.base();
+    }
+
+  template<typename LIterator, typename RIterator, typename Container>
+    inline typename normal_iterator<LIterator, Container>::difference_type
+    operator-(
+        normal_iterator<LIterator, Container> const &lhs,
+        normal_iterator<RIterator, Container> const &rhs)
+    {
+      return lhs.base() - rhs.base();
+    }
+
+  template<typename LIterator, typename Container>
+    inline normal_iterator<LIterator, Container>
+    operator+(
+        normal_iterator<LIterator, Container> const &lhs,
+        typename normal_iterator<LIterator, Container>::difference_type diff)
+    {
+      return normal_iterator<LIterator, Container>(lhs.base() + diff);
     }
 }
 
