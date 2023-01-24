@@ -50,12 +50,12 @@ namespace internals
       Iterator const& base() { return current; }
 
       //Operators
-      reference operator*() const { return *current; }
+      reference operator*() { return *current; }
       pointer operator->() const { return current; }
       normal_iterator& operator++() { return *(++current); }
-      normal_iterator& operator++(int) { return normal_iterator(current++); }
+      normal_iterator operator++(int) const { return current++; }
       normal_iterator& operator--() { return *(--current); }
-      normal_iterator& operator--(int) { return normal_iterator(current--); }
+      normal_iterator operator--(int) const { return current--; }
 
       normal_iterator& operator[](differenceType const &index) const {
         return current[index];

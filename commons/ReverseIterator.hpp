@@ -48,17 +48,19 @@ namespace ft
       Iter base() { return current; }
 
       //Operators
-      reference operator*() { Iter tmp = current; return *--tmp; }
+      reference operator*() const { Iter tmp = current; return *--tmp; }
       pointer operator->() { return &(operator*()); }
       reference operator[](difference_type size) const {
         return *(*this + size);
       }
       reverse_iterator& operator++() { --current; return *this; }
       reverse_iterator& operator--() { ++current; return *this; }
-      reverse_iterator operator++(int) {
+      reverse_iterator operator++(int) const
+      {
         return reverse_iterator(current--);
       }
-      reverse_iterator operator--(int) {
+      reverse_iterator operator--(int) const
+      {
         return reverse_iterator(current++);
       }
 
