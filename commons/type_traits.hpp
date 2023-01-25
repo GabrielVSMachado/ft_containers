@@ -10,7 +10,8 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef TYPE_TRAITS
+#ifndef TYPE_TRAITS_HPP
+#define TYPE_TRAITS_HPP
 
 #include <string>
 
