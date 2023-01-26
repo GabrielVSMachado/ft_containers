@@ -6,7 +6,7 @@
 /*   By: gvitor-s <gvitor-s@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/17 21:29:35 by gvitor-s          #+#    #+#             */
-/*   Updated: 2023/01/18 00:06:19 by gvitor-s         ###   ########.fr       */
+/*   Updated: 2023/01/25 22:01:37 by gvitor-s         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,11 +39,14 @@ namespace ft
       reverse_iterator() : current(0) {}
 
       template<typename OtherIter>
-      reverse_iterator(reverse_iterator<OtherIter> const &other) : current(other.base()) {}
+      reverse_iterator(reverse_iterator<OtherIter> const &other)
+        : current(other.base())
+      {}
 
-      reverse_iterator(reverse_iterator const &other) : current(other.current) {}
+      reverse_iterator(reverse_iterator const &other): current(other.current)
+      {}
 
-      explicit reverse_iterator(Iter const & any) : current(any) {}
+      explicit reverse_iterator(Iter any) : current(any) {}
 
       Iter base() { return current; }
 

@@ -6,7 +6,7 @@
 /*   By: gvitor-s <gvitor-s@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/21 13:14:48 by gvitor-s          #+#    #+#             */
-/*   Updated: 2023/01/25 17:18:38 by gvitor-s         ###   ########.fr       */
+/*   Updated: 2023/01/25 22:07:36 by gvitor-s         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,11 +60,14 @@ namespace ft
       iterator end() { return iterator(this->Aimpl.finish); }
       const_iterator end() const { return const_iterator(this->Aimpl.finish); }
 
-      reverse_iterator rbegin() { return reverse_iterator(this->Aimpl.start); }
-      const_reverse_iterator rend() const
+      reverse_iterator rbegin() { return reverse_iterator(end()); }
+      const_reverse_iterator rbegin() const
       {
-        return const_reverse_iterator(this->Aimpl.finish);
+        return const_reverse_iterator(end());
       }
+
+      reverse_iterator rend() { return reverse_iterator(begin()); }
+      const_reverse_iterator rend() const { return reverse_iterator(begin()); }
 
       // capacity methods
       size_type capacity() const
