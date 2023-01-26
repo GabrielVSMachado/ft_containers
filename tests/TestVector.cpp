@@ -105,3 +105,55 @@ Test(vector_empty, expected_false)
 
   cr_assert(my_vector.empty() == false);
 }
+
+Test(vector_max_size, expected_size_max_of_char)
+{
+  ft::vector<char> my_vector;
+  std::vector<char> original;
+
+  std::cout << my_vector.max_size() << '\n';
+  std::cout << original.max_size() << '\n';
+  cr_assert(my_vector.max_size() == original.max_size());
+}
+
+
+Test(vector_max_size, expected_size_max_of_int)
+{
+  ft::vector<int> my_vector;
+  std::vector<int> original;
+
+  cr_assert(my_vector.max_size() == original.max_size());
+}
+
+Test(vector_max_size, expected_size_max_of_float)
+{
+  ft::vector<float> my_vector;
+  std::vector<float> original;
+
+  cr_assert(my_vector.max_size() == original.max_size());
+}
+
+
+Test(vector_max_size, expected_size_max_of_double)
+{
+  ft::vector<double> my_vector;
+  std::vector<double> original;
+
+  cr_assert(my_vector.max_size() == original.max_size());
+}
+
+Test(vector_max_size, expected_size_max_of_long_long_int)
+{
+  ft::vector<long long int> my_vector;
+  std::vector<long long int> original;
+
+  cr_assert(my_vector.max_size() == original.max_size());
+}
+
+Test(vector_max_size, expected_size_max_of_std_string)
+{
+  ft::vector<std::string> my_vector;
+  std::vector<std::string> original;
+
+  cr_assert(my_vector.max_size() == original.max_size());
+}

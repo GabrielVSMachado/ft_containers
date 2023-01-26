@@ -1,4 +1,4 @@
-NAME = my_containters
+NAME = my_containers
 
 SRC = main.cpp
 

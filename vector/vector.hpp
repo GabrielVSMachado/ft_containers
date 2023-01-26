@@ -22,6 +22,7 @@
 #include "iterator.hpp"
 #include "my_stl_construct.hpp"
 #include "type_traits.hpp"
+#include <memory>
 
 namespace ft
 {
@@ -30,6 +31,7 @@ namespace ft
     {
       typedef internals::VectorBase<T> _Base;
       typedef ft::vector<T> vector_type;
+      typedef std::allocator<T> allocator;
 
     public:
 
@@ -77,10 +79,15 @@ namespace ft
 
       size_type size() const
       {
-        return ft::distance(begin(), end());
+        return end() - begin();
       }
 
       bool empty() const { return size() == 0; }
+
+      size_type max_size() const
+      {
+        return this->get_allocator().max_size();
+      }
 
       // modifiers methods
       void push_back(value_type const &value)
