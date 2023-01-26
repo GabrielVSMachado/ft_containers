@@ -80,6 +80,8 @@ namespace ft
         return ft::distance(begin(), end());
       }
 
+      bool empty() const { return size() == 0; }
+
       // modifiers methods
       void push_back(value_type const &value)
       {

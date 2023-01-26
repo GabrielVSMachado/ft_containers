@@ -89,3 +89,19 @@ Test(vector_const_iterator, expected_all_values_from_const_iterator_eq_to_30)
   result = my_vector.begin();
   cr_assert(ft::equal(expected, original_vector.end(), result));
 }
+
+Test(vector_empty, expected_true)
+{
+  ft::vector<int> my_vector;
+
+  cr_assert(my_vector.empty() == true);
+}
+
+Test(vector_empty, expected_false)
+{
+  ft::vector<int> my_vector;
+
+  my_vector.push_back(42);
+
+  cr_assert(my_vector.empty() == false);
+}
