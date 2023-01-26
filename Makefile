@@ -30,8 +30,8 @@ re: fclean all
 $(TESTDIR)/%.o: $(TESTDIR)/%.cpp
 	$(CXX) -std=c++11 $(INCLUDES) -c $< -o $@
 
-test:
-	docker build -t ft_containers_test:latest .
-	docker run --rm ft_containers_test:latest
+test: $(TESTOBJS)
+	$(CXX) $(TESTOBJS) -o $(TESTNAME) -lcriterion
+	./$(TESTNAME)
 
 .PHONY: all clean fclean re test

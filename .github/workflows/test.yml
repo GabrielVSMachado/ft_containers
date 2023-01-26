@@ -1,0 +1,18 @@
+name: Tests
+
+on:
+  push:
+    branches: [master]
+
+jobs:
+  container_test_ft_containers:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Create image
+        run: docker build -t ft_containers:latest .
+
+      - name: Run Container
+        run: docker run --rm ft_containers:latest
