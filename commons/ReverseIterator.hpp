@@ -13,7 +13,7 @@
 #ifndef REVERSERITERATOR_HPP
 #define REVERSERITERATOR_HPP
 
-#include "base_iterator.hpp"
+#include "iterator.hpp"
 
 namespace ft
 {
@@ -43,7 +43,7 @@ namespace ft
 
       reverse_iterator(reverse_iterator const &other) : current(other.current) {}
 
-      explicit reverse_iterator(Iter any) : current(any) {}
+      explicit reverse_iterator(Iter const & any) : current(any) {}
 
       Iter base() { return current; }
 

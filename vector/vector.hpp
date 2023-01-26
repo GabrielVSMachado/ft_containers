@@ -6,7 +6,7 @@
 /*   By: gvitor-s <gvitor-s@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/21 13:14:48 by gvitor-s          #+#    #+#             */
-/*   Updated: 2023/01/21 14:08:10 by gvitor-s         ###   ########.fr       */
+/*   Updated: 2023/01/25 17:18:38 by gvitor-s         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,16 +14,12 @@
 #define VECTOR_HPP
 
 // std implementation
-#include <cstddef>
-#include <cstring>
-#include <exception>
-#include <iostream>
 
 //My implementation
 #include "ReverseIterator.hpp"
 #include "VectorBase.hpp"
 #include "NormalIterator.hpp"
-#include "base_iterator.hpp"
+#include "iterator.hpp"
 #include "my_stl_construct.hpp"
 #include "type_traits.hpp"
 
@@ -54,24 +50,20 @@ namespace ft
       explicit vector(allocator_type const & = allocator_type())
         : _Base(allocator_type()) {}
 
-      explicit vector(size_type count, value_type const &value = value_type(),
-                      allocator_type const & = allocator_type()) : _Base(count)
+      //iterator methods
+      iterator begin() { return iterator(this->Aimpl.start); }
+      const_iterator begin() const
       {
-        allocator_type const & tmp_allocator = this->get_allocator();
-        pointer current;
+        return const_iterator(this->Aimpl.start);
+      }
 
-        current = this->Aimpl.start;
-        try
-        {
-          for (; count > -1; --count, ++current)
-            tmp_allocator.construct(current, value);
-        }
-        catch (...)
-        {
-          internals::_Destroy(this->Aimpl.start, current);
-          throw;
-        }
-        this->Aimpl.finish = current;
+      iterator end() { return iterator(this->Aimpl.finish); }
+      const_iterator end() const { return const_iterator(this->Aimpl.finish); }
+
+      reverse_iterator rbegin() { return reverse_iterator(this->Aimpl.start); }
+      const_reverse_iterator rend() const
+      {
+        return const_reverse_iterator(this->Aimpl.finish);
       }
 
       // capacity methods
@@ -80,15 +72,20 @@ namespace ft
         return this->Aimpl.endOfStorage - this->Aimpl.start;
       }
 
+      size_type size() const
+      {
+        return ft::distance(begin(), end());
+      }
+
       // modifiers methods
       void push_back(value_type const &value)
       {
-        difference_type size, new_size;
+        difference_type old_size, new_size;
         pointer hold_memory, current, tmp;
 
-        size = this->Aimpl.finish - this->Aimpl.start;
+        old_size = size();
 
-        if (!size)
+        if (!old_size)
         {
           this->Aimpl.start = this->allocate(2);
           this->Aimpl.finish = this->Aimpl.start;
@@ -97,7 +94,7 @@ namespace ft
         else if (this->Aimpl.finish == this->Aimpl.endOfStorage)
         {
           hold_memory = this->Aimpl.start;
-          new_size = size * 2;
+          new_size = old_size * 2;
           this->Aimpl.start = this->allocate(new_size);
           this->Aimpl.endOfStorage = this->Aimpl.start + new_size;
           for (current = this->Aimpl.start, tmp = hold_memory;
@@ -106,7 +103,7 @@ namespace ft
           {
             *current = *tmp;
           }
-          this->deallocate(hold_memory, size);
+          this->deallocate(hold_memory, old_size);
           this->Aimpl.finish = current;
         }
         *this->Aimpl.finish = value;

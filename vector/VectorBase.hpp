@@ -48,7 +48,7 @@ template<typename Tp>
       return *static_cast<allocator_type const *>(&this->Aimpl);
     }
 
-    VectorBase(allocator_type const &a) : Aimpl() {}
+    VectorBase(allocator_type const &) : Aimpl() {}
 
     VectorBase(size_t n) : Aimpl()
     {

@@ -6,7 +6,7 @@
 /*   By: gvitor-s <gvitor-s@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/08 15:12:11 by gvitor-s          #+#    #+#             */
-/*   Updated: 2023/01/21 18:10:48 by gvitor-s         ###   ########.fr       */
+/*   Updated: 2023/01/25 17:17:11 by gvitor-s         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -169,7 +169,7 @@ namespace ft
 
   template<typename T>
     struct is_member_pointer
-    : public ft::is_member_pointer_helper<typename ft::remove_cv<T>::type>
+    : public ft::is_member_pointer_helper<typename ft::remove_cv<T>::value_type>
     {};
 
   // Define is_enum

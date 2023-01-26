@@ -1,18 +1,19 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   base_iterator.hpp                                  :+:      :+:    :+:   */
+/*   iterator.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gvitor-s <gvitor-s@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/01/09 00:05:46 by gvitor-s          #+#    #+#             */
-/*   Updated: 2023/01/09 00:06:22 by gvitor-s         ###   ########.fr       */
+/*   Created: 2023/01/25 16:08:59 by gvitor-s          #+#    #+#             */
+/*   Updated: 2023/01/25 21:47:43 by gvitor-s         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef BASE_ITERATOR_HPP
-#define BASE_ITERATOR_HPP
+#ifndef ITERATOR_HPP
+#define ITERATOR_HPP
 
+#include "type_traits.hpp"
 #include <cstddef>
 
 namespace ft
@@ -70,9 +71,40 @@ namespace ft
       typedef random_access_iterator_tag iterator_category;
       typedef T value_type;
       typedef std::ptrdiff_t difference_type;
-      typedef T* pointer;
-      typedef T& reference;
+      typedef T const * pointer;
+      typedef T const & reference;
     };
+
+  template<typename InputIt>
+    typename ft::iterator_traits<InputIt>::difference_type
+    calculate_distance(InputIt first, InputIt last, ft::random_access_iterator_tag)
+    {
+      return last - first;
+    }
+
+  template<typename InputIt>
+    typename ft::iterator_traits<InputIt>::difference_type
+    calculate_distance(InputIt first, InputIt last, ft::input_iterator_tag)
+    {
+      typename ft::iterator_traits<InputIt>::difference_type size;
+
+      size = 0;
+      while (first != last)
+      {
+        ++first;
+        ++size;
+      }
+      return size;
+    }
+
+  template<typename InputIt>
+    typename ft::iterator_traits<InputIt>::difference_type
+    distance(InputIt first, InputIt last)
+    {
+      return calculate_distance(first, last,
+              typename ft::iterator_traits<InputIt>::iterator_category()
+            );
+    }
 }
 
-#endif
+#endif // !ITERATOR_HPP

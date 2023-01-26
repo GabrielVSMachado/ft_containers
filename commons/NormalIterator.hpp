@@ -12,9 +12,9 @@
 
 
 #ifndef NORMALITERATOR_HPP
-#define NormalIterator_HPP
+#define NORMALITERATOR_HPP
 
-#include "base_iterator.hpp"
+#include "iterator.hpp"
 
 namespace internals
 {
@@ -42,40 +42,44 @@ namespace internals
       explicit normal_iterator(Iterator const &other) : current(other) {}
 
       template<typename Iter>
-        inline normal_iterator(
-            normal_iterator<Iter, Container> const &other)
+        inline normal_iterator(normal_iterator<Iter, Container> const &other)
         : current(other.base()) {}
 
       //Base
-      Iterator const& base() { return current; }
+      Iterator const& base() const { return current; }
 
       //Operators
       reference operator*() { return *current; }
       pointer operator->() const { return current; }
-      normal_iterator& operator++() { return *(++current); }
+      normal_iterator& operator++() { ++current; return *this; }
       normal_iterator operator++(int) const { return current++; }
-      normal_iterator& operator--() { return *(--current); }
+      normal_iterator& operator--() { --current; return *this; }
       normal_iterator operator--(int) const { return current--; }
 
-      normal_iterator& operator[](difference_type const &index) const {
+      normal_iterator& operator[](difference_type const &index) const
+      {
         return current[index];
       }
 
-      normal_iterator& operator+=(difference_type const &diff) {
+      normal_iterator& operator+=(difference_type const &diff)
+      {
         current += diff;
         return *this;
       }
 
-      normal_iterator& operator-=(difference_type const &diff) {
+      normal_iterator& operator-=(difference_type const &diff)
+      {
         current -= diff;
         return *this;
       }
 
-      normal_iterator operator+(difference_type const &diff) const {
+      normal_iterator operator+(difference_type const &diff) const
+      {
         return current + diff;
       }
 
-      normal_iterator operator-(difference_type const &diff) const {
+      normal_iterator operator-(difference_type const &diff) const
+      {
         return current - diff;
       }
     }; // finish normal_iterator
@@ -85,41 +89,47 @@ namespace internals
   template<typename Iterator, typename Container>
     normal_iterator<Iterator, Container>&
     operator==(normal_iterator<Iterator, Container> const &lhs,
-              normal_iterator<Iterator, Container> const &rhs) {
+              normal_iterator<Iterator, Container> const &rhs)
+    {
       return lhs.base() == rhs.base();
     }
 
   template<typename Iterator, typename Container>
     inline bool operator>(normal_iterator<Iterator, Container> const &lhs,
-              normal_iterator<Iterator, Container> const &rhs) {
+              normal_iterator<Iterator, Container> const &rhs)
+    {
       return lhs.base() > rhs.base();
     }
 
   template<typename Iterator, typename Container>
     inline bool operator!=(
         normal_iterator<Iterator, Container> const &lhs,
-        normal_iterator<Iterator, Container> const &rhs) {
+        normal_iterator<Iterator, Container> const &rhs)
+    {
       return lhs.base() != rhs.base();
     }
 
   template<typename Iterator, typename Container>
     inline bool operator<(
         normal_iterator<Iterator, Container> const &lhs,
-        normal_iterator<Iterator, Container> const &rhs) {
+        normal_iterator<Iterator, Container> const &rhs)
+    {
       return lhs.base() < rhs.base();
     }
 
   template<typename Iterator, typename Container>
     inline bool operator<=(
         normal_iterator<Iterator, Container> const &lhs,
-        normal_iterator<Iterator, Container> const &rhs) {
+        normal_iterator<Iterator, Container> const &rhs)
+    {
       return lhs.base() <= rhs.base();
     }
 
   template<typename Iterator, typename Container>
     inline bool operator>=(
         normal_iterator<Iterator, Container> const &lhs,
-        normal_iterator<Iterator, Container> const &rhs) {
+        normal_iterator<Iterator, Container> const &rhs)
+    {
       return lhs.base() >= rhs.base();
     }
 
@@ -128,42 +138,48 @@ namespace internals
   template<typename LIterator, typename RIterator, typename Container>
     inline bool operator==(
         normal_iterator<LIterator, Container> const &lhs,
-        normal_iterator<RIterator, Container> const &rhs) {
+        normal_iterator<RIterator, Container> const &rhs)
+    {
       return lhs.base() == rhs.base();
     }
 
   template<typename LIterator, typename RIterator, typename Container>
     inline bool operator!=(
         normal_iterator<LIterator, Container> const &lhs,
-        normal_iterator<RIterator, Container> const &rhs) {
+        normal_iterator<RIterator, Container> const &rhs)
+    {
       return lhs.base() != rhs.base();
     }
 
   template<typename LIterator, typename RIterator, typename Container>
     inline bool operator>(
         normal_iterator<LIterator, Container> const &lhs,
-        normal_iterator<RIterator, Container> const &rhs) {
+        normal_iterator<RIterator, Container> const &rhs)
+    {
       return lhs.base() > rhs.base();
     }
   
   template<typename LIterator, typename RIterator, typename Container>
     inline bool operator<(
         normal_iterator<LIterator, Container> const &lhs,
-        normal_iterator<RIterator, Container> const &rhs) {
+        normal_iterator<RIterator, Container> const &rhs)
+    {
       return lhs.base() < rhs.base();
     }
 
   template<typename LIterator, typename RIterator, typename Container>
     inline bool operator<=(
         normal_iterator<LIterator, Container> const &lhs,
-        normal_iterator<RIterator, Container> const &rhs) {
+        normal_iterator<RIterator, Container> const &rhs)
+    {
       return lhs.base() <= rhs.base();
     }
 
   template<typename LIterator, typename RIterator, typename Container>
     inline bool operator>=(
         normal_iterator<LIterator, Container> const &lhs,
-        normal_iterator<RIterator, Container> const &rhs) {
+        normal_iterator<RIterator, Container> const &rhs)
+    {
       return lhs.base() >= rhs.base();
     }
 
