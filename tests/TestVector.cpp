@@ -111,8 +111,6 @@ Test(vector_max_size, expected_size_max_of_char)
   ft::vector<char> my_vector;
   std::vector<char> original;
 
-  std::cout << my_vector.max_size() << '\n';
-  std::cout << original.max_size() << '\n';
   cr_assert(my_vector.max_size() == original.max_size());
 }
 
