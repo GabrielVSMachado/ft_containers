@@ -22,6 +22,7 @@
 #include "iterator.hpp"
 #include "my_stl_construct.hpp"
 #include "type_traits.hpp"
+#include <cstring>
 #include <memory>
 
 namespace ft
@@ -92,35 +93,44 @@ namespace ft
       // modifiers methods
       void push_back(value_type const &value)
       {
-        difference_type old_size, new_size;
-        pointer hold_memory, current, tmp;
+        size_type _size, new_size;
+        pointer src;
 
-        old_size = size();
 
-        if (!old_size)
+        if (this->Aimpl.finish == this->Aimpl.endOfStorage)
         {
-          this->Aimpl.start = this->allocate(2);
-          this->Aimpl.finish = this->Aimpl.start;
-          this->Aimpl.endOfStorage = this->Aimpl.start + 2;
-        }
-        else if (this->Aimpl.finish == this->Aimpl.endOfStorage)
-        {
-          hold_memory = this->Aimpl.start;
-          new_size = old_size * 2;
+          _size = size();
+          new_size = _size > 0 ? _size * 2 : 1;
+          src = this->Aimpl.start;
           this->Aimpl.start = this->allocate(new_size);
           this->Aimpl.endOfStorage = this->Aimpl.start + new_size;
-          for (current = this->Aimpl.start, tmp = hold_memory;
-            tmp != this->Aimpl.finish;
-            ++tmp, ++current)
-          {
-            *current = *tmp;
-          }
-          this->deallocate(hold_memory, old_size);
-          this->Aimpl.finish = current;
+          this->fill_unintialiazed_copy<
+            ft::is_integral<T>::value
+          >(_size, src, this->Aimpl.start);
+          this->deallocate(src, _size);
         }
         *this->Aimpl.finish = value;
         ++this->Aimpl.finish;
       }
+
+    private:
+      template<bool>
+        void fill_unintialiazed_copy(
+            size_type size, pointer src, pointer const& dst)
+        {
+          pointer current = dst;
+          for (; size > 0 ; ++current, ++src, --size)
+            *current = *src;
+          this->Aimpl.finish = &*current;
+        }
+
+      template<>
+        void fill_unintialiazed_copy<true>(
+            size_type size, pointer src, pointer const &dst)
+        {
+          std::memmove(dst, src, size * sizeof(value_type));
+          this->Aimpl.finish = dst + size;
+        }
     };
 }
 

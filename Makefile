@@ -34,4 +34,8 @@ test: $(TESTOBJS)
 	$(CXX) $(TESTOBJS) -o $(TESTNAME) -lcriterion
 	./$(TESTNAME)
 
+test_on_docker:
+	docker build -t ft_containers:latest .
+	docker run --rm ft_containers:latest
+
 .PHONY: all clean fclean re test
