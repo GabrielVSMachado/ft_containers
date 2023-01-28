@@ -14,6 +14,7 @@
 #define VECTOR_HPP
 
 // std implementation
+#include <iostream>
 
 //My implementation
 #include "ReverseIterator.hpp"
@@ -32,7 +33,6 @@ namespace ft
     {
       typedef internals::VectorBase<T> _Base;
       typedef ft::vector<T> vector_type;
-      typedef std::allocator<T> allocator;
 
     public:
 
@@ -105,11 +105,11 @@ namespace ft
           this->Aimpl.start = this->allocate(new_size);
           this->Aimpl.endOfStorage = this->Aimpl.start + new_size;
           this->fill_unintialiazed_copy<
-            ft::is_integral<T>::value
-          >(_size, src, this->Aimpl.start);
+                                        ft::is_integral<T>::value
+                                      >(_size, src, this->Aimpl.start);
           this->deallocate(src, _size);
         }
-        *this->Aimpl.finish = value;
+        this->construct(this->Aimpl.finish, value);
         ++this->Aimpl.finish;
       }
 
@@ -120,7 +120,7 @@ namespace ft
         {
           pointer current = dst;
           for (; size > 0 ; ++current, ++src, --size)
-            *current = *src;
+            this->construct(current, *src);
           this->Aimpl.finish = &*current;
         }
 

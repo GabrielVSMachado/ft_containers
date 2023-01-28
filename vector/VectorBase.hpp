@@ -69,6 +69,11 @@ template<typename Tp>
       if (p)
         Aimpl.deallocate(p, n);
     }
+
+    void construct(Tp_pointer p, Tp const &value)
+    {
+      Aimpl.construct(p, value);
+    }
   };
 }
 

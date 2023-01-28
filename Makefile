@@ -31,11 +31,11 @@ $(TESTDIR)/%.o: $(TESTDIR)/%.cpp
 	$(CXX) -std=c++11 $(INCLUDES) -c $< -o $@
 
 test: $(TESTOBJS)
-	$(CXX) $(TESTOBJS) -o $(TESTNAME) -lcriterion
+	$(CXX) -std=c++11 $(TESTOBJS) -o $(TESTNAME) -lcriterion
 	./$(TESTNAME)
 
 test_on_docker:
 	docker build -t ft_containers:latest .
 	docker run --rm ft_containers:latest
 
-.PHONY: all clean fclean re test
+.PHONY: all clean fclean re test test_on_docker

@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <iostream>
 #include <iterator>
+#include <string>
 #include <vector>
 #include "algorithms.hpp"
 
@@ -80,14 +81,12 @@ Test(vector_const_iterator, expected_all_values_from_const_iterator_eq_to_30)
 {
   ft::vector<int> my_vector;
   std::vector<int> const original_vector(20, 42);
-  typename ft::vector<int>::const_iterator result;
   typename std::vector<int>::const_iterator expected = original_vector.begin();
 
   for (int i = 0; i < 20; i++)
     my_vector.push_back(42);
 
-  result = my_vector.begin();
-  cr_assert(ft::equal(expected, original_vector.end(), result));
+  cr_assert(ft::equal(expected, original_vector.end(), my_vector.begin()));
 }
 
 Test(vector_empty, expected_true)
@@ -154,4 +153,17 @@ Test(vector_max_size, expected_size_max_of_std_string)
   std::vector<std::string> original;
 
   cr_assert(my_vector.max_size() == original.max_size());
+}
+
+Test(vector_push_back, expected_right_sequence_values_for_no_integral_types)
+{
+  ft::vector<std::string> my_vector;
+  std::vector<std::string> original(3, "42sp");
+  typename ft::vector<std::string>::iterator result;
+
+  my_vector.push_back("42sp");
+  my_vector.push_back("42sp");
+  my_vector.push_back("42sp");
+
+  cr_assert(ft::equal(original.begin(), original.end(), my_vector.begin()));
 }
