@@ -113,6 +113,8 @@ namespace ft
         ++this->Aimpl.finish;
       }
 
+      void pop_back() { (this->Aimpl.finish--)->~value_type(); }
+
     private:
       template<bool>
         void fill_unintialiazed_copy(
