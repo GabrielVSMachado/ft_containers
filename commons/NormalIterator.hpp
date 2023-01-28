@@ -75,21 +75,21 @@ namespace internals
 
       normal_iterator operator+(difference_type const &diff) const
       {
-        return current + diff;
+        return normal_iterator(current + diff);
       }
 
       normal_iterator operator-(difference_type const &diff) const
       {
-        return current - diff;
+        return normal_iterator(current - diff);
       }
     }; // finish normal_iterator
 
   // boolean operator to Iterator of same type
 
   template<typename Iterator, typename Container>
-    normal_iterator<Iterator, Container>&
-    operator==(normal_iterator<Iterator, Container> const &lhs,
-              normal_iterator<Iterator, Container> const &rhs)
+    inline bool operator==(
+        normal_iterator<Iterator, Container> const &lhs,
+        normal_iterator<Iterator, Container> const &rhs)
     {
       return lhs.base() == rhs.base();
     }

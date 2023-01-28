@@ -123,6 +123,27 @@ namespace ft
         this->Aimpl.finish = this->Aimpl.start;
       }
 
+      iterator erase(iterator pos)
+      {
+        iterator last = --end();
+        iterator next;
+
+        if (pos == last)
+        {
+          pop_back();
+          next = end();
+        }
+        else
+        {
+          pos->~value_type();
+          next = pos;
+          for (iterator current = pos; current != last; ++current)
+            *current = *++pos;
+          --this->Aimpl.finish;
+        }
+        return next;
+      }
+
     private:
       template<bool>
         void fill_unintialiazed_copy(

@@ -272,3 +272,85 @@ Test(vector_clear, expected_same_values_for_vectors_using_iterator)
   original.clear();
   cr_assert(ft::equal(original.begin(), original.end(), my_vector.begin()));
 }
+
+Test(vector_erased, expected_size_eq_to_the_original)
+{
+  ft::vector<int> my_vector;
+  std::vector<int> original(4, 42);
+
+  my_vector.push_back(42);
+  my_vector.push_back(42);
+  my_vector.push_back(42);
+  my_vector.push_back(42);
+
+  original.erase(original.begin()+1);
+  my_vector.erase(my_vector.begin()+1);
+  cr_assert(my_vector.size() == original.size());
+}
+
+Test(vector_erased, expected_capacity_eq_the_original)
+{
+  ft::vector<int> my_vector;
+  std::vector<int> original(4, 42);
+
+  my_vector.push_back(42);
+  my_vector.push_back(42);
+  my_vector.push_back(42);
+  my_vector.push_back(42);
+
+  original.erase(original.begin()+1);
+  my_vector.erase(my_vector.begin()+1);
+  cr_assert(my_vector.capacity() == original.capacity());
+}
+
+Test(vector_erased, expected_same_return_as_the_original_vector)
+{
+  ft::vector<int> my_vector;
+  std::vector<int> original;
+  typename ft::vector<int>::iterator result;
+  typename std::vector<int>::iterator expected;
+
+  for (int i = 0; i < 10; ++i) {
+    my_vector.push_back(i);
+    original.push_back(i);
+  }
+
+  result = my_vector.erase(my_vector.begin()+2);
+  expected = original.erase(original.begin()+2);
+
+  cr_assert(*result == *expected);
+}
+
+Test(vector_erased, erased_last_element_and_expected_iterator_end)
+{
+  ft::vector<std::string> my_vector;
+  std::vector<std::string> original(4, "42sp");
+  typename ft::vector<std::string>::iterator result;
+  typename std::vector<std::string>::iterator expected;
+
+  my_vector.push_back("42sp");
+  my_vector.push_back("42sp");
+  my_vector.push_back("42sp");
+  my_vector.push_back("42sp");
+
+  result = my_vector.erase(--my_vector.end());
+  expected = original.erase(--original.end());
+
+  cr_assert(result == my_vector.end() && expected == original.end());
+}
+
+Test(vector_erased, expected_the_same_sequence_as_the_original)
+{
+  ft::vector<int> my_vector;
+  std::vector<int> original;
+
+  for (int i = 0; i < 10; ++i) {
+    my_vector.push_back(i);
+    original.push_back(i);
+  }
+
+  my_vector.erase(my_vector.begin()+3);
+  original.erase(original.begin()+3);
+
+  cr_assert(ft::equal(original.begin(), original.end(), my_vector.begin()));
+}
