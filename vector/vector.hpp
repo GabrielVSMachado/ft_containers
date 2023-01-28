@@ -94,7 +94,7 @@ namespace ft
       void push_back(value_type const &value)
       {
         size_type _size, new_size;
-        pointer src;
+        pointer src, finish;
 
 
         if (this->Aimpl.finish == this->Aimpl.endOfStorage)
@@ -102,11 +102,13 @@ namespace ft
           _size = size();
           new_size = _size > 0 ? _size * 2 : 1;
           src = this->Aimpl.start;
+          finish = this->Aimpl.finish;
           this->Aimpl.start = this->allocate(new_size);
           this->Aimpl.endOfStorage = this->Aimpl.start + new_size;
           this->fill_unintialiazed_copy<
                                         ft::is_integral<T>::value
                                       >(_size, src, this->Aimpl.start);
+          internals::_Destroy(iterator(src), iterator(finish));
           this->deallocate(src, _size);
         }
         this->construct(this->Aimpl.finish, value);
@@ -114,6 +116,12 @@ namespace ft
       }
 
       void pop_back() { (this->Aimpl.finish--)->~value_type(); }
+
+      void clear()
+      {
+        internals::_Destroy(begin(), end());
+        this->Aimpl.finish = this->Aimpl.start;
+      }
 
     private:
       template<bool>

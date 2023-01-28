@@ -227,3 +227,48 @@ Test(vector_pop_back, expected_same_values_for_vectors_using_reverse_iterator)
 
   cr_assert(ft::equal(original.rbegin(), original.rend(), my_vector.rbegin()));
 }
+
+Test(vector_clear, expected_the_same_value_of_capacity)
+{
+  ft::vector<std::string> my_vector;
+  std::vector<std::string> original(4, "42sp");
+
+  my_vector.push_back("42sp");
+  my_vector.push_back("42sp");
+  my_vector.push_back("42sp");
+  my_vector.push_back("42sp");
+
+  my_vector.clear();
+  original.clear();
+  cr_assert(my_vector.capacity() == original.capacity());
+}
+
+Test(vector_clear, expected_size_eq_0)
+{
+  ft::vector<std::string> my_vector;
+  std::vector<std::string> original(4, "42sp");
+
+  my_vector.push_back("42sp");
+  my_vector.push_back("42sp");
+  my_vector.push_back("42sp");
+  my_vector.push_back("42sp");
+
+  my_vector.clear();
+  original.clear();
+  cr_assert(my_vector.size() == original.size());
+}
+
+Test(vector_clear, expected_same_values_for_vectors_using_iterator)
+{
+  ft::vector<std::string> my_vector;
+  std::vector<std::string> original(4, "42sp");
+
+  my_vector.push_back("42sp");
+  my_vector.push_back("42sp");
+  my_vector.push_back("42sp");
+  my_vector.push_back("42sp");
+
+  my_vector.clear();
+  original.clear();
+  cr_assert(ft::equal(original.begin(), original.end(), my_vector.begin()));
+}

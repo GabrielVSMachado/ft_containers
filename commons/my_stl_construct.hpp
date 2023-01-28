@@ -19,7 +19,7 @@
 namespace internals
 {
   template<typename Tp>
-    inline void _Destroy(Tp* pointer) { pointer->Tp(); }
+    inline void _Destroy(Tp* pointer) { pointer->~Tp(); }
 
   template<bool>
     struct destroy_aux
@@ -28,7 +28,7 @@ namespace internals
         static void destroy(FowardIterator first, FowardIterator last)
         {
           for (; first != last; ++first)
-            _Destroy(&*first);
+            internals::_Destroy(&*first);
         };
     };
 
