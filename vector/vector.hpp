@@ -80,7 +80,7 @@ namespace ft
 
       size_type size() const
       {
-        return end() - begin();
+        return ft::distance(begin(), end());
       }
 
       bool empty() const { return size() == 0; }
@@ -169,6 +169,23 @@ namespace ft
         }
 
         return following_iterator;
+      }
+
+      void resize(size_type count, value_type value = value_type())
+      {
+        iterator start(begin()+count);
+        size_type _size(size());
+
+        if (_size > count)
+        {
+          internals::_Destroy(start, end());
+          this->Aimpl.finish = &*start;
+        }
+        else
+        {
+          for (; _size != count; --count)
+            push_back(value);
+        }
       }
 
     private:

@@ -466,3 +466,81 @@ Test(vector_erased, test_last_diff_from_first_and_end_expected_the_same_returned
   expected = original.erase(original.begin()+3, original.begin()+5);
   cr_assert(*result == *expected);
 }
+
+Test(vector_resize, downsize_vector_to_size_eq_2)
+{
+  ft::vector<int> my_vector;
+  std::vector<int> original(4, 10);
+
+  my_vector.push_back(10);
+  my_vector.push_back(10);
+  my_vector.push_back(10);
+  my_vector.push_back(10);
+
+  my_vector.resize(2);
+  original.resize(2);
+  cr_assert(my_vector.size() == original.size());
+}
+
+Test(vector_resize, incresce_size_in_4_elements_expected_same_size_as_the_original_vector)
+{
+  ft::vector<int> my_vector;
+  std::vector<int> original(4, 10);
+
+  my_vector.push_back(10);
+  my_vector.push_back(10);
+  my_vector.push_back(10);
+  my_vector.push_back(10);
+
+  my_vector.resize(8);
+  original.resize(8);
+  cr_assert(my_vector.size() == original.size());
+}
+
+Test(vector_resize, incresce_size_in_4_elements_expected_same_capacity_as_the_original_vector)
+{
+  ft::vector<int> my_vector;
+  std::vector<int> original(4, 10);
+
+  my_vector.push_back(10);
+  my_vector.push_back(10);
+  my_vector.push_back(10);
+  my_vector.push_back(10);
+
+  my_vector.resize(8);
+  original.resize(8);
+  cr_assert(my_vector.capacity() == original.capacity());
+}
+
+Test(vector_resize, incresce_size_in_8_elements_expected_same_values_as_the_original)
+{
+  ft::vector<std::string> my_vector;
+  std::vector<std::string> original(4, "42sp");
+
+  my_vector.push_back("42sp");
+  my_vector.push_back("42sp");
+  my_vector.push_back("42sp");
+  my_vector.push_back("42sp");
+
+  my_vector.resize(8);
+  original.resize(8);
+  cr_assert(ft::equal(original.begin(), original.end(), my_vector.begin()));
+}
+
+Test(vector_resize, dont_change_the_size_expected_anything_change)
+{
+  ft::vector<std::string> my_vector;
+  std::vector<std::string> original(4, "42sp");
+
+  my_vector.push_back("42sp");
+  my_vector.push_back("42sp");
+  my_vector.push_back("42sp");
+  my_vector.push_back("42sp");
+
+  my_vector.resize(4);
+  original.resize(4);
+  cr_assert(
+      my_vector.size() == original.size()
+      && my_vector.capacity() == original.capacity()
+  );
+}
