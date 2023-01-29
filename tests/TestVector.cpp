@@ -321,6 +321,27 @@ Test(vector_erased, expected_same_return_as_the_original_vector)
   cr_assert(*result == *expected);
 }
 
+Test(vector_erased, testing_overlaping_on_erase_method)
+{
+  ft::vector<std::string> my_vector;
+  std::vector<std::string> original;
+
+  my_vector.push_back("42");
+  my_vector.push_back("43");
+  my_vector.push_back("44");
+  my_vector.push_back("45");
+
+  original.push_back("42");
+  original.push_back("43");
+  original.push_back("44");
+  original.push_back("45");
+
+  my_vector.erase(my_vector.begin()+1);
+  original.erase(original.begin()+1);
+
+  cr_assert(ft::equal(original.begin(), original.end(), my_vector.begin()));
+}
+
 Test(vector_erased, erased_last_element_and_expected_iterator_end)
 {
   ft::vector<std::string> my_vector;
@@ -353,4 +374,95 @@ Test(vector_erased, expected_the_same_sequence_as_the_original)
   original.erase(original.begin()+3);
 
   cr_assert(ft::equal(original.begin(), original.end(), my_vector.begin()));
+}
+
+Test(vector_erased, test_when_last_and_first_are_eq_expected_the_same_iterator_returned)
+{
+  ft::vector<double> my_vector;
+  std::vector<double> original;
+  typename ft::vector<double>::iterator result;
+  typename std::vector<double>::iterator expected;
+
+  for (double i = 0; i < 10; ++i) {
+    my_vector.push_back(i);
+    original.push_back(i);
+  }
+
+  result = my_vector.erase(my_vector.begin()+2, my_vector.begin()+2);
+  expected = original.erase(original.begin()+2, original.begin()+2);
+  cr_assert(*result == *expected);
+}
+
+Test(vector_erased, test_when_last_eq_end_expected_the_size_eq_to_1)
+{
+  ft::vector<std::string> my_vector;
+
+  my_vector.push_back("42sp");
+  my_vector.push_back("42sp");
+  my_vector.push_back("42sp");
+
+  my_vector.erase(my_vector.begin()+1, my_vector.end());
+  cr_assert(my_vector.size() == 1);
+}
+
+Test(vector_erased, test_when_last_eq_end_expected_the_same_sequence_after_erase)
+{
+  ft::vector<int> my_vector;
+  std::vector<int> original;
+
+  for (int i = 0; i < 10; i++) {
+    my_vector.push_back(i);
+    original.push_back(i);
+  }
+
+  my_vector.erase(my_vector.begin()+4, my_vector.end());
+  original.erase(original.begin()+4, original.end());
+  cr_assert(ft::equal(original.begin(), original.end(), my_vector.begin()));
+}
+
+Test(vector_erased, test_last_diff_from_first_and_end_expected_the_same_sequence)
+{
+  ft::vector<int> my_vector;
+  std::vector<int> original;
+
+  for (int i = 0; i < 10; i++) {
+    my_vector.push_back(i);
+    original.push_back(i);
+  }
+
+  my_vector.erase(my_vector.begin()+2, my_vector.begin()+4);
+  original.erase(original.begin()+2, original.begin()+4);
+  cr_assert(ft::equal(original.begin(), original.end(), my_vector.begin()));
+}
+
+Test(vector_erased, test_last_diff_from_first_and_end_expected_the_same_size)
+{
+  ft::vector<int> my_vector;
+  std::vector<int> original;
+
+  for (int i = 0; i < 10; i++) {
+    my_vector.push_back(i);
+    original.push_back(i);
+  }
+
+  my_vector.erase(my_vector.begin()+2, my_vector.begin()+5);
+  original.erase(original.begin()+2, original.begin()+5);
+  cr_assert(my_vector.size() == original.size());
+}
+
+Test(vector_erased, test_last_diff_from_first_and_end_expected_the_same_returned_value)
+{
+  ft::vector<int> my_vector;
+  std::vector<int> original;
+  typename ft::vector<int>::iterator result;
+  typename std::vector<int>::iterator expected;
+
+  for (int i = 0; i < 10; i++) {
+    my_vector.push_back(i);
+    original.push_back(i);
+  }
+
+  result = my_vector.erase(my_vector.begin()+3, my_vector.begin()+5);
+  expected = original.erase(original.begin()+3, original.begin()+5);
+  cr_assert(*result == *expected);
 }

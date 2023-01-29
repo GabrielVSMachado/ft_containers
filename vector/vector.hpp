@@ -125,23 +125,50 @@ namespace ft
 
       iterator erase(iterator pos)
       {
-        iterator last = --end();
-        iterator next;
+        iterator last(--end());
+        iterator following_iterator;
 
         if (pos == last)
         {
           pop_back();
-          next = end();
+          following_iterator = end();
         }
         else
         {
-          pos->~value_type();
-          next = pos;
-          for (iterator current = pos; current != last; ++current)
-            *current = *++pos;
-          --this->Aimpl.finish;
+          internals::_Destroy(&*pos);
+          following_iterator = pos++;
+          fill_unintialiazed_copy<ft::is_integral<value_type>::value>(
+              last - following_iterator, &*pos, &*following_iterator
+          );
         }
-        return next;
+        return following_iterator;
+      }
+
+      iterator erase(iterator first, iterator last)
+      {
+        iterator _end(end());
+        iterator following_iterator;
+
+        if (first == last)
+          return last;
+
+        internals::_Destroy(first, last);
+
+        if (last == _end)
+        {
+          this->Aimpl.finish = &*first;
+          following_iterator = end();
+        }
+
+        else
+        {
+          following_iterator = first;
+          fill_unintialiazed_copy<ft::is_integral<value_type>::value>(
+              _end - last, &*last, &*first
+          );
+        }
+
+        return following_iterator;
       }
 
     private:

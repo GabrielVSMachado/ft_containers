@@ -52,9 +52,9 @@ namespace internals
       reference operator*() { return *current; }
       pointer operator->() const { return current; }
       normal_iterator& operator++() { ++current; return *this; }
-      normal_iterator operator++(int) const { return current++; }
+      normal_iterator operator++(int) { return normal_iterator(current++); }
       normal_iterator& operator--() { --current; return *this; }
-      normal_iterator operator--(int) const { return current--; }
+      normal_iterator operator--(int) { return normal_iterator(current--); }
 
       normal_iterator& operator[](difference_type const &index) const
       {
