@@ -56,7 +56,7 @@ namespace internals
       normal_iterator& operator--() { --current; return *this; }
       normal_iterator operator--(int) { return normal_iterator(current--); }
 
-      normal_iterator& operator[](difference_type const &index) const
+      reference operator[](difference_type const &index) const
       {
         return current[index];
       }

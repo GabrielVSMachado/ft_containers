@@ -544,3 +544,135 @@ Test(vector_resize, dont_change_the_size_expected_anything_change)
       && my_vector.capacity() == original.capacity()
   );
 }
+
+Test(vector_insert, when_pos_eq_end_expected_same_return)
+{
+  ft::vector<std::string> my_vector;
+  std::vector<std::string> original;
+  typename ft::vector<std::string>::iterator result;
+  typename std::vector<std::string>::iterator expected;
+
+  my_vector.push_back("42");
+  my_vector.push_back("43");
+
+  original.push_back("42");
+  original.push_back("43");
+
+  result = my_vector.insert(my_vector.end(), "44");
+  expected = original.insert(original.end(), "44");
+  cr_assert(*result == *expected);
+}
+
+Test(vector_insert, when_capacity_is_less_than_size_plus_one_expected_same_size)
+{
+  ft::vector<std::string> my_vector;
+  std::vector<std::string> original;
+
+  my_vector.push_back("42");
+  my_vector.push_back("44");
+
+  original.push_back("42");
+  original.push_back("44");
+
+  my_vector.insert(my_vector.begin(), "43");
+  original.insert(original.begin(), "43");
+  cr_assert(my_vector.size() == original.size());
+} 
+
+
+Test(vector_insert, when_capacity_is_less_than_size_plus_one_expected_same_capacity)
+{
+  ft::vector<std::string> my_vector;
+  std::vector<std::string> original;
+
+  my_vector.push_back("42");
+  my_vector.push_back("44");
+
+  original.push_back("42");
+  original.push_back("44");
+
+  my_vector.insert(my_vector.begin(), "43");
+  original.insert(original.begin(), "43");
+  cr_assert(my_vector.capacity() == original.capacity());
+} 
+
+
+Test(vector_insert, when_capacity_is_less_than_size_plus_one_expected_same_values)
+{
+  ft::vector<std::string> my_vector;
+  std::vector<std::string> original;
+  typename ft::vector<std::string>::iterator test;
+
+  my_vector.push_back("42");
+  my_vector.push_back("44");
+
+  original.push_back("42");
+  original.push_back("44");
+
+  my_vector.insert(my_vector.begin()+1, "43");
+  original.insert(original.begin()+1, "43");
+  cr_assert(ft::equal(original.begin(), original.end(), my_vector.begin()));
+}
+
+Test(vector_insert, when_capacity_is_less_than_size_plus_one_expected_same_return)
+{
+  ft::vector<std::string> my_vector;
+  std::vector<std::string> original;
+  typename ft::vector<std::string>::iterator result, test;
+  typename std::vector<std::string>::iterator expected;
+
+  my_vector.push_back("42");
+  my_vector.push_back("44");
+
+  original.push_back("42");
+  original.push_back("44");
+
+  result = my_vector.insert(my_vector.begin()+1, "43");
+  expected = original.insert(original.begin()+1, "43");
+  cr_assert(*result == *expected);
+}
+
+
+Test(vector_insert, when_capacity_is_sufficient_to_insert_more_elements_expected_eq_to_original)
+{
+  ft::vector<std::string> my_vector;
+  std::vector<std::string> original;
+  typename ft::vector<std::string>::iterator result;
+  typename std::vector<std::string>::iterator expected;
+
+  my_vector.push_back("42");
+  my_vector.push_back("43");
+  my_vector.push_back("44");
+  my_vector.push_back("46");
+
+  original.push_back("42");
+  original.push_back("43");
+  original.push_back("44");
+  original.push_back("46");
+
+  my_vector.insert(my_vector.begin()+3, "45");
+  original.insert(original.begin()+3, "45");
+  cr_assert(ft::equal(original.begin(), original.end(), my_vector.begin()));
+}
+
+Test(vector_insert, when_capacity_is_sufficient_to_insert_more_elements_expected_same_return)
+{
+  ft::vector<std::string> my_vector;
+  std::vector<std::string> original;
+  typename ft::vector<std::string>::iterator result;
+  typename std::vector<std::string>::iterator expected;
+
+  my_vector.push_back("42");
+  my_vector.push_back("43");
+  my_vector.push_back("44");
+  my_vector.push_back("46");
+
+  original.push_back("42");
+  original.push_back("43");
+  original.push_back("44");
+  original.push_back("46");
+
+  result = my_vector.insert(my_vector.begin()+3, "45");
+  expected = original.insert(original.begin()+3, "45");
+  cr_assert(*result == *expected);
+}

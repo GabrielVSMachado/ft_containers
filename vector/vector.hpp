@@ -14,6 +14,7 @@
 #define VECTOR_HPP
 
 // std implementation
+#include <cstdio>
 #include <iostream>
 
 //My implementation
@@ -70,7 +71,10 @@ namespace ft
       }
 
       reverse_iterator rend() { return reverse_iterator(begin()); }
-      const_reverse_iterator rend() const { return reverse_iterator(begin()); }
+      const_reverse_iterator rend() const
+      {
+        return const_reverse_iterator(begin());
+      }
 
       // capacity methods
       size_type capacity() const
@@ -186,6 +190,33 @@ namespace ft
           for (; _size != count; --count)
             push_back(value);
         }
+      }
+
+      iterator insert(iterator pos, value_type const & value)
+      {
+        size_type _size, length_to_move;
+        reverse_iterator next;
+
+        if (pos == end())
+        {
+          push_back(value);
+          return --end();
+        }
+
+        _size = size();
+        length_to_move = ft::distance(pos, end());
+
+        if (_size + 1 > capacity())
+          push_back(value_type());
+
+        next = rbegin() + length_to_move;
+        for (reverse_iterator src = ++rbegin(), dst = rbegin();
+            length_to_move > 0;
+            --length_to_move, ++src, ++dst)
+          *dst = *src;
+        *next = value;
+
+        return iterator((++next).base());
       }
 
     private:

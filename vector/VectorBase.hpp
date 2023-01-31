@@ -27,7 +27,8 @@ template<typename Tp>
   struct VectorBase
   {
     typedef Tp* Tp_pointer;
-    typedef std::allocator<Tp> allocator_type;
+    typedef typename std::allocator<Tp>::template rebind<Tp>::other
+                                                                allocator_type;
 
     private:
       struct ImplementationAllocator : public std::allocator<Tp>

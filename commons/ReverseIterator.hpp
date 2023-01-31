@@ -48,21 +48,26 @@ namespace ft
 
       explicit reverse_iterator(Iter any) : current(any) {}
 
-      Iter base() { return current; }
+      Iter base() const { return current; }
 
       //Operators
       reference operator*() const { Iter tmp = current; return *--tmp; }
       pointer operator->() { return &(operator*()); }
-      reference operator[](difference_type size) const {
+
+      reference operator[](difference_type size) const
+      {
         return *(*this + size);
       }
+
       reverse_iterator& operator++() { --current; return *this; }
       reverse_iterator& operator--() { ++current; return *this; }
-      reverse_iterator operator++(int) const
+
+      reverse_iterator operator++(int)
       {
         return reverse_iterator(current--);
       }
-      reverse_iterator operator--(int) const
+
+      reverse_iterator operator--(int)
       {
         return reverse_iterator(current++);
       }
