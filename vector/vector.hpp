@@ -14,6 +14,7 @@
 #define VECTOR_HPP
 
 // std implementation
+#include <algorithm>
 #include <cstdio>
 #include <iostream>
 
@@ -177,14 +178,10 @@ namespace ft
 
       void resize(size_type count, value_type value = value_type())
       {
-        iterator start(begin()+count);
         size_type _size(size());
 
         if (_size > count)
-        {
-          internals::_Destroy(start, end());
-          this->Aimpl.finish = &*start;
-        }
+          erase(begin() + count, end());
         else
         {
           for (; _size != count; --count)
@@ -195,28 +192,48 @@ namespace ft
       iterator insert(iterator pos, value_type const & value)
       {
         size_type _size, length_to_move;
-        reverse_iterator next;
+        iterator insertedValuePos;
 
         if (pos == end())
         {
           push_back(value);
-          return --end();
+          insertedValuePos = --end();
+        }
+        else
+        {
+          _size = size();
+          length_to_move = ft::distance(pos, end());
+          insert(pos, 1, value);
+          insertedValuePos = begin() + (_size - length_to_move);
         }
 
+        return insertedValuePos;
+      }
+
+      void insert(iterator pos, size_type count, value_type const &value)
+      {
+        size_type _size, length_to_move;
+        iterator insertedValuePos;
+
         _size = size();
-        length_to_move = ft::distance(pos, end());
 
-        if (_size + 1 > capacity())
-          push_back(value_type());
+        if (pos == end())
+          resize(_size + count, value);
 
-        next = rbegin() + length_to_move;
-        for (reverse_iterator src = ++rbegin(), dst = rbegin();
-            length_to_move > 0;
-            --length_to_move, ++src, ++dst)
-          *dst = *src;
-        *next = value;
+        else
+        {
+          length_to_move = ft::distance(pos, end());
 
-        return iterator((++next).base());
+          if (_size + count > capacity())
+            resize(_size + count);
+
+          insertedValuePos = std::copy_backward(
+                  begin()+(_size - length_to_move), begin()+_size, end()
+                );
+          --insertedValuePos;
+          for (; count > 0; --count, --insertedValuePos)
+            *insertedValuePos = value;
+        }
       }
 
     private:
