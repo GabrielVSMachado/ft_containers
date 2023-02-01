@@ -98,22 +98,22 @@ namespace ft
       // modifiers methods
       void push_back(value_type const &value)
       {
-        size_type _size, new_size;
-        pointer src, finish;
+        size_type _size, newSize;
+        pointer src, oldFinish;
 
 
         if (this->Aimpl.finish == this->Aimpl.endOfStorage)
         {
           _size = size();
-          new_size = _size > 0 ? _size * 2 : 1;
+          newSize = _size > 0 ? _size * 2 : 1;
           src = this->Aimpl.start;
-          finish = this->Aimpl.finish;
-          this->Aimpl.start = this->allocate(new_size);
-          this->Aimpl.endOfStorage = this->Aimpl.start + new_size;
+          oldFinish = this->Aimpl.finish;
+          this->Aimpl.start = this->allocate(newSize);
+          this->Aimpl.endOfStorage = this->Aimpl.start + newSize;
           this->fill_unintialiazed_copy<
                                         ft::is_integral<T>::value
                                       >(_size, src, this->Aimpl.start);
-          internals::_Destroy(iterator(src), iterator(finish));
+          internals::_Destroy(iterator(src), iterator(oldFinish));
           this->deallocate(src, _size);
         }
         this->construct(this->Aimpl.finish, value);
@@ -130,29 +130,31 @@ namespace ft
 
       iterator erase(iterator pos)
       {
-        iterator last(--end());
-        iterator following_iterator;
+        iterator last, followingIterator;
+
+        last = --end();
 
         if (pos == last)
         {
           pop_back();
-          following_iterator = end();
+          followingIterator = end();
         }
         else
         {
           internals::_Destroy(&*pos);
-          following_iterator = pos++;
+          followingIterator = pos++;
           fill_unintialiazed_copy<ft::is_integral<value_type>::value>(
-              last - following_iterator, &*pos, &*following_iterator
+              last - followingIterator, &*pos, &*followingIterator
           );
         }
-        return following_iterator;
+        return followingIterator;
       }
 
       iterator erase(iterator first, iterator last)
       {
-        iterator _end(end());
-        iterator following_iterator;
+        iterator _end, followingIterator;
+
+        _end = end();
 
         if (first == last)
           return last;
@@ -162,23 +164,25 @@ namespace ft
         if (last == _end)
         {
           this->Aimpl.finish = &*first;
-          following_iterator = end();
+          followingIterator = end();
         }
 
         else
         {
-          following_iterator = first;
+          followingIterator = first;
           fill_unintialiazed_copy<ft::is_integral<value_type>::value>(
               _end - last, &*last, &*first
           );
         }
 
-        return following_iterator;
+        return followingIterator;
       }
 
       void resize(size_type count, value_type value = value_type())
       {
-        size_type _size(size());
+        size_type _size;
+
+        _size = size();
 
         if (_size > count)
           erase(begin() + count, end());
@@ -191,7 +195,7 @@ namespace ft
 
       iterator insert(iterator pos, value_type const & value)
       {
-        size_type _size, length_to_move;
+        size_type _size, lengthToCopy;
         iterator insertedValuePos;
 
         if (pos == end())
@@ -202,9 +206,9 @@ namespace ft
         else
         {
           _size = size();
-          length_to_move = ft::distance(pos, end());
+          lengthToCopy = ft::distance(pos, end());
           insert(pos, 1, value);
-          insertedValuePos = begin() + (_size - length_to_move);
+          insertedValuePos = begin() + (_size - lengthToCopy);
         }
 
         return insertedValuePos;
@@ -212,8 +216,8 @@ namespace ft
 
       void insert(iterator pos, size_type count, value_type const &value)
       {
-        size_type _size, length_to_move;
-        iterator insertedValuePos;
+        size_type _size, lengthToCopy;
+        iterator insertedValuePos, endToCopy, startToCopy, destination;
 
         _size = size();
 
@@ -222,14 +226,18 @@ namespace ft
 
         else
         {
-          length_to_move = ft::distance(pos, end());
+          lengthToCopy = ft::distance(pos, end());
 
           if (_size + count > capacity())
             resize(_size + count);
 
+          endToCopy = begin() + (_size - lengthToCopy);
+          startToCopy = begin() + _size;
+          destination = end();
+
           insertedValuePos = std::copy_backward(
-                  begin()+(_size - length_to_move), begin()+_size, end()
-                );
+                              endToCopy, startToCopy, destination
+                            );
           --insertedValuePos;
           for (; count > 0; --count, --insertedValuePos)
             *insertedValuePos = value;
