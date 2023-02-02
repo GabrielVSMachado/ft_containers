@@ -789,3 +789,189 @@ Test(vector_insert_with_count, expected_same_sequence_of_the_values_as_the_origi
 
   cr_assert(ft::equal(original.begin(), original.end(), my_vector.begin()));
 }
+
+Test(vector_insert_iterator_range, expected_the_same_size)
+{
+  ft::vector<std::string> my_vector;
+  ft::vector<std::string> m_vector;
+
+  m_vector.push_back("42");
+  m_vector.push_back("43");
+  m_vector.push_back("43.5");
+  m_vector.push_back("43.5");
+  m_vector.push_back("43.5");
+  m_vector.push_back("43.5");
+  m_vector.push_back("43.5");
+  m_vector.push_back("44");
+  m_vector.push_back("45");
+
+  my_vector.push_back("42");
+  my_vector.push_back("43");
+  my_vector.push_back("44");
+  my_vector.push_back("45");
+
+  my_vector.insert(my_vector.begin()+2, m_vector.begin()+2, m_vector.end()-2);
+
+  cr_assert(my_vector.size() == m_vector.size());
+}
+
+
+Test(vector_insert_iterator_range, expected_the_same_capacity)
+{
+  ft::vector<std::string> my_vector;
+  ft::vector<std::string> m_vector;
+
+  m_vector.push_back("42");
+  m_vector.push_back("43");
+  m_vector.push_back("43.5");
+  m_vector.push_back("43.5");
+  m_vector.push_back("43.5");
+  m_vector.push_back("43.5");
+  m_vector.push_back("43.5");
+  m_vector.push_back("44");
+  m_vector.push_back("45");
+
+  my_vector.push_back("42");
+  my_vector.push_back("43");
+  my_vector.push_back("44");
+  my_vector.push_back("45");
+
+  my_vector.insert(my_vector.begin()+2, m_vector.begin()+2, m_vector.end()-2);
+
+  cr_assert(my_vector.capacity() == m_vector.capacity());
+}
+
+Test(vector_insert_iterator_range, expected_the_same_values)
+{
+  ft::vector<std::string> my_vector;
+  ft::vector<std::string> m_vector;
+  std::vector<std::string> original;
+  std::vector<std::string> m_original;
+
+  m_vector.push_back("42");
+  m_vector.push_back("43");
+  m_vector.push_back("43.5");
+  m_vector.push_back("43.5");
+  m_vector.push_back("43.5");
+  m_vector.push_back("43.5");
+  m_vector.push_back("43.5");
+  m_vector.push_back("44");
+  m_vector.push_back("45");
+
+  my_vector.push_back("42");
+  my_vector.push_back("43");
+  my_vector.push_back("44");
+  my_vector.push_back("45");
+
+  original.push_back("42");
+  original.push_back("43");
+  original.push_back("44");
+  original.push_back("45");
+
+  m_original.push_back("42");
+  m_original.push_back("43");
+  m_original.push_back("43.5");
+  m_original.push_back("43.5");
+  m_original.push_back("43.5");
+  m_original.push_back("43.5");
+  m_original.push_back("43.5");
+  m_original.push_back("44");
+  m_original.push_back("45");
+
+  my_vector.insert(my_vector.begin()+2, m_vector.begin()+2, m_vector.end()-2);
+  original.insert(original.begin()+2, m_original.begin()+2, m_original.end()-2);
+  cr_assert(ft::equal(original.begin(), original.end(), my_vector.begin()));
+}
+
+Test(vector_insert_iterator_range, expected_the_same_size_with_integral)
+{
+  ft::vector<unsigned int> my_vector;
+  ft::vector<unsigned int> m_vector;
+
+  m_vector.push_back(42);
+  m_vector.push_back(43);
+  m_vector.push_back(43);
+  m_vector.push_back(43);
+  m_vector.push_back(43);
+  m_vector.push_back(43);
+  m_vector.push_back(43);
+  m_vector.push_back(44);
+  m_vector.push_back(45);
+
+  my_vector.push_back(42);
+  my_vector.push_back(43);
+  my_vector.push_back(44);
+  my_vector.push_back(45);
+
+  my_vector.insert(my_vector.begin()+2, m_vector.begin()+2, m_vector.end()-2);
+
+  cr_assert(my_vector.size() == m_vector.size());
+}
+
+
+Test(vector_insert_iterator_range, expected_the_same_capacity_with_integral)
+{
+  ft::vector<unsigned int> my_vector;
+  ft::vector<unsigned int> m_vector;
+
+  m_vector.push_back(42);
+  m_vector.push_back(43);
+  m_vector.push_back(43);
+  m_vector.push_back(43);
+  m_vector.push_back(43);
+  m_vector.push_back(43);
+  m_vector.push_back(43);
+  m_vector.push_back(44);
+  m_vector.push_back(45);
+
+  my_vector.push_back(42);
+  my_vector.push_back(43);
+  my_vector.push_back(44);
+  my_vector.push_back(45);
+
+  my_vector.insert(my_vector.begin()+2, 5, 43);
+
+  cr_assert(my_vector.capacity() == m_vector.capacity());
+}
+
+Test(vector_insert_iterator_range, expected_the_same_values_with_integral)
+{
+  ft::vector<unsigned int> my_vector;
+  ft::vector<unsigned int> m_vector;
+  std::vector<unsigned int> original;
+  std::vector<unsigned int> m_original;
+
+  m_vector.push_back(42);
+  m_vector.push_back(43);
+  m_vector.push_back(43);
+  m_vector.push_back(43);
+  m_vector.push_back(43);
+  m_vector.push_back(43);
+  m_vector.push_back(43);
+  m_vector.push_back(44);
+  m_vector.push_back(45);
+
+  my_vector.push_back(42);
+  my_vector.push_back(43);
+  my_vector.push_back(44);
+  my_vector.push_back(45);
+
+  original.push_back(42);
+  original.push_back(43);
+  original.push_back(44);
+  original.push_back(45);
+
+  m_original.push_back(42);
+  m_original.push_back(43);
+  m_original.push_back(43);
+  m_original.push_back(43);
+  m_original.push_back(43);
+  m_original.push_back(43);
+  m_original.push_back(43);
+  m_original.push_back(44);
+  m_original.push_back(45);
+
+  my_vector.insert(my_vector.begin()+2, 5, 43);
+  original.insert(original.begin()+2, 5, 43);
+  cr_assert(ft::equal(original.begin(), original.end(), my_vector.begin()));
+}
