@@ -1,41 +1,44 @@
+#include "doctest.h"
+
 #include "algorithms.hpp"
-#include "criterion/assert.h"
-#include "criterion/criterion.h"
-#include "criterion/internal/assert.h"
 #include "vector.hpp"
-#include <criterion/criterion.h>
 #include <vector>
 
-Test(equal, expected_false)
+TEST_SUITE("equal")
 {
-  ft::vector<int> my_vector;
-  std::vector<int> original(20, -32);
-  typename ft::vector<int>::const_iterator result;
 
-  my_vector.push_back(-32);
-  my_vector.push_back(-32);
-  my_vector.push_back(-32);
-  my_vector.push_back(-32);
-  my_vector.push_back(-32);
-  my_vector.push_back(-32);
-  my_vector.push_back(42);
+  TEST_CASE("expected_false")
+  {
+    ft::vector<int> my_vector;
+    std::vector<int> original(20, -32);
+    ft::vector<int>::const_iterator result;
 
-  result = my_vector.begin();
+    my_vector.push_back(-32);
+    my_vector.push_back(-32);
+    my_vector.push_back(-32);
+    my_vector.push_back(-32);
+    my_vector.push_back(-32);
+    my_vector.push_back(-32);
+    my_vector.push_back(42);
 
-  cr_assert(ft::equal(original.begin(), original.end(), result) == false);
-}
+    result = my_vector.begin();
 
-Test(equal, expected_true)
-{
-  ft::vector<int> my_vector;
-  std::vector<int> original(20, 10);
-  typename ft::vector<int>::reverse_iterator result;
-
-  for (int i = 0; i < 20; i++) {
-    my_vector.push_back(10);
+    CHECK_FALSE(ft::equal(original.begin(), original.end(), result));
   }
 
-  result = my_vector.rbegin();
+  TEST_CASE("expected_true")
+  {
+    ft::vector<int> my_vector;
+    std::vector<int> original(20, 10);
+    ft::vector<int>::reverse_iterator result;
 
-  cr_assert(ft::equal(original.rbegin(), original.rend(), result) == true);
-}
+    for (int i = 0; i < 20; i++) {
+      my_vector.push_back(10);
+    }
+
+    result = my_vector.rbegin();
+
+    CHECK(ft::equal(original.rbegin(), original.rend(), result) == true);
+  }
+
+} // end of test suite equal

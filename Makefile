@@ -28,10 +28,10 @@ fclean: clean
 re: fclean all
 
 $(TESTDIR)/%.o: $(TESTDIR)/%.cpp
-	$(CXX) -std=c++11 $(INCLUDES) -c $< -o $@
+	$(CXX) -std=c++98 $(INCLUDES) -c $< -o $@
 
 test: $(TESTOBJS)
-	$(CXX) -std=c++11 $(TESTOBJS) -o $(TESTNAME) -lcriterion
+	$(CXX) $(CXXFLAGS) -I $(TESTDIR) $(TESTOBJS) -o $(TESTNAME)
 	./$(TESTNAME)
 
 test_on_docker:
