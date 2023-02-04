@@ -26,104 +26,105 @@
 #include "my_stl_construct.hpp"
 #include "type_traits.hpp"
 #include <cstring>
+#include <iterator>
 #include <memory>
 #include <new>
 #include <stdexcept>
 
 namespace ft
 {
-  template<typename T>
-    class vector : protected internals::VectorBase<T>
+template<typename T>
+  class vector : protected internals::VectorBase<T>
+  {
+    typedef internals::VectorBase<T> _Base;
+    typedef ft::vector<T> vector_type;
+
+  public:
+
+    typedef T value_type;
+    typedef size_t size_type;
+    typedef std::ptrdiff_t difference_type;
+    typedef typename _Base::allocator_type allocator_type;
+    typedef typename allocator_type::pointer pointer;
+    typedef typename allocator_type::const_pointer const_pointer;
+    typedef typename allocator_type::reference reference;
+    typedef typename allocator_type::const_reference const_reference;
+    typedef internals::normal_iterator<pointer, vector_type> iterator;
+    typedef internals::normal_iterator<const_pointer, vector_type> const_iterator;
+    typedef ft::reverse_iterator<iterator> reverse_iterator;
+    typedef ft::reverse_iterator<const_iterator> const_reverse_iterator;
+
+    //Constructors
+    explicit vector(allocator_type const & = allocator_type())
+      : _Base(allocator_type()) {}
+
+    //iterator methods
+    iterator begin() { return iterator(this->Aimpl.start); }
+    const_iterator begin() const
     {
-      typedef internals::VectorBase<T> _Base;
-      typedef ft::vector<T> vector_type;
+      return const_iterator(this->Aimpl.start);
+    }
 
-    public:
+    iterator end() { return iterator(this->Aimpl.finish); }
+    const_iterator end() const { return const_iterator(this->Aimpl.finish); }
 
-      typedef T value_type;
-      typedef size_t size_type;
-      typedef std::ptrdiff_t difference_type;
-      typedef typename _Base::allocator_type allocator_type;
-      typedef typename allocator_type::pointer pointer;
-      typedef typename allocator_type::const_pointer const_pointer;
-      typedef typename allocator_type::reference reference;
-      typedef typename allocator_type::const_reference const_reference;
-      typedef internals::normal_iterator<pointer, vector_type> iterator;
-      typedef internals::normal_iterator<const_pointer, vector_type> const_iterator;
-      typedef ft::reverse_iterator<iterator> reverse_iterator;
-      typedef ft::reverse_iterator<const_iterator> const_reverse_iterator;
+    reverse_iterator rbegin() { return reverse_iterator(end()); }
+    const_reverse_iterator rbegin() const
+    {
+      return const_reverse_iterator(end());
+    }
 
-      //Constructors
-      explicit vector(allocator_type const & = allocator_type())
-        : _Base(allocator_type()) {}
+    reverse_iterator rend() { return reverse_iterator(begin()); }
+    const_reverse_iterator rend() const
+    {
+      return const_reverse_iterator(begin());
+    }
 
-      //iterator methods
-      iterator begin() { return iterator(this->Aimpl.start); }
-      const_iterator begin() const
+    // capacity methods
+    size_type capacity() const
+    {
+      return this->Aimpl.endOfStorage - this->Aimpl.start;
+    }
+
+    size_type size() const
+    {
+      return ft::distance(begin(), end());
+    }
+
+    bool empty() const { return size() == 0; }
+
+    size_type max_size() const
+    {
+      return this->get_allocator().max_size();
+    }
+
+    void reserve(size_type new_cap)
+    {
+      pointer newReservedMem;
+      size_type _size;
+
+      if (new_cap > max_size())
+        throw std::length_error(
+                "std::allocator<T>::allocate(size_t n) 'n' "
+                "exceeds maximum supported size"
+              );
+
+      if (new_cap > capacity())
       {
-        return const_iterator(this->Aimpl.start);
+        newReservedMem = this->allocate(new_cap);
+        _size = size();
+        this->fill_unintialiazed_copy<ft::is_integral<value_type>::value>(
+          _size, this->Aimpl.start, newReservedMem
+        );
+        internals::_Destroy(begin(), end());
+        this->deallocate(this->Aimpl.start, capacity());
+        this->Aimpl.start = newReservedMem;
+        this->Aimpl.finish = this->Aimpl.start + _size;
+        this->Aimpl.endOfStorage = newReservedMem + new_cap;
       }
+    }
 
-      iterator end() { return iterator(this->Aimpl.finish); }
-      const_iterator end() const { return const_iterator(this->Aimpl.finish); }
-
-      reverse_iterator rbegin() { return reverse_iterator(end()); }
-      const_reverse_iterator rbegin() const
-      {
-        return const_reverse_iterator(end());
-      }
-
-      reverse_iterator rend() { return reverse_iterator(begin()); }
-      const_reverse_iterator rend() const
-      {
-        return const_reverse_iterator(begin());
-      }
-
-      // capacity methods
-      size_type capacity() const
-      {
-        return this->Aimpl.endOfStorage - this->Aimpl.start;
-      }
-
-      size_type size() const
-      {
-        return ft::distance(begin(), end());
-      }
-
-      bool empty() const { return size() == 0; }
-
-      size_type max_size() const
-      {
-        return this->get_allocator().max_size();
-      }
-
-      void reserve(size_type new_cap)
-      {
-        pointer newReservedMem, oldFinish;
-        size_type _size;
-
-        if (new_cap > max_size())
-          throw std::length_error(
-                  "std::allocator<T>::allocate(size_t n) 'n' "
-                  "exceeds maximum supported size"
-                );
-
-        if (new_cap > capacity())
-        {
-          newReservedMem = this->allocate(new_cap);
-          _size = size();
-          oldFinish = this->Aimpl.finish;
-          this->fill_unintialiazed_copy<ft::is_integral<value_type>::value>(
-            _size, this->Aimpl.start, newReservedMem
-          );
-          internals::_Destroy(iterator(this->Aimpl.start), iterator(oldFinish));
-          this->deallocate(this->Aimpl.start, _size);
-          this->Aimpl.start = newReservedMem;
-          this->Aimpl.endOfStorage = newReservedMem + new_cap;
-        }
-      }
-
-      // modifiers methods
+    // modifiers methods
     void push_back(value_type const &value)
     {
       size_type _size, newSize;
@@ -151,7 +152,13 @@ namespace ft
       ++this->Aimpl.finish;
     }
 
-      void pop_back() { (this->Aimpl.finish--)->~value_type(); }
+    void pop_back() { (this->Aimpl.finish--)->~value_type(); }
+
+    void clear()
+    {
+      internals::_Destroy(begin(), end());
+      this->Aimpl.finish = this->Aimpl.start;
+    }
 
     iterator erase(iterator pos)
     {
@@ -202,50 +209,61 @@ namespace ft
       return first;
     }
 
-        _size = size();
+    void resize(size_type count, value_type value = value_type())
+    {
+      size_type _size;
 
-        if (_size > count)
-          erase(begin() + count, end());
-        else
-        {
-          for (; _size != count; --count)
-            push_back(value);
-        }
-      }
+      _size = size();
 
-      iterator insert(iterator pos, value_type const & value)
+      if (_size > count)
+        erase(begin() + count, end());
+      else
       {
-        size_type _size, lengthToCopy;
-        iterator insertedValuePos;
-
-        if (pos == end())
-        {
+        for (; _size != count; --count)
           push_back(value);
-          insertedValuePos = --end();
-        }
-        else
-        {
-          _size = size();
-          lengthToCopy = ft::distance(pos, end());
-          insert(pos, 1, value);
-          insertedValuePos = begin() + (_size - lengthToCopy);
-        }
-
-        return insertedValuePos;
       }
+    }
 
-      void insert(iterator pos, size_type count, value_type const &value)
+    iterator insert(iterator pos, value_type const & value)
+    {
+      size_type _size, lengthToCopy;
+      iterator insertedValuePos;
+
+      if (pos == end())
       {
-        internInsert(pos, count, value, ft::true_type());
+        push_back(value);
+        insertedValuePos = --end();
+      }
+      else
+      {
+        _size = size();
+        lengthToCopy = ft::distance(pos, end());
+        insert(pos, 1, value);
+        insertedValuePos = begin() + (_size - lengthToCopy);
       }
 
-      template<typename InputIt>
-        void insert(iterator pos, InputIt first, InputIt last)
-        {
-          internInsert(
-              pos, first, last, typename ft::is_integral<InputIt>::type()
-          );
-        }
+      return insertedValuePos;
+    }
+
+    void insert(iterator pos, size_type count, value_type const &value)
+    {
+      internInsert(pos, count, value, ft::true_type());
+    }
+
+    template<typename InputIt>
+      void insert(iterator pos, InputIt first, InputIt last)
+      {
+        internInsert(
+            pos, first, last, typename ft::is_integral<InputIt>::type()
+        );
+      }
+
+    void swap(vector_type & other)
+    {
+      std::swap(this->Aimpl.start, other.Aimpl.start);
+      std::swap(this->Aimpl.finish, other.Aimpl.finish);
+      std::swap(this->Aimpl.endOfStorage, other.Aimpl.endOfStorage);
+    }
 
   private:
     template<bool>
@@ -279,30 +297,53 @@ namespace ft
         std::memmove(dst, src, size * sizeof(value_type));
       }
 
-      template<>
-        void fill_unintialiazed_copy<true>(
-            size_type size, pointer src, pointer const &dst)
+    template<typename InputIt>
+      void internInsert(
+          iterator pos, InputIt first, InputIt last, ft::false_type)
+      {
+        size_type _size, lengthToCopy, lengthToAdd;
+        iterator insertedValuePos, endToCopy, startToCopy, destination;
+
+        if (first == last)
+          return;
+
+        lengthToAdd = ft::distance(first, last);
+        _size = size();
+        lengthToCopy = ft::distance(pos, end());
+
+        if (_size + lengthToAdd > capacity())
+          resize(_size + lengthToAdd);
+
+        endToCopy = begin() + (_size - lengthToCopy);
+        startToCopy = begin() + _size;
+        destination = end();
+
+        insertedValuePos = std::copy_backward(
+                            endToCopy, startToCopy, destination
+                          );
+        --insertedValuePos;
+        for (; first != last; ++first, --insertedValuePos)
+          *insertedValuePos = *first;
+      }
+
+    template<typename Integral>
+      void internInsert(
+          iterator pos, size_type count, Integral const& value,ft::true_type)
+      {
+        size_type _size, lengthToCopy;
+        iterator insertedValuePos, endToCopy, startToCopy, destination;
+
+        _size = size();
+
+        if (pos == end())
+          resize(_size + count, value);
+
+        else
         {
-          std::memmove(dst, src, size * sizeof(value_type));
-          this->Aimpl.finish = dst + size;
-        }
-
-      template<typename InputIt>
-        void internInsert(
-            iterator pos, InputIt first, InputIt last, ft::false_type)
-        {
-          size_type _size, lengthToCopy, lengthToAdd;
-          iterator insertedValuePos, endToCopy, startToCopy, destination;
-
-          if (first == last)
-            return;
-
-          lengthToAdd = ft::distance(first, last);
-          _size = size();
           lengthToCopy = ft::distance(pos, end());
 
-          if (_size + lengthToAdd > capacity())
-            resize(_size + lengthToAdd);
+          if (_size + count > capacity())
+            resize(_size + count);
 
           endToCopy = begin() + (_size - lengthToCopy);
           startToCopy = begin() + _size;
@@ -312,42 +353,11 @@ namespace ft
                               endToCopy, startToCopy, destination
                             );
           --insertedValuePos;
-          for (; first != last; ++first, --insertedValuePos)
-            *insertedValuePos = *first;
+          for (; count > 0; --count, --insertedValuePos)
+            *insertedValuePos = value;
         }
-
-      template<typename Integral>
-        void internInsert(
-            iterator pos, size_type count, Integral const& value,ft::true_type)
-        {
-          size_type _size, lengthToCopy;
-          iterator insertedValuePos, endToCopy, startToCopy, destination;
-
-          _size = size();
-
-          if (pos == end())
-            resize(_size + count, value);
-
-          else
-          {
-            lengthToCopy = ft::distance(pos, end());
-
-            if (_size + count > capacity())
-              resize(_size + count);
-
-            endToCopy = begin() + (_size - lengthToCopy);
-            startToCopy = begin() + _size;
-            destination = end();
-
-            insertedValuePos = std::copy_backward(
-                                endToCopy, startToCopy, destination
-                              );
-            --insertedValuePos;
-            for (; count > 0; --count, --insertedValuePos)
-              *insertedValuePos = value;
-          }
-        }
-    };
+      }
+  };
 }
 
 #endif // !VECTOR_HPP
