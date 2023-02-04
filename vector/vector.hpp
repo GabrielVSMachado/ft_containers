@@ -124,29 +124,32 @@ namespace ft
       }
 
       // modifiers methods
-      void push_back(value_type const &value)
+    void push_back(value_type const &value)
+    {
+      size_type _size, newSize;
+      pointer newAllocatedMem;
+
+
+      if (this->Aimpl.finish == this->Aimpl.endOfStorage)
       {
-        size_type _size, newSize;
-        pointer src, oldFinish;
+        _size = size();
+        newSize = _size > 0 ? _size * 2 : 1;
+        newAllocatedMem = this->allocate(newSize);
 
+        this->fill_unintialiazed_copy<ft::is_integral<T>::value>(
+          _size, this->Aimpl.start, newAllocatedMem
+        );
 
-        if (this->Aimpl.finish == this->Aimpl.endOfStorage)
-        {
-          _size = size();
-          newSize = _size > 0 ? _size * 2 : 1;
-          src = this->Aimpl.start;
-          oldFinish = this->Aimpl.finish;
-          this->Aimpl.start = this->allocate(newSize);
-          this->Aimpl.endOfStorage = this->Aimpl.start + newSize;
-          this->fill_unintialiazed_copy<ft::is_integral<T>::value>(
-            _size, src, this->Aimpl.start
-          );
-          internals::_Destroy(iterator(src), iterator(oldFinish));
-          this->deallocate(src, _size);
-        }
-        this->construct(this->Aimpl.finish, value);
-        ++this->Aimpl.finish;
+        internals::_Destroy(begin(), end());
+        this->deallocate(this->Aimpl.start, capacity());
+
+        this->Aimpl.start = newAllocatedMem;
+        this->Aimpl.finish = this->Aimpl.start + _size;
+        this->Aimpl.endOfStorage = this->Aimpl.start + newSize;
       }
+      this->construct(this->Aimpl.finish, value);
+      ++this->Aimpl.finish;
+    }
 
       void pop_back() { (this->Aimpl.finish--)->~value_type(); }
 
@@ -255,23 +258,22 @@ namespace ft
           );
         }
 
-      void swap(vector_type & other)
+  private:
+    template<bool>
+      void fill_unintialiazed_copy(
+          size_type size, pointer src, pointer const& dst)
       {
-        std::swap(this->Aimpl.start, other.Aimpl.start);
-        std::swap(this->Aimpl.finish, other.Aimpl.finish);
-        std::swap(this->Aimpl.endOfStorage, other.Aimpl.endOfStorage);
+        pointer current = dst;
+        for (; size > 0 ; ++current, ++src, --size)
+          this->construct(current, *src);
       }
 
-    private:
-      template<bool>
-        void fill_unintialiazed_copy(
-            size_type size, pointer src, pointer const& dst)
-        {
-          pointer current = dst;
-          for (; size > 0 ; ++current, ++src, --size)
-            this->construct(current, *src);
-          this->Aimpl.finish = &*current;
-        }
+    template<>
+      void fill_unintialiazed_copy<true>(
+          size_type size, pointer src, pointer const &dst)
+      {
+        std::memmove(dst, src, size * sizeof(value_type));
+      }
 
       template<>
         void fill_unintialiazed_copy<true>(
