@@ -1,3 +1,4 @@
+#include <stdexcept>
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include "iterator.hpp"
 #include "type_traits.hpp"
@@ -128,6 +129,62 @@ TEST_SUITE("vector")
       std::vector<std::string> original;
 
       CHECK_EQ(my_vector.max_size(), original.max_size());
+    }
+
+    TEST_CASE("expected_exception_std::length_error")
+    {
+      ft::vector<int> my_vector;
+
+      CHECK_THROWS_AS(
+        my_vector.reserve(my_vector.max_size() + 1), std::length_error
+      );
+    }
+
+    TEST_CASE("expected_do_nothing_with_capacity")
+    {
+      ft::vector<int> my_vector;
+
+      my_vector.reserve(0);
+
+      CHECK_EQ(my_vector.capacity(), 0);
+    }
+
+    TEST_CASE("expected_capacity_eq_3")
+    {
+      ft::vector<int> my_vector;
+
+      my_vector.push_back(42);
+      my_vector.push_back(43);
+
+      my_vector.reserve(3);
+
+      CHECK_EQ(my_vector.capacity(), 3);
+    }
+
+    TEST_CASE("expected_same_size_before_reserve")
+    {
+      ft::vector<std::string> my_vector;
+
+      my_vector.push_back("42");
+      my_vector.push_back("43");
+
+      my_vector.reserve(4);
+      CHECK_EQ(my_vector.size(), 2);
+    }
+
+    TEST_CASE("expected_same_values_before_reserve")
+    {
+      ft::vector<std::string> my_vector;
+      std::vector<std::string> original;
+
+      my_vector.push_back("42");
+      my_vector.push_back("43");
+
+      original.push_back("42");
+      original.push_back("43");
+
+      my_vector.reserve(4);
+      CHECK(ft::equal(original.begin(), original.end(), my_vector.begin()));
     }
   } // end of suite capacity
 
@@ -998,6 +1055,81 @@ TEST_SUITE("vector")
       my_vector.insert(my_vector.begin()+2, 5, 43);
       original.insert(original.begin()+2, 5, 43);
       CHECK(ft::equal(original.begin(), original.end(), my_vector.begin()));
+    }
+
+    TEST_CASE("expected_the_capacity_of_original_into_myvector")
+    {
+      ft::vector<std::string> my_vector;
+      ft::vector<std::string> my_vector2;
+      ft::vector<std::string> original;
+
+      my_vector.push_back("42");
+      my_vector.push_back("43");
+      my_vector.push_back("44");
+      my_vector.push_back("45");
+
+      my_vector2.push_back("42");
+      my_vector2.push_back("43");
+      my_vector2.push_back("44");
+      my_vector2.push_back("45");
+
+      original.push_back("46");
+      original.push_back("47");
+      original.push_back("48");
+      original.push_back("49");
+
+      original.swap(my_vector);
+      CHECK_EQ(original.capacity(), my_vector2.capacity());
+    }
+
+    TEST_CASE("expected_the_size_of_original_into_myvector")
+    {
+      ft::vector<std::string> my_vector;
+      ft::vector<std::string> my_vector2;
+      ft::vector<std::string> original;
+
+      my_vector.push_back("42");
+      my_vector.push_back("43");
+      my_vector.push_back("44");
+      my_vector.push_back("45");
+
+      my_vector2.push_back("42");
+      my_vector2.push_back("43");
+      my_vector2.push_back("44");
+      my_vector2.push_back("45");
+
+      original.push_back("46");
+      original.push_back("47");
+      original.push_back("48");
+      original.push_back("49");
+
+      original.swap(my_vector);
+      CHECK_EQ(original.size(), my_vector2.size());
+    }
+
+    TEST_CASE("expected_the_same_values_of_original_into_myvector")
+    {
+      ft::vector<std::string> my_vector;
+      ft::vector<std::string> my_vector2;
+      ft::vector<std::string> original;
+
+      my_vector.push_back("42");
+      my_vector.push_back("43");
+      my_vector.push_back("44");
+      my_vector.push_back("45");
+
+      my_vector2.push_back("42");
+      my_vector2.push_back("43");
+      my_vector2.push_back("44");
+      my_vector2.push_back("45");
+
+      original.push_back("46");
+      original.push_back("47");
+      original.push_back("48");
+      original.push_back("49");
+
+      original.swap(my_vector);
+      CHECK(ft::equal(original.begin(), original.end(), my_vector2.begin()));
     }
   }// end of suite Modifiers
 }

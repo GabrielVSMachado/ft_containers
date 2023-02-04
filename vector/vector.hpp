@@ -27,6 +27,8 @@
 #include "type_traits.hpp"
 #include <cstring>
 #include <memory>
+#include <new>
+#include <stdexcept>
 
 namespace ft
 {
@@ -95,6 +97,32 @@ namespace ft
         return this->get_allocator().max_size();
       }
 
+      void reserve(size_type new_cap)
+      {
+        pointer newReservedMem, oldFinish;
+        size_type _size;
+
+        if (new_cap > max_size())
+          throw std::length_error(
+                  "std::allocator<T>::allocate(size_t n) 'n' "
+                  "exceeds maximum supported size"
+                );
+
+        if (new_cap > capacity())
+        {
+          newReservedMem = this->allocate(new_cap);
+          _size = size();
+          oldFinish = this->Aimpl.finish;
+          this->fill_unintialiazed_copy<ft::is_integral<value_type>::value>(
+            _size, this->Aimpl.start, newReservedMem
+          );
+          internals::_Destroy(iterator(this->Aimpl.start), iterator(oldFinish));
+          this->deallocate(this->Aimpl.start, _size);
+          this->Aimpl.start = newReservedMem;
+          this->Aimpl.endOfStorage = newReservedMem + new_cap;
+        }
+      }
+
       // modifiers methods
       void push_back(value_type const &value)
       {
@@ -110,9 +138,9 @@ namespace ft
           oldFinish = this->Aimpl.finish;
           this->Aimpl.start = this->allocate(newSize);
           this->Aimpl.endOfStorage = this->Aimpl.start + newSize;
-          this->fill_unintialiazed_copy<
-                                        ft::is_integral<T>::value
-                                      >(_size, src, this->Aimpl.start);
+          this->fill_unintialiazed_copy<ft::is_integral<T>::value>(
+            _size, src, this->Aimpl.start
+          );
           internals::_Destroy(iterator(src), iterator(oldFinish));
           this->deallocate(src, _size);
         }
@@ -227,6 +255,12 @@ namespace ft
           );
         }
 
+      void swap(vector_type & other)
+      {
+        std::swap(this->Aimpl.start, other.Aimpl.start);
+        std::swap(this->Aimpl.finish, other.Aimpl.finish);
+        std::swap(this->Aimpl.endOfStorage, other.Aimpl.endOfStorage);
+      }
 
     private:
       template<bool>
