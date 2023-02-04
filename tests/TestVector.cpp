@@ -1152,5 +1152,61 @@ TEST_SUITE("vector")
         CHECK(ft::equal(original.begin(), original.end(), my_vector2.begin()));
       }
     }
+
+    TEST_SUITE("Acess_methods")
+    {
+      TEST_CASE("at_method_expected_exception_std::out_of_rage")
+      {
+        ft::vector<int> my_vector;
+
+        my_vector.push_back(42);
+        my_vector.push_back(43);
+        my_vector.push_back(44);
+        my_vector.push_back(45);
+        my_vector.push_back(46);
+
+        CHECK_THROWS_AS(my_vector.at(100000), std::out_of_range);
+      }
+
+      TEST_CASE("at_method_expected_reference_value_42")
+      {
+        ft::vector<int> my_vector;
+
+        my_vector.push_back(46);
+        my_vector.push_back(45);
+        my_vector.push_back(44);
+        my_vector.push_back(43);
+        my_vector.push_back(42);
+
+        CHECK_EQ(my_vector.at(4), 42);
+      }
+
+      TEST_CASE("at_method_expected_str_42")
+      {
+        ft::vector<std::string> my_vector;
+
+        my_vector.push_back("46");
+        my_vector.push_back("45");
+        my_vector.push_back("44");
+        my_vector.push_back("43");
+        my_vector.push_back("42");
+
+        CHECK_EQ(my_vector.at(4), "42");
+      }
+
+      TEST_CASE("at_method_expected_42_on_43_position")
+      {
+        ft::vector<int> my_vector;
+
+        my_vector.push_back(46);
+        my_vector.push_back(45);
+        my_vector.push_back(44);
+        my_vector.push_back(43);
+        my_vector.push_back(42);
+
+        my_vector.at(3) = 42;
+        CHECK_EQ(my_vector.at(3), 42);
+      }
+    }
   }// end of suite Modifiers
 }

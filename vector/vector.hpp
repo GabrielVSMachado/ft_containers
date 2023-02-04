@@ -58,6 +58,29 @@ template<typename T>
     explicit vector(allocator_type const & = allocator_type())
       : _Base(allocator_type()) {}
 
+    // Access methods
+    reference at(size_type pos)
+    {
+      if (pos > size())
+        throw std::out_of_range(
+          "Parameter pos on 'at' method"
+          " isn't a valid position"
+        );
+
+      return *(begin() + pos);
+    }
+
+    const_reference at(size_type pos) const
+    {
+      if (pos > size())
+        throw std::out_of_range(
+          "Parameter pos on 'at' method"
+          " isn't a valid position"
+        );
+
+      return *(begin() + pos);
+    }
+
     //iterator methods
     iterator begin() { return iterator(this->Aimpl.start); }
     const_iterator begin() const
