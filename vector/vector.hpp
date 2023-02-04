@@ -67,7 +67,7 @@ template<typename T>
           " isn't a valid position"
         );
 
-      return *(begin() + pos);
+      return (operator[](pos));
     }
 
     const_reference at(size_type pos) const
@@ -78,8 +78,20 @@ template<typename T>
           " isn't a valid position"
         );
 
-      return *(begin() + pos);
+      return (operator[](pos));
     }
+
+    reference front() { return *begin(); }
+    const_reference front() const { return *begin(); }
+
+    reference back() { return *--end(); }
+    const_reference back() const { return *--end(); }
+
+    reference operator[](size_type pos) { return *(begin() + pos); }
+    const_reference operator[](size_type pos) const { return *(begin() + pos); }
+
+    pointer data() { return this->Aimpl.start; }
+    const_pointer data() const { return this->Aimpl.start; }
 
     //iterator methods
     iterator begin() { return iterator(this->Aimpl.start); }

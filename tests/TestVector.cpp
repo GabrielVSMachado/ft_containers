@@ -1207,6 +1207,30 @@ TEST_SUITE("vector")
         my_vector.at(3) = 42;
         CHECK_EQ(my_vector.at(3), 42);
       }
+
+      TEST_CASE("data_method_expected_same_values")
+      {
+        ft::vector<std::string> my_vector;
+        std::vector<std::string> original;
+        ft::vector<std::string>::pointer p;
+        std::vector<std::string>::pointer op;
+
+        my_vector.push_back("42");
+        my_vector.push_back("43");
+        my_vector.push_back("44");
+        my_vector.push_back("45");
+        my_vector.push_back("46");
+
+        original.push_back("42");
+        original.push_back("43");
+        original.push_back("44");
+        original.push_back("45");
+        original.push_back("46");
+
+        p = my_vector.data();
+        op = original.data();
+        CHECK_EQ(*(p + 3), *(op + 3));
+      }
     }
   }// end of suite Modifiers
 }
