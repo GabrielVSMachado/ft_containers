@@ -112,41 +112,47 @@ template<typename T>
       if (new_cap > capacity())
       {
         newReservedMem = this->allocate(new_cap);
+
         _size = size();
+
         this->fill_unintialiazed_copy<ft::is_integral<value_type>::value>(
           _size, this->Aimpl.start, newReservedMem
         );
-        internals::_Destroy(begin(), end());
-        this->deallocate(this->Aimpl.start, capacity());
-        this->Aimpl.start = newReservedMem;
-        this->Aimpl.finish = this->Aimpl.start + _size;
-        this->Aimpl.endOfStorage = newReservedMem + new_cap;
+
+        clearMemory();
+
+        setMemoryAddress(
+            newReservedMem,
+            newReservedMem + _size,
+            newReservedMem + new_cap
+        );
       }
     }
 
     // modifiers methods
     void push_back(value_type const &value)
     {
-      size_type _size, newSize;
+      size_type _size, newCapacity;
       pointer newAllocatedMem;
 
 
       if (this->Aimpl.finish == this->Aimpl.endOfStorage)
       {
         _size = size();
-        newSize = _size > 0 ? _size * 2 : 1;
-        newAllocatedMem = this->allocate(newSize);
+        newCapacity = _size > 0 ? _size * 2 : 1;
+        newAllocatedMem = this->allocate(newCapacity);
 
         this->fill_unintialiazed_copy<ft::is_integral<T>::value>(
           _size, this->Aimpl.start, newAllocatedMem
         );
 
-        internals::_Destroy(begin(), end());
-        this->deallocate(this->Aimpl.start, capacity());
+        clearMemory();
 
-        this->Aimpl.start = newAllocatedMem;
-        this->Aimpl.finish = this->Aimpl.start + _size;
-        this->Aimpl.endOfStorage = this->Aimpl.start + newSize;
+        setMemoryAddress(
+            newAllocatedMem,
+            newAllocatedMem + _size,
+            newAllocatedMem + newCapacity
+        );
       }
       this->construct(this->Aimpl.finish, value);
       ++this->Aimpl.finish;
@@ -266,6 +272,21 @@ template<typename T>
     }
 
   private:
+    void clearMemory()
+    {
+      internals::_Destroy(begin(), end());
+      this->deallocate(this->Aimpl.start, capacity());
+    }
+
+    void setMemoryAddress(
+        pointer const &newAddress, pointer const &newFinish,
+        pointer const &newEndOfStorage)
+    {
+      this->Aimpl.start = newAddress;
+      this->Aimpl.finish = newFinish;
+      this->Aimpl.endOfStorage = newEndOfStorage;
+    }
+
     template<bool>
       void internalAssignmentCopy(iterator begin, iterator end, iterator dst)
       {
