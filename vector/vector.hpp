@@ -153,65 +153,54 @@ namespace ft
 
       void pop_back() { (this->Aimpl.finish--)->~value_type(); }
 
-      void clear()
+    iterator erase(iterator pos)
+    {
+      iterator last(--end());
+
+      if (pos == last)
       {
-        internals::_Destroy(begin(), end());
-        this->Aimpl.finish = this->Aimpl.start;
+        pop_back();
+        return end();
       }
 
-      iterator erase(iterator pos)
+      internalAssignmentCopy<ft::is_integral<value_type>::value>(
+        pos + 1, end(), pos
+      );
+      internals::_Destroy(&*last);
+      --this->Aimpl.finish;
+
+      return pos;
+    }
+
+    iterator erase(iterator first, iterator last)
+    {
+      iterator _end;
+      size_type newSize;
+
+      _end = end();
+
+      if (first == last)
+        return last;
+
+
+      if (last == _end)
       {
-        iterator last, followingIterator;
-
-        last = --end();
-
-        if (pos == last)
-        {
-          pop_back();
-          followingIterator = end();
-        }
-        else
-        {
-          internals::_Destroy(&*pos);
-          followingIterator = pos++;
-          fill_unintialiazed_copy<ft::is_integral<value_type>::value>(
-              last - followingIterator, &*pos, &*followingIterator
-          );
-        }
-        return followingIterator;
-      }
-
-      iterator erase(iterator first, iterator last)
-      {
-        iterator _end, followingIterator;
-
-        _end = end();
-
-        if (first == last)
-          return last;
-
         internals::_Destroy(first, last);
-
-        if (last == _end)
-        {
-          this->Aimpl.finish = &*first;
-          followingIterator = end();
-        }
-
-        else
-        {
-          followingIterator = first;
-          fill_unintialiazed_copy<ft::is_integral<value_type>::value>(
-              _end - last, &*last, &*first
-          );
-        }
-
-        return followingIterator;
+        this->Aimpl.finish = &*first;
+        return end();
       }
 
-      void resize(size_type count, value_type value = value_type())
-      {
-        size_type _size;
+      newSize = size() - ft::distance(first, last);
+
+      internalAssignmentCopy<ft::is_integral<value_type>::value>(
+          last, _end, first
+      );
+
+      internals::_Destroy(last, _end);
+      this->Aimpl.finish = this->Aimpl.start + newSize;
+
+      return first;
+    }
 
         _size = size();
 
@@ -259,6 +248,21 @@ namespace ft
         }
 
   private:
+    template<bool>
+      void internalAssignmentCopy(iterator begin, iterator end, iterator dst)
+      {
+        std::copy(begin, end, dst);
+      }
+
+    template<>
+      void internalAssignmentCopy<true>(
+          iterator begin, iterator end, iterator dst)
+      {
+        std::memmove(
+          &*dst, &*begin, ft::distance(begin, end) * sizeof(value_type)
+        );
+      }
+
     template<bool>
       void fill_unintialiazed_copy(
           size_type size, pointer src, pointer const& dst)
