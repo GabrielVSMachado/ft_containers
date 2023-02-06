@@ -950,8 +950,8 @@ TEST_SUITE("vector")
         m_vector.push_back("43");
         m_vector.push_back("43.5");
         m_vector.push_back("43.5");
-        m_vector.push_back("43.5");
-        m_vector.push_back("43.5");
+        m_vector.push_back("44");
+        m_vector.push_back("46.5");
         m_vector.push_back("43.5");
         m_vector.push_back("44");
         m_vector.push_back("45");
@@ -970,8 +970,8 @@ TEST_SUITE("vector")
         m_original.push_back("43");
         m_original.push_back("43.5");
         m_original.push_back("43.5");
-        m_original.push_back("43.5");
-        m_original.push_back("43.5");
+        m_original.push_back("44");
+        m_original.push_back("46.5");
         m_original.push_back("43.5");
         m_original.push_back("44");
         m_original.push_back("45");
@@ -988,9 +988,9 @@ TEST_SUITE("vector")
 
         m_vector.push_back(42);
         m_vector.push_back(43);
-        m_vector.push_back(43);
-        m_vector.push_back(43);
-        m_vector.push_back(43);
+        m_vector.push_back(44);
+        m_vector.push_back(45);
+        m_vector.push_back(46);
         m_vector.push_back(43);
         m_vector.push_back(43);
         m_vector.push_back(44);

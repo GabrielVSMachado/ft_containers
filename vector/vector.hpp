@@ -14,6 +14,7 @@
 #define VECTOR_HPP
 
 // std implementation
+#include <algorithm>
 #include <cstring>
 #include <stdexcept>
 
@@ -293,35 +294,61 @@ template<typename T>
     iterator insert(iterator pos, value_type const & value)
     {
       size_type _size, lengthToCopy;
-      iterator insertedValuePos;
 
       if (pos == end())
       {
         push_back(value);
-        insertedValuePos = --end();
-      }
-      else
-      {
-        _size = size();
-        lengthToCopy = ft::distance(pos, end());
-        insert(pos, 1, value);
-        insertedValuePos = begin() + (_size - lengthToCopy);
+        return --end();
       }
 
-      return insertedValuePos;
+      _size = size();
+      lengthToCopy = ft::distance(pos, end());
+      insert(pos, 1, value);
+
+      return begin() + (_size - lengthToCopy);
     }
 
     void insert(iterator pos, size_type count, value_type const &value)
     {
-      _T_insert(pos, count, value, ft::true_type());
+      size_type _size, lengthToCopy;
+      iterator insertedValuePos;
+
+      _size = size();
+
+      if (pos == end())
+        resize(_size + count, value);
+
+      else
+      {
+        lengthToCopy = ft::distance(pos, end());
+
+        if (_size + count > capacity())
+          resize(_size + count);
+
+        insertedValuePos = _copyAfterRange(_size, lengthToCopy);
+        _assignmentValue(insertedValuePos - count, insertedValuePos, value);
+      }
     }
 
-    template<typename InputIt>
-      void insert(iterator pos, InputIt first, InputIt last)
+    template<typename It>
+      typename ft::enable_if<!ft::is_integral<It>::value, void>::value_type
+      insert(iterator pos, It first, It last)
       {
-        _T_insert(
-            pos, first, last, typename ft::is_integral<InputIt>::type()
-        );
+        size_type _size, lengthToAdd, lengthToCopy;
+        iterator insertedValuePos;
+
+        if (first == last)
+          return;
+
+        _size = size();
+        lengthToAdd = ft::distance(first, last);
+        lengthToCopy = ft::distance(pos, end());
+
+        if (_size + lengthToAdd > capacity())
+          resize(_size + lengthToAdd);
+
+        insertedValuePos = _copyAfterRange(_size, lengthToCopy);
+        std::copy_backward(first, last, insertedValuePos);
       }
 
     void swap(vector_type & other)
@@ -332,6 +359,13 @@ template<typename T>
     }
 
   private:
+    iterator _copyAfterRange(size_type size, size_type lengthToCopy)
+    {
+      return std::copy_backward(
+              begin() + (size - lengthToCopy), begin() + size, end()
+            );
+    }
+
     void _clearMemory()
     {
       clear();
@@ -387,66 +421,6 @@ template<typename T>
           size_type size, pointer src, pointer const &dst)
       {
         std::memmove(dst, src, size * sizeof(value_type));
-      }
-
-    template<typename InputIt>
-      void _T_insert(iterator pos, InputIt first, InputIt last, ft::false_type)
-      {
-        size_type _size, lengthToCopy, lengthToAdd;
-        iterator insertedValuePos, endToCopy, startToCopy, destination;
-
-        if (first == last)
-          return;
-
-        lengthToAdd = ft::distance(first, last);
-        _size = size();
-        lengthToCopy = ft::distance(pos, end());
-
-        if (_size + lengthToAdd > capacity())
-          resize(_size + lengthToAdd);
-
-        endToCopy = begin() + (_size - lengthToCopy);
-        startToCopy = begin() + _size;
-        destination = end();
-
-        insertedValuePos = std::copy_backward(
-                            endToCopy, startToCopy, destination
-                          );
-        --insertedValuePos;
-        for (; first != last; ++first, --insertedValuePos)
-          *insertedValuePos = *first;
-      }
-
-    template<typename Integral>
-      void _T_insert(
-          iterator pos, size_type count, Integral const& value, ft::true_type)
-      {
-        size_type _size, lengthToCopy;
-        iterator insertedValuePos, endToCopy, startToCopy, destination;
-
-        _size = size();
-
-        if (pos == end())
-          resize(_size + count, value);
-
-        else
-        {
-          lengthToCopy = ft::distance(pos, end());
-
-          if (_size + count > capacity())
-            resize(_size + count);
-
-          endToCopy = begin() + (_size - lengthToCopy);
-          startToCopy = begin() + _size;
-          destination = end();
-
-          insertedValuePos = std::copy_backward(
-                              endToCopy, startToCopy, destination
-                            );
-          --insertedValuePos;
-          for (; count > 0; --count, --insertedValuePos)
-            *insertedValuePos = value;
-        }
       }
   };
 }
