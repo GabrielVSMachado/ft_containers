@@ -1,13 +1,16 @@
-#include <stdexcept>
+#include <memory>
+#include <string_view>
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include "iterator.hpp"
 #include "type_traits.hpp"
+#include <stdexcept>
 #include "vector.hpp"
 #include <algorithm>
 #include <iostream>
 #include <iterator>
 #include <string>
 #include <vector>
+#include <typeinfo>
 #include "algorithms.hpp"
 #include "doctest.h"
 
@@ -1363,6 +1366,17 @@ TEST_SUITE("vector")
 
         original.assign(o2.begin(), o2.end());
         CHECK(ft::equal(o2.begin(), o2.end(), original.begin()));
+      }
+    }
+
+    TEST_SUITE("get_allocator")
+    {
+      TEST_CASE("expected_not_failed")
+      {
+        ft::vector<std::string> my_vector;
+        my_vector.get_allocator();
+        bool result = ft::is_same<ft::vector<std::string>::allocator_type, std::allocator<std::string> >::value;
+        CHECK_EQ(result, true);
       }
     }
   }// end of suite Modifiers

@@ -53,6 +53,8 @@ template<typename T>
     explicit vector(allocator_type const & = allocator_type())
       : _Base(allocator_type()) {}
 
+    allocator_type get_allocator() const { return _Base::get_allocator(); }
+
     void assign(size_type count, value_type const &value)
     {
       reserve(count);
