@@ -69,8 +69,7 @@ template<typename T>
     template<typename It>
       void assign(
         It first,
-        typename ft::enable_if<!ft::is_integral<It>::value, It>::value_type
-        last)
+        typename ft::enable_if<!ft::is_integral<It>::value, It>::type last)
       {
         size_type length = ft::distance(first, last);
         reserve(length);
@@ -333,7 +332,7 @@ template<typename T>
     }
 
     template<typename It>
-      typename ft::enable_if<!ft::is_integral<It>::value, void>::value_type
+      typename ft::enable_if<!ft::is_integral<It>::value, void>::type
       insert(iterator pos, It first, It last)
       {
         size_type _size, lengthToAdd, lengthToCopy;

@@ -32,7 +32,7 @@ namespace ft
   typedef integral_constant<bool, false> false_type;
 
   template<typename T>
-    struct TypeIdentity { typedef T value_type; };
+    struct TypeIdentity { typedef T type; };
 
   // Define Remove Modifiers
   template<typename T>
@@ -50,9 +50,7 @@ namespace ft
   template<typename T>
     struct remove_cv
       : public TypeIdentity<
-                typename remove_volatile<
-                          typename remove_const<T>::value_type
-                        >::value_type
+                typename remove_volatile<typename remove_const<T>::type>::type
               > {};
 
   // Define IsSame
@@ -103,9 +101,8 @@ namespace ft
     struct is_integral_helper<unsigned long long> : public true_type {};
 
   template<typename T>
-    struct is_integral : public is_integral_helper<
-                                typename remove_cv<T>::value_type
-                              > {};
+    struct is_integral : public is_integral_helper<typename remove_cv<T>::type>
+    {};
 
   // Define enable_if
   template<bool, typename T = void>
@@ -120,9 +117,9 @@ namespace ft
       : public
       ft::integral_constant<
         bool,
-        ft::is_same<float, typename ft::remove_cv<T>::value_type>::value ||
-        ft::is_same<double, typename ft::remove_cv<T>::value_type>::value ||
-        ft::is_same<long double, typename ft::remove_cv<T>::value_type>::value
+        ft::is_same<float, typename ft::remove_cv<T>::type>::value ||
+        ft::is_same<double, typename ft::remove_cv<T>::type>::value ||
+        ft::is_same<long double, typename ft::remove_cv<T>::type>::value
       > {};
 
   //Define is_arithmetic
@@ -160,7 +157,7 @@ namespace ft
 
   template<typename T>
     struct is_member_pointer
-    : public ft::is_member_pointer_helper<typename ft::remove_cv<T>::value_type>
+    : public ft::is_member_pointer_helper<typename ft::remove_cv<T>::type>
     {};
 
   // Define is_enum
