@@ -14,9 +14,8 @@
 #define VECTOR_HPP
 
 // std implementation
-#include <algorithm>
-#include <cstdio>
-#include <iostream>
+#include <cstring>
+#include <stdexcept>
 
 //My implementation
 #include "ReverseIterator.hpp"
@@ -25,11 +24,6 @@
 #include "iterator.hpp"
 #include "my_stl_construct.hpp"
 #include "type_traits.hpp"
-#include <cstring>
-#include <iterator>
-#include <memory>
-#include <new>
-#include <stdexcept>
 
 namespace ft
 {
@@ -57,6 +51,33 @@ template<typename T>
     //Constructors
     explicit vector(allocator_type const & = allocator_type())
       : _Base(allocator_type()) {}
+
+    void assign(size_type count, value_type const &value)
+    {
+      reserve(count);
+      _setMemoryAddress(
+        this->Aimpl.start,
+        this->Aimpl.start + count,
+        this->Aimpl.endOfStorage
+      );
+      _assignmentValue(begin(), end(), value);
+    }
+
+    template<typename It>
+      void assign(
+        It first,
+        typename ft::enable_if<!ft::is_integral<It>::value, It>::value_type
+        last)
+      {
+        size_type length = ft::distance(first, last);
+        reserve(length);
+        _setMemoryAddress(
+          this->Aimpl.start,
+          this->Aimpl.start + length,
+          this->Aimpl.endOfStorage
+        );
+        _assignmentCopy(first, last, begin(), ft::false_type());
+      }
 
     // Access methods
     reference at(size_type pos)
@@ -154,9 +175,9 @@ template<typename T>
           _size, this->Aimpl.start, newReservedMem
         );
 
-        clearMemory();
+        _clearMemory();
 
-        setMemoryAddress(
+        _setMemoryAddress(
             newReservedMem,
             newReservedMem + _size,
             newReservedMem + new_cap
@@ -181,9 +202,9 @@ template<typename T>
           _size, this->Aimpl.start, newAllocatedMem
         );
 
-        clearMemory();
+        _clearMemory();
 
-        setMemoryAddress(
+        _setMemoryAddress(
             newAllocatedMem,
             newAllocatedMem + _size,
             newAllocatedMem + newCapacity
@@ -211,8 +232,8 @@ template<typename T>
         return end();
       }
 
-      internalAssignmentCopy<ft::is_integral<value_type>::value>(
-        pos + 1, end(), pos
+      _assignmentCopy(
+        pos + 1, end(), pos, typename ft::is_integral<value_type>::type()
       );
       internals::_Destroy(&*last);
       --this->Aimpl.finish;
@@ -240,12 +261,16 @@ template<typename T>
 
       newSize = size() - ft::distance(first, last);
 
-      internalAssignmentCopy<ft::is_integral<value_type>::value>(
-          last, _end, first
+      _assignmentCopy(
+          last, _end, first, typename ft::is_integral<value_type>::type()
       );
 
       internals::_Destroy(last, _end);
-      this->Aimpl.finish = this->Aimpl.start + newSize;
+      _setMemoryAddress(
+          this->Aimpl.start,
+          this->Aimpl.start + newSize,
+          this->Aimpl.endOfStorage
+      );
 
       return first;
     }
@@ -288,13 +313,13 @@ template<typename T>
 
     void insert(iterator pos, size_type count, value_type const &value)
     {
-      internInsert(pos, count, value, ft::true_type());
+      _T_insert(pos, count, value, ft::true_type());
     }
 
     template<typename InputIt>
       void insert(iterator pos, InputIt first, InputIt last)
       {
-        internInsert(
+        _T_insert(
             pos, first, last, typename ft::is_integral<InputIt>::type()
         );
       }
@@ -307,13 +332,13 @@ template<typename T>
     }
 
   private:
-    void clearMemory()
+    void _clearMemory()
     {
-      internals::_Destroy(begin(), end());
+      clear();
       this->deallocate(this->Aimpl.start, capacity());
     }
 
-    void setMemoryAddress(
+    void _setMemoryAddress(
         pointer const &newAddress, pointer const &newFinish,
         pointer const &newEndOfStorage)
     {
@@ -322,20 +347,31 @@ template<typename T>
       this->Aimpl.endOfStorage = newEndOfStorage;
     }
 
-    template<bool>
-      void internalAssignmentCopy(iterator begin, iterator end, iterator dst)
+    template<typename InputIt, typename InputItDst>
+      void _assignmentCopy(
+          InputIt begin, InputIt end, InputItDst dst, ft::false_type)
       {
         std::copy(begin, end, dst);
       }
 
-    template<>
-      void internalAssignmentCopy<true>(
-          iterator begin, iterator end, iterator dst)
+    template<typename Integral, typename InputItDst>
+      void _assignmentCopy(
+          Integral begin, Integral end, InputItDst dst, ft::true_type)
       {
         std::memmove(
           &*dst, &*begin, ft::distance(begin, end) * sizeof(value_type)
         );
       }
+
+    void _assignmentValue(
+        iterator begin, iterator end, value_type const &value)
+    {
+      while (begin != end)
+      {
+        *begin = value;
+        ++begin;
+      }
+    }
 
     template<bool>
       void fill_unintialiazed_copy(
@@ -354,8 +390,7 @@ template<typename T>
       }
 
     template<typename InputIt>
-      void internInsert(
-          iterator pos, InputIt first, InputIt last, ft::false_type)
+      void _T_insert(iterator pos, InputIt first, InputIt last, ft::false_type)
       {
         size_type _size, lengthToCopy, lengthToAdd;
         iterator insertedValuePos, endToCopy, startToCopy, destination;
@@ -383,8 +418,8 @@ template<typename T>
       }
 
     template<typename Integral>
-      void internInsert(
-          iterator pos, size_type count, Integral const& value,ft::true_type)
+      void _T_insert(
+          iterator pos, size_type count, Integral const& value, ft::true_type)
       {
         size_type _size, lengthToCopy;
         iterator insertedValuePos, endToCopy, startToCopy, destination;

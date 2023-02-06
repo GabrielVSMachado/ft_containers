@@ -1232,5 +1232,138 @@ TEST_SUITE("vector")
         CHECK_EQ(*(p + 3), *(op + 3));
       }
     }
+
+    TEST_SUITE("assign")
+    {
+      TEST_CASE("expected_exception_std::length_error")
+      {
+        ft::vector<std::string> my_vector;
+
+        CHECK_THROWS_AS(
+          my_vector.assign(my_vector.max_size() + 1, "42"), std::length_error
+        );
+      }
+
+      TEST_CASE("expected_same_capacity_before_and_after")
+      {
+        ft::vector<int> my_vector;
+        ft::vector<int>::size_type beforeCapacity, afterCapacity;
+
+        my_vector.push_back(42);
+        my_vector.push_back(43);
+        my_vector.push_back(44);
+        my_vector.push_back(45);
+
+        beforeCapacity = my_vector.capacity();
+        my_vector.assign(4, 42);
+        afterCapacity = my_vector.capacity();
+        CHECK_EQ(beforeCapacity, afterCapacity);
+      }
+
+      TEST_CASE("expected_same_size")
+      {
+        ft::vector<int> my_vector;
+        ft::vector<int>::size_type beforeSize, afterSize;
+
+        my_vector.push_back(42);
+        my_vector.push_back(43);
+        my_vector.push_back(44);
+        my_vector.push_back(45);
+
+        beforeSize = my_vector.size();
+        my_vector.assign(4, 42);
+        afterSize = my_vector.size();
+        CHECK_EQ(beforeSize, afterSize);
+      }
+
+      TEST_CASE("expected_size_eq_10")
+      {
+        ft::vector<std::string> my_vector;
+
+        my_vector.push_back("42");
+        my_vector.push_back("43");
+        my_vector.push_back("44");
+        my_vector.push_back("45");
+
+        my_vector.assign(10, "42");
+        CHECK_EQ(10, my_vector.size());
+      }
+
+      TEST_CASE("expected_capacity_eq_10")
+      {
+        ft::vector<std::string> my_vector;
+
+        my_vector.push_back("42");
+        my_vector.push_back("43");
+        my_vector.push_back("44");
+        my_vector.push_back("45");
+
+        my_vector.assign(10, "42");
+        CHECK_EQ(10, my_vector.capacity());
+      }
+
+      TEST_CASE("expected_same_values_after_assign")
+      {
+        ft::vector<std::string> my_vector;
+        std::vector<std::string> original;
+
+        my_vector.push_back("42");
+        my_vector.push_back("43");
+        my_vector.push_back("44");
+        my_vector.push_back("45");
+
+        original.push_back("42");
+        original.push_back("43");
+        original.push_back("44");
+        original.push_back("45");
+
+
+        my_vector.assign(10, "42");
+        original.assign(10, "42");
+        CHECK(ft::equal(original.begin(), original.end(), my_vector.begin()));
+      }
+
+      TEST_CASE("assert_with_range_expected_same_capacity")
+      {
+        ft::vector<int> original;
+        std::vector<int> o2(11, 42);
+
+        original.push_back(41);
+        original.push_back(42);
+        original.push_back(43);
+        original.push_back(44);
+
+        original.assign(o2.begin(), o2.end());
+        CHECK_EQ(original.capacity(), o2.capacity());
+      }
+
+      TEST_CASE("expected_same_size")
+      {
+        ft::vector<int> original;
+        std::vector<int> o2(12, 42);
+
+        original.push_back(41);
+        original.push_back(42);
+        original.push_back(43);
+        original.push_back(44);
+
+        original.assign(o2.begin(), o2.end());
+        CHECK_EQ(original.size(), o2.size());
+      }
+
+      TEST_CASE("expected_same_values")
+      {
+        ft::vector<int> original;
+        std::vector<int> o2(10, 42);
+
+        original.push_back(41);
+        original.push_back(42);
+        original.push_back(43);
+        original.push_back(44);
+
+        original.assign(o2.begin(), o2.end());
+        CHECK(ft::equal(o2.begin(), o2.end(), original.begin()));
+      }
+    }
   }// end of suite Modifiers
 }
