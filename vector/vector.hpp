@@ -53,11 +53,21 @@ template<typename T>
     explicit vector(allocator_type const & = allocator_type())
       : _Base(allocator_type()) {}
 
+    ~vector() {}
+
     allocator_type get_allocator() const { return _Base::get_allocator(); }
+
+    vector_type& operator=(vector_type const &other)
+    {
+      assign(other.begin(), other.end());
+      return *this;
+    }
 
     void assign(size_type count, value_type const &value)
     {
       reserve(count);
+      if (count < size())
+        internals::_Destroy(begin()+count, end());
       _setMemoryAddress(
         this->Aimpl.start,
         this->Aimpl.start + count,
@@ -73,6 +83,8 @@ template<typename T>
       {
         size_type length = ft::distance(first, last);
         reserve(length);
+        if (length < size())
+          internals::_Destroy(begin()+length, end());
         _setMemoryAddress(
           this->Aimpl.start,
           this->Aimpl.start + length,

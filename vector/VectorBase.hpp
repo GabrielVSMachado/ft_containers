@@ -14,6 +14,7 @@
 #define VECTORBASE_HPP
 
 #include <cstddef>
+#include <iostream>
 #include <memory>
 
 namespace internals
@@ -58,7 +59,7 @@ template<typename Tp>
       Aimpl.endOfStorage = Aimpl.start + n;
     }
 
-    ~VectorBase()
+    virtual ~VectorBase()
     {
       Aimpl.deallocate(Aimpl.start, Aimpl.endOfStorage - Aimpl.start);
     }

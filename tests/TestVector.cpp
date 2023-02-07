@@ -1,3 +1,4 @@
+#include <cstdio>
 #include <memory>
 #include <string_view>
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
@@ -1368,16 +1369,106 @@ TEST_SUITE("vector")
         CHECK(ft::equal(o2.begin(), o2.end(), original.begin()));
       }
     }
-
-    TEST_SUITE("get_allocator")
-    {
-      TEST_CASE("expected_not_failed")
-      {
-        ft::vector<std::string> my_vector;
-        my_vector.get_allocator();
-        bool result = ft::is_same<ft::vector<std::string>::allocator_type, std::allocator<std::string> >::value;
-        CHECK_EQ(result, true);
-      }
-    }
   }// end of suite Modifiers
+
+  TEST_SUITE("get_allocator")
+  {
+    TEST_CASE("expected_not_failed")
+    {
+      ft::vector<std::string> my_vector;
+      my_vector.get_allocator();
+      bool result = ft::is_same<ft::vector<std::string>::allocator_type, std::allocator<std::string> >::value;
+      CHECK_EQ(result, true);
+    }
+  }
+
+  TEST_SUITE("operator=")
+  {
+    TEST_CASE("expected_same_size")
+    {
+      ft::vector<int> my_vector;
+      std::vector<int> original(4, 42);
+      ft::vector<int> my_vector2;
+      std::vector<int> original2(7, 42);
+
+      my_vector.push_back(42);
+      my_vector.push_back(42);
+      my_vector.push_back(42);
+      my_vector.push_back(42);
+
+
+      my_vector2.push_back(42);
+      my_vector2.push_back(42);
+      my_vector2.push_back(42);
+      my_vector2.push_back(42);
+      my_vector2.push_back(42);
+      my_vector2.push_back(42);
+      my_vector2.push_back(42);
+
+      my_vector = my_vector2;
+      original = original2;
+      CHECK_EQ(original.size(), my_vector.size());
+    }
+
+    TEST_CASE("expected_same_capacity")
+    {
+      ft::vector<int> my_vector;
+      std::vector<int> original(4, 42);
+      ft::vector<int> my_vector2;
+      std::vector<int> original2(7, 42);
+
+      my_vector.push_back(42);
+      my_vector.push_back(42);
+      my_vector.push_back(42);
+      my_vector.push_back(42);
+
+
+      my_vector2.push_back(42);
+      my_vector2.push_back(42);
+      my_vector2.push_back(42);
+      my_vector2.push_back(42);
+      my_vector2.push_back(42);
+      my_vector2.push_back(42);
+      my_vector2.push_back(42);
+
+      my_vector = my_vector2;
+      original = original2;
+      CHECK_EQ(original.capacity(), my_vector.capacity());
+    }
+
+    TEST_CASE("expected_same_values")
+    {
+      ft::vector<int> my_vector;
+      std::vector<int> original(4, 42);
+      ft::vector<int> my_vector2;
+      std::vector<int> original2;
+
+      my_vector.push_back(42);
+      my_vector.push_back(43);
+      my_vector.push_back(44);
+      my_vector.push_back(45);
+
+
+      my_vector2.push_back(42);
+      my_vector2.push_back(43);
+      my_vector2.push_back(45);
+      my_vector2.push_back(50);
+      my_vector2.push_back(45);
+      my_vector2.push_back(53);
+      my_vector2.push_back(57);
+
+
+      original2.push_back(42);
+      original2.push_back(43);
+      original2.push_back(45);
+      original2.push_back(50);
+      original2.push_back(45);
+      original2.push_back(53);
+      original2.push_back(57);
+
+      my_vector = my_vector2;
+      original = original2;
+      CHECK(ft::equal(original.begin(), original.end(), my_vector.begin()));
+    }
+  }
 }
