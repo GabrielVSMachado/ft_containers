@@ -1384,7 +1384,7 @@ TEST_SUITE("vector")
 
   TEST_SUITE("operator=")
   {
-    TEST_CASE("expected_same_size")
+    TEST_CASE("expected_same_size_integral_type")
     {
       ft::vector<int> my_vector;
       std::vector<int> original(4, 42);
@@ -1410,7 +1410,7 @@ TEST_SUITE("vector")
       CHECK_EQ(original.size(), my_vector.size());
     }
 
-    TEST_CASE("expected_same_capacity")
+    TEST_CASE("expected_same_capacity_integral_type")
     {
       ft::vector<int> my_vector;
       std::vector<int> original(4, 42);
@@ -1436,7 +1436,7 @@ TEST_SUITE("vector")
       CHECK_EQ(original.capacity(), my_vector.capacity());
     }
 
-    TEST_CASE("expected_same_values")
+    TEST_CASE("expected_same_values_integral_type")
     {
       ft::vector<int> my_vector;
       std::vector<int> original(4, 42);
@@ -1469,6 +1469,183 @@ TEST_SUITE("vector")
       my_vector = my_vector2;
       original = original2;
       CHECK(ft::equal(original.begin(), original.end(), my_vector.begin()));
+    }
+  }
+
+  TEST_SUITE("boolean_operators")
+  {
+    TEST_CASE("operator<_expected_true")
+    {
+      ft::vector<int> my_vector;
+      ft::vector<int> my_vector2;
+
+      my_vector.push_back(10);
+      my_vector.push_back(11);
+      my_vector.push_back(12);
+      my_vector.push_back(13);
+      my_vector.push_back(14);
+      my_vector.push_back(15);
+      my_vector.push_back(16);
+      my_vector.push_back(17);
+
+      my_vector2.push_back(18);
+      my_vector2.push_back(19);
+      my_vector2.push_back(20);
+      my_vector2.push_back(21);
+      my_vector2.push_back(22);
+      my_vector2.push_back(23);
+      my_vector2.push_back(24);
+      my_vector2.push_back(25);
+
+      CHECK(my_vector < my_vector2);
+    }
+
+    TEST_CASE("operator<_expected_false")
+    {
+      ft::vector<int> my_vector;
+      ft::vector<int> my_vector2;
+
+      my_vector.push_back(10);
+      my_vector.push_back(11);
+      my_vector.push_back(12);
+      my_vector.push_back(26);
+      my_vector.push_back(14);
+      my_vector.push_back(15);
+      my_vector.push_back(16);
+      my_vector.push_back(17);
+
+      my_vector2.push_back(18);
+      my_vector2.push_back(19);
+      my_vector2.push_back(20);
+      my_vector2.push_back(21);
+      my_vector2.push_back(22);
+      my_vector2.push_back(23);
+      my_vector2.push_back(24);
+      my_vector2.push_back(25);
+
+      CHECK_FALSE(my_vector < my_vector2);
+    }
+
+    TEST_CASE("operator>_expected_false")
+    {
+      ft::vector<int> my_vector;
+      ft::vector<int> my_vector2;
+
+      my_vector.push_back(10);
+      my_vector.push_back(11);
+      my_vector.push_back(12);
+      my_vector.push_back(26);
+      my_vector.push_back(14);
+      my_vector.push_back(15);
+      my_vector.push_back(16);
+      my_vector.push_back(17);
+
+      my_vector2.push_back(18);
+      my_vector2.push_back(19);
+      my_vector2.push_back(20);
+      my_vector2.push_back(21);
+      my_vector2.push_back(22);
+      my_vector2.push_back(23);
+      my_vector2.push_back(24);
+      my_vector2.push_back(25);
+
+      CHECK_FALSE(my_vector > my_vector2);
+    }
+
+    TEST_CASE("operator>_expected_true")
+    {
+      ft::vector<std::string> my_vector;
+      ft::vector<std::string> my_vector2;
+
+      my_vector.push_back("10");
+      my_vector.push_back("11");
+      my_vector.push_back("12");
+      my_vector.push_back("13");
+      my_vector.push_back("14");
+      my_vector.push_back("15");
+      my_vector.push_back("16");
+      my_vector.push_back("17");
+
+      my_vector2.push_back("18");
+      my_vector2.push_back("19");
+      my_vector2.push_back("20");
+      my_vector2.push_back("21");
+      my_vector2.push_back("22");
+      my_vector2.push_back("23");
+      my_vector2.push_back("24");
+      my_vector2.push_back("25");
+
+      CHECK(my_vector2 > my_vector);
+    }
+
+    TEST_CASE("operator==expected_true")
+    {
+      ft::vector<std::string> my_vector;
+      ft::vector<std::string> my_vector2;
+
+      my_vector.push_back("10");
+      my_vector.push_back("10");
+      my_vector.push_back("10");
+      my_vector.push_back("10");
+      my_vector.push_back("10");
+      my_vector.push_back("10");
+
+      my_vector2.push_back("10");
+      my_vector2.push_back("10");
+      my_vector2.push_back("10");
+      my_vector2.push_back("10");
+      my_vector2.push_back("10");
+      my_vector2.push_back("10");
+
+      CHECK(my_vector2 == my_vector);
+    }
+
+    TEST_CASE("operator!=expected_false")
+    {
+      ft::vector<int> my_vector;
+      ft::vector<int> my_vector2;
+
+      my_vector.push_back(10);
+      my_vector.push_back(10);
+      my_vector.push_back(10);
+      my_vector.push_back(10);
+      my_vector.push_back(10);
+      my_vector.push_back(10);
+
+      my_vector2.push_back(10);
+      my_vector2.push_back(10);
+      my_vector2.push_back(10);
+      my_vector2.push_back(10);
+      my_vector2.push_back(10);
+      my_vector2.push_back(10);
+
+      CHECK_FALSE(my_vector2 != my_vector);
+    }
+
+    TEST_CASE("operator<=_expected_true")
+    {
+      ft::vector<std::string> my_vector;
+      ft::vector<std::string> my_vector2;
+
+      my_vector.push_back("10");
+      my_vector.push_back("11");
+      my_vector.push_back("12");
+      my_vector.push_back("13");
+      my_vector.push_back("14");
+      my_vector.push_back("15");
+      my_vector.push_back("16");
+      my_vector.push_back("17");
+
+      my_vector2.push_back("18");
+      my_vector2.push_back("19");
+      my_vector2.push_back("20");
+      my_vector2.push_back("21");
+      my_vector2.push_back("22");
+      my_vector2.push_back("23");
+      my_vector2.push_back("24");
+      my_vector2.push_back("25");
+
+      CHECK(my_vector <= my_vector2);
     }
   }
 }

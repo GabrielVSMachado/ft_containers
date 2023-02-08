@@ -77,6 +77,9 @@ namespace ft
     bool operator>=(pair<T1, T2> const &lhs, pair<T1, T2> const &rhs) {
       return !(lhs < rhs);
     }
+
+  template<typename T>
+    bool cmp_less(T const &a, T const &b) { return a < b; }
 }
 
 #endif // !UTILITY_HPP

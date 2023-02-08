@@ -25,10 +25,12 @@
 #include "iterator.hpp"
 #include "my_stl_construct.hpp"
 #include "type_traits.hpp"
+#include "algorithms.hpp"
+#include "utility.hpp"
 
 namespace ft
 {
-template<typename T>
+template<typename T, typename Alloc = std::allocator<T> >
   class vector : protected internals::VectorBase<T>
   {
     typedef internals::VectorBase<T> _Base;
@@ -50,8 +52,8 @@ template<typename T>
     typedef ft::reverse_iterator<const_iterator> const_reverse_iterator;
 
     //Constructors
-    explicit vector(allocator_type const & = allocator_type())
-      : _Base(allocator_type()) {}
+    explicit vector(allocator_type const &alloc = allocator_type())
+      : _Base(alloc) {}
 
     ~vector() {}
 
@@ -436,6 +438,53 @@ template<typename T>
         std::memmove(dst, src, size * sizeof(value_type));
       }
   };
+
+  // Non member functions booleans operators vector
+  template<typename T, typename Alloc>
+    bool operator==(
+        ft::vector<T, Alloc> const &lhs, ft::vector<T, Alloc> const &rhs)
+    {
+      return ft::equal(lhs.begin(), lhs.end(), rhs.begin());
+    }
+
+  template<typename T, typename Alloc>
+    bool operator<(
+        ft::vector<T, Alloc> const &lhs, ft::vector<T, Alloc> const &rhs)
+    {
+      typedef typename ft::vector<T, Alloc>::const_iterator const_iterator;
+
+      return ft::equal<
+              const_iterator, const_iterator, bool (*)(T const &, T const &)
+              >(lhs.begin(), lhs.end(), rhs.begin(), ft::cmp_less);
+    }
+
+  template<typename T, typename Alloc>
+    bool operator!=(
+        ft::vector<T, Alloc> const &lhs, ft::vector<T, Alloc> const &rhs)
+    {
+      return !(lhs == rhs);
+    }
+
+  template<typename T, typename Alloc>
+    bool operator>(
+        ft::vector<T, Alloc> const &lhs, ft::vector<T, Alloc> const &rhs)
+    {
+      return rhs < lhs;
+    }
+
+  template<typename T, typename Alloc>
+    bool operator>=(
+        ft::vector<T, Alloc> const &lhs, ft::vector<T, Alloc> const &rhs)
+    {
+      return !(lhs < rhs);
+    }
+
+  template<typename T, typename Alloc>
+    bool operator<=(
+        ft::vector<T, Alloc> const &lhs, ft::vector<T, Alloc> const &rhs)
+    {
+      return !(rhs < lhs);
+    }
 }
 
 #endif // !VECTOR_HPP
