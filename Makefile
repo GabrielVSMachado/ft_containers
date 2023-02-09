@@ -10,7 +10,7 @@ TESTOBJS = $(TESTSRCS:%.cpp=%.o)
 OBJ = main.o
 DIRS = commons vector
 INCLUDES = $(addprefix -I ,$(DIRS))
-CXXFLAGS = -std=c++98 -Wall -Wextra -Werror $(INCLUDES)
+CXXFLAGS = -std=c++98 -Wall -Wextra $(INCLUDES) -g3
 CXX = c++
 
 
@@ -31,7 +31,7 @@ $(TESTDIR)/%.o: $(TESTDIR)/%.cpp
 	$(CXX) -std=c++98 $(INCLUDES) -c $< -o $@
 
 test: $(TESTOBJS)
-	$(CXX) $(CXXFLAGS) -I $(TESTDIR) $(TESTOBJS) -o $(TESTNAME)
+	$(CXX) -std=c++98 $(INCLUDES) -I $(TESTDIR) $(TESTOBJS) -o $(TESTNAME)
 	./$(TESTNAME)
 
 test_on_docker:

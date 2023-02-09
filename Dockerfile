@@ -10,4 +10,4 @@ WORKDIR /ft_containers
 
 COPY . .
 
-ENTRYPOINT ["make", "test"]
+CMD ["make", "test"]

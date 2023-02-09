@@ -14,6 +14,7 @@
 #define VECTORBASE_HPP
 
 #include <cstddef>
+#include <cstring>
 #include <iostream>
 #include <memory>
 
@@ -24,21 +25,23 @@ namespace internals
  * This implementation is used to make easy handle allocation
  * and exceptions from the allocation's process
  **/
-template<typename Tp>
+template<typename Tp, typename Alloc = std::allocator<Tp> >
   struct VectorBase
   {
     typedef Tp* Tp_pointer;
-    typedef typename std::allocator<Tp>::template rebind<Tp>::other
-                                                                allocator_type;
+    typedef Alloc allocator_type;
 
     private:
-      struct ImplementationAllocator : public std::allocator<Tp>
+      struct ImplementationAllocator : public Alloc
       {
         Tp_pointer start;
         Tp_pointer finish;
         Tp_pointer endOfStorage;
 
-        ImplementationAllocator() : start(0), finish(0), endOfStorage(0) {}
+        ImplementationAllocator(
+            allocator_type const &alloc = std::allocator<Tp>())
+          : Alloc(alloc), start(0), finish(0), endOfStorage(0)
+        {}
       };
 
     public:
@@ -52,11 +55,15 @@ template<typename Tp>
 
     VectorBase(allocator_type const &) : Aimpl() {}
 
-    VectorBase(size_t n) : Aimpl()
+    VectorBase(size_t n, allocator_type const &alloc = allocator_type())
+      : Aimpl(alloc)
     {
       Aimpl.start = this->Aimpl.allocate(n);
       Aimpl.finish = Aimpl.start;
       Aimpl.endOfStorage = Aimpl.start + n;
+      // std::memset(
+      //   this->Aimpl.start, 0, (Aimpl.endOfStorage - Aimpl.start) * sizeof(Tp)
+      // );
     }
 
     virtual ~VectorBase()
