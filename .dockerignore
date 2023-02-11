@@ -1,4 +1,5 @@
 *.o
+tests/*.o
 my_containers
 original_containers
 unittests
