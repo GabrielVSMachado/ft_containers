@@ -14,9 +14,9 @@
 #define VECTOR_HPP
 
 // std implementation
+#include <iostream>
 #include <memory>
 #include <stdexcept>
-#include <cmath>
 
 //My implementation
 #include "ReverseIterator.hpp"
@@ -97,7 +97,7 @@ template<typename T, typename Alloc = std::allocator<T> >
         this->Aimpl.endOfStorage
       );
       _uninitialized_fill_n(
-        this->Aimpl.start,
+        begin(),
         count,
         value,
         typename ft::is_integral<value_type>::type()
@@ -118,7 +118,7 @@ template<typename T, typename Alloc = std::allocator<T> >
           this->Aimpl.start + length,
           this->Aimpl.endOfStorage
         );
-        _assignmentCopy(first, last, begin(), ft::false_type());
+        _uninitialiazed_copy_backwards(first, last, begin() + length, ft::false_type());
       }
 
     // Access methods
@@ -213,19 +213,19 @@ template<typename T, typename Alloc = std::allocator<T> >
 
         _size = size();
 
-        this->fill_unintialiazed_copy(
-          &*begin(),
-          &*end(),
-          newReservedMem,
+        this->_uninitialiazed_copy_backwards(
+          begin(),
+          end(),
+          newReservedMem + _size,
           typename is_integral::type()
         );
 
         _clearMemory();
 
         _setMemoryAddress(
-            newReservedMem,
-            newReservedMem + _size,
-            newReservedMem + new_cap
+          newReservedMem,
+          newReservedMem + _size,
+          newReservedMem + new_cap
         );
       }
     }
@@ -243,10 +243,10 @@ template<typename T, typename Alloc = std::allocator<T> >
         newCapacity = _size > 0 ? _size * 2 : 1;
         newAllocatedMem = this->allocate(newCapacity);
 
-        this->fill_unintialiazed_copy(
-          &*begin(),
-          &*end(),
-          newAllocatedMem,
+        this->_uninitialiazed_copy_backwards(
+          begin(),
+          end(),
+          iterator(newAllocatedMem + _size),
           typename is_integral::type()
         );
 
@@ -262,7 +262,7 @@ template<typename T, typename Alloc = std::allocator<T> >
       ++this->Aimpl.finish;
     }
 
-    void pop_back() { (this->Aimpl.finish--)->~value_type(); }
+    void pop_back() { (--this->Aimpl.finish)->~value_type(); }
 
     void clear()
     {
@@ -272,19 +272,13 @@ template<typename T, typename Alloc = std::allocator<T> >
 
     iterator erase(iterator pos)
     {
-      iterator last(--end());
-
-      if (pos == last)
+      if (pos != --end())
       {
-        pop_back();
-        return end();
+        _assignmentCopy(
+          pos + 1, end(), pos, typename ft::is_integral<value_type>::type()
+        );
       }
-
-      _assignmentCopy(
-        pos + 1, end(), pos, typename ft::is_integral<value_type>::type()
-      );
-      internals::_Destroy(&*last);
-      --this->Aimpl.finish;
+      pop_back();
 
       return pos;
     }
@@ -330,7 +324,7 @@ template<typename T, typename Alloc = std::allocator<T> >
       if (_size > count)
         erase(begin() + count, end());
       else
-        insert(end(), _size > count ? _size - count: count - _size, value);
+        insert(end(), count - _size, value);
     }
 
     iterator insert(iterator pos, value_type const & value)
@@ -350,18 +344,29 @@ template<typename T, typename Alloc = std::allocator<T> >
     {
       size_type const newSize = size() + count;
 
+      if (!count)
+        return;
+
       if (newSize > capacity())
         _insert_in_new_memory_n_values(newSize, pos, count, value);
       else
         _insert_n_values(pos, count, value);
     }
 
-    //
-    // template<typename It>
-    //   typename ft::enable_if<!ft::is_integral<It>::value, void>::type
-    //   insert(iterator pos, It first, It last)
-    //   {
-    //   }
+    template<typename It>
+    typename ft::enable_if<!is_integral<It>::value, void>::type
+      insert(iterator pos, It first, It last)
+      {
+        size_type const newSize = size() + ft::distance(first, last);
+
+        if (first == last)
+          return;
+
+        if (newSize > capacity())
+          _insert_in_new_memory_n_values(newSize, pos, first, last);
+        else
+          _insert_n_values(pos, first, last);
+      }
 
     void swap(vector_type & other)
     {
@@ -379,33 +384,79 @@ template<typename T, typename Alloc = std::allocator<T> >
       size_type count,
       value_type const &value)
     {
+      size_type const newCapacity =
+        newSize > 2 * capacity() ? newSize : 2 * capacity();
       size_type const firstPartSize = pos - begin();
       size_type const secondPartSize = end() - pos;
       pointer newMemory;
 
-      newMemory = this->allocate(newSize);
+      newMemory = this->allocate(newCapacity);
 
-      fill_unintialiazed_copy(
-        &*begin(),
-        &*(begin() + firstPartSize),
-        newMemory,
+      _uninitialiazed_copy_backwards(
+        begin(),
+        begin() + firstPartSize,
+        iterator(newMemory + firstPartSize),
         typename is_integral::type()
       );
       _uninitialized_fill_n(
-        newMemory + firstPartSize,
+        iterator(newMemory + firstPartSize),
         count,
         value,
         typename is_integral::type()
       );
-      fill_unintialiazed_copy(
-        &*pos,
-        &*(pos + secondPartSize),
-        newMemory + firstPartSize + count,
+      _uninitialiazed_copy_backwards(
+        pos,
+        (pos + secondPartSize),
+        iterator(newMemory + newSize),
         typename is_integral::type()
       );
 
       _clearMemory();
-      _setMemoryAddress(newMemory, newMemory + newSize, newMemory + newSize);
+      _setMemoryAddress(
+        newMemory,
+        newMemory + newSize,
+        newMemory + newCapacity
+      );
+    }
+
+    template<typename Iter>
+    typename ft::enable_if<!ft::is_integral<Iter>::value, void>::type
+    _insert_in_new_memory_n_values(
+      size_type const newSize, iterator pos, Iter first, Iter last)
+    {
+      pointer newMemory;
+      size_type const firstPartSize = pos - begin();
+      size_type const secondPartSize = end() - pos;
+      size_type const newCapacity =
+                        newSize > 2 * capacity() ? newSize: 2 * capacity();
+
+      newMemory = this->allocate(newCapacity);
+
+      _uninitialiazed_copy_backwards(
+        begin(),
+        begin() + firstPartSize,
+        iterator(newMemory + firstPartSize),
+        typename is_integral::type()
+      );
+      _uninitialiazed_copy_backwards(
+        first,
+        last,
+        iterator(newMemory + (newSize - secondPartSize)),
+        typename is_integral::type()
+      );
+      _uninitialiazed_copy_backwards(
+        pos,
+        pos + secondPartSize,
+        iterator(newMemory + newSize),
+        typename is_integral::type()
+      );
+
+      _clearMemory();
+      _setMemoryAddress(
+        newMemory,
+        newMemory + newSize,
+        newMemory + newCapacity
+      );
     }
 
     void _insert_n_values(
@@ -413,22 +464,49 @@ template<typename T, typename Alloc = std::allocator<T> >
     {
       size_type const firstPartSize = pos - begin();
       size_type const secondPartSize = end() - pos;
+      size_type const newSize = firstPartSize + count + secondPartSize;
 
-      fill_unintialiazed_copy(
-        &*pos,
-        &*end(),
-        &*(begin() + firstPartSize + count),
+      _uninitialiazed_copy_backwards(
+        pos,
+        end(),
+        begin() + newSize,
         typename is_integral::type()
       );
       _uninitialized_fill_n(
-        &*pos,
+        pos,
         count,
         value,
         typename is_integral::type()
       );
       _setMemoryAddress(
         this->Aimpl.start,
-        this->Aimpl.start + (firstPartSize + count + secondPartSize),
+        this->Aimpl.start + newSize,
+        this->Aimpl.endOfStorage
+      );
+    }
+
+    template<typename Iter>
+    typename ft::enable_if<!ft::is_integral<Iter>::value, void>::type
+    _insert_n_values(iterator pos, Iter first, Iter last)
+    {
+      size_type const length = ft::distance(first, last);
+      size_type const newSize = size() + length;
+
+      _uninitialiazed_copy_backwards(
+        pos,
+        end(),
+        begin() + newSize,
+        typename is_integral::type()
+      );
+      _uninitialiazed_copy_backwards(
+        first,
+        last,
+        pos + length,
+        typename is_integral::type()
+      );
+      _setMemoryAddress(
+        this->Aimpl.start,
+        this->Aimpl.start + newSize,
         this->Aimpl.endOfStorage
       );
     }
@@ -459,43 +537,42 @@ template<typename T, typename Alloc = std::allocator<T> >
       void _assignmentCopy(
           InputIt begin, InputIt end, InputItDst dst, ft::false_type)
       {
-        std::copy(begin, end, dst);
+        std::uninitialized_copy(begin, end, dst);
       }
 
     template<typename Integral, typename InputItDst>
       void _assignmentCopy(
           Integral begin, Integral end, InputItDst dst, ft::true_type)
       {
-        std::memmove(
-          &*dst, &*begin, ft::distance(begin, end) * sizeof(value_type)
-        );
+        std::uninitialized_copy(&*begin, &*end, &*dst);
       }
 
     void _uninitialized_fill_n(
-        pointer begin, size_type count, value_type const &value, ft::true_type)
+        iterator begin, size_type count, value_type const &value, ft::true_type)
+    {
+      std::uninitialized_fill_n(&*begin, count, value);
+    }
+
+    void _uninitialized_fill_n(
+      iterator begin, size_type count, value_type const &value, ft::false_type)
     {
       std::uninitialized_fill_n(begin, count, value);
     }
 
-    void _uninitialized_fill_n(
-      pointer begin, size_type count, value_type const &value, ft::false_type)
+    template<typename Iter, typename IterDst>
+    void _uninitialiazed_copy_backwards(
+        Iter first, Iter last, IterDst dst, ft::true_type)
     {
-      std::uninitialized_fill_n(iterator(begin), count, value);
+      std::copy_backward(&*first, &*last, &*dst);
+      // std::uninitialized_copy(&*first, &*last, &*dst);
     }
 
-    void fill_unintialiazed_copy(
-        pointer first, pointer last, pointer dst, ft::true_type)
+    template<typename Iter, typename IterDst>
+    void _uninitialiazed_copy_backwards(
+        Iter first, Iter last, IterDst dst, ft::false_type)
     {
-      std::uninitialized_copy(first, last, dst);
-    }
-
-    void fill_unintialiazed_copy(
-        pointer first, pointer last, pointer dst, ft::false_type)
-    {
-      size_type length = ft::distance(first, last);
-
-      while (length-- > 0)
-        this->construct(dst + length, *(first + length));
+      while (first != last)
+        this->construct(&*(--dst), *--last);
     }
 
   };

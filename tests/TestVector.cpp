@@ -1,17 +1,10 @@
-#include <cstdio>
-#include <memory>
-#include <string_view>
+#include <cstdlib>
+#include <string>
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include "iterator.hpp"
 #include "type_traits.hpp"
-#include <stdexcept>
 #include "vector.hpp"
-#include <algorithm>
-#include <iostream>
-#include <iterator>
-#include <string>
 #include <vector>
-#include <typeinfo>
 #include "algorithms.hpp"
 #include "doctest.h"
 
@@ -295,7 +288,7 @@ TEST_SUITE("pop_back_vector_method")
     original.pop_back();
     my_vector.pop_back();
 
-    CHECK(ft::equal(original.rbegin(), original.rend(), my_vector.rbegin()));
+    CHECK(ft::equal(original.begin(), original.end(), my_vector.begin()));
   }
 }
 
@@ -421,14 +414,20 @@ TEST_SUITE("erase_vector_method")
   TEST_CASE("erased_last_element_and_expected_iterator_end")
   {
     ft::vector<std::string> my_vector;
-    std::vector<std::string> original(4, "42sp");
+    std::vector<std::string> original;
     ft::vector<std::string>::iterator result;
     std::vector<std::string>::iterator expected;
 
-    my_vector.push_back("42sp");
-    my_vector.push_back("42sp");
-    my_vector.push_back("42sp");
-    my_vector.push_back("42sp");
+    my_vector.push_back("43sp");
+    my_vector.push_back("44sp");
+    my_vector.push_back("45sp");
+    my_vector.push_back("46sp");
+
+    original.push_back("43sp");
+    original.push_back("44sp");
+    original.push_back("45sp");
+    original.push_back("46sp");
+
 
     result = my_vector.erase(--my_vector.end());
     expected = original.erase(--original.end());
@@ -563,25 +562,23 @@ TEST_SUITE("resize_vector_method")
 
   TEST_CASE("incresce_size_in_4_elements_expected_same_size_as_the_original_vector")
   {
-    ft::vector<int> my_vector;
+    ft::vector<int> my_vector(4, 10);
     std::vector<int> original(4, 10);
-
-    my_vector.insert(my_vector.end(), 4, 10);
 
     my_vector.resize(8);
     original.resize(8);
+
     CHECK_EQ(my_vector.size(), original.size());
   }
 
   TEST_CASE("incresce_size_in_4_elements_expected_same_capacity_as_the_original_vector")
   {
-    ft::vector<int> my_vector;
+    ft::vector<int> my_vector(4, 10);
     std::vector<int> original(4, 10);
-
-    my_vector.insert(my_vector.end(), 4, 10);
 
     my_vector.resize(8);
     original.resize(8);
+
     CHECK_EQ(my_vector.capacity(), original.capacity());
   }
 
@@ -634,7 +631,6 @@ TEST_SUITE("resize_vector_method")
     );
   }
 }
-
 
 TEST_SUITE("insert_vector_method")
 {
@@ -809,6 +805,68 @@ TEST_SUITE("insert_vector_method")
     my_vector.reserve(10);
 
     my_vector.insert(my_vector.end(), 10, "42");
+    CHECK(ft::equal(original.begin(), original.end(), my_vector.begin()));
+  }
+
+  TEST_CASE("test_third_overloading_expected_same_size_as_original")
+  {
+    ft::vector<int> my_vector;
+    std::vector<int> original;
+
+    srand(time(NULL));
+    for (size_t i = 0; i < 6; i++) {
+      original.push_back(rand() % 50);
+    }
+
+    my_vector.insert(my_vector.begin(), original.begin(), original.end());
+    CHECK_EQ(original.size(), my_vector.size());
+  }
+
+  std::string itoa(int n) { std::stringstream s; s << n; return s.str();}
+
+  TEST_CASE("test_third_overloading_expected_same_capacity_as_original")
+  {
+    ft::vector<std::string> my_vector;
+    std::vector<std::string> original;
+    std::vector<std::string> expected;
+
+    srand(time(NULL));
+    for (size_t i = 0; i < 6; i++) {
+      original.insert(original.end(), itoa(rand() % 50));
+    }
+
+    my_vector.insert(my_vector.begin(), original.begin(), original.end());
+    expected.insert(expected.begin(), original.begin(), original.end());
+    CHECK_EQ(expected.capacity(), my_vector.capacity());
+  }
+
+  TEST_CASE("test_first_overloading_expected_same_capacity_as_original")
+  {
+    ft::vector<std::string> my_vector;
+    std::vector<std::string> original;
+    std::vector<std::string> expected;
+
+    srand(time(NULL));
+    for (size_t i = 0; i < 6; i++) {
+      original.insert(original.end(), itoa(rand() % 50));
+      my_vector.insert(my_vector.end(), itoa(rand() % 50));
+    }
+    CHECK_EQ(my_vector.capacity(), original.capacity());
+  }
+
+  TEST_CASE("test_third_overloading_expected_same_values")
+  {
+    ft::vector<std::string> my_vector;
+    std::vector<std::string> original;
+
+    srand(time(NULL));
+    for (size_t i = 0; i < 50; i++) {
+      original.insert(original.end(), itoa(rand() % 50));
+    }
+
+    my_vector.reserve(100);
+
+    my_vector.insert(my_vector.begin(), original.begin(), original.end());
     CHECK(ft::equal(original.begin(), original.end(), my_vector.begin()));
   }
 }

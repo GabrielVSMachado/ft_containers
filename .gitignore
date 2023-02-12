@@ -1,6 +1,8 @@
+core
 *.o
 my_containers
 original_containers
+containers_test
 unittests
 *.json
 .cache

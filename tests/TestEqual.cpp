@@ -11,7 +11,6 @@ TEST_SUITE("equal")
   {
     ft::vector<int> my_vector;
     std::vector<int> original(20, -32);
-    ft::vector<int>::const_iterator result;
 
     my_vector.push_back(-32);
     my_vector.push_back(-32);
@@ -21,24 +20,18 @@ TEST_SUITE("equal")
     my_vector.push_back(-32);
     my_vector.push_back(42);
 
-    result = my_vector.begin();
-
-    CHECK_FALSE(ft::equal(original.begin(), original.end(), result));
+    CHECK_FALSE(ft::equal(original.begin(), original.end(), my_vector.begin()));
   }
 
   TEST_CASE("expected_true")
   {
     ft::vector<int> my_vector;
     std::vector<int> original(20, 10);
-    ft::vector<int>::reverse_iterator result;
 
     for (int i = 0; i < 20; i++) {
       my_vector.push_back(10);
     }
-
-    result = my_vector.rbegin();
-
-    CHECK(ft::equal(original.rbegin(), original.rend(), result) == true);
+    CHECK(ft::equal(original.rbegin(), original.rend(), my_vector.rbegin()));
   }
 
 } // end of test suite equal
