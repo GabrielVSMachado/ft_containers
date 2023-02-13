@@ -14,7 +14,6 @@
 #define VECTOR_HPP
 
 // std implementation
-#include <iostream>
 #include <memory>
 #include <stdexcept>
 
@@ -73,7 +72,7 @@ template<typename T, typename Alloc = std::allocator<T> >
         allocator_type const &alloc = allocator_type())
         : _Base(ft::distance(first, last), alloc)
       {
-        insert(begin(), first, last);
+        insert(end(), first, last);
       }
 
     ~vector()  { internals::_Destroy(begin(), end()); }
@@ -89,8 +88,10 @@ template<typename T, typename Alloc = std::allocator<T> >
     void assign(size_type count, value_type const &value)
     {
       reserve(count);
+
       if (count < size())
         internals::_Destroy(begin()+count, end());
+
       _setMemoryAddress(
         this->Aimpl.start,
         this->Aimpl.start + count,
@@ -110,15 +111,20 @@ template<typename T, typename Alloc = std::allocator<T> >
         typename ft::enable_if<!ft::is_integral<It>::value, It>::type last)
       {
         size_type length = ft::distance(first, last);
+
         reserve(length);
+
         if (length < size())
           internals::_Destroy(begin()+length, end());
+
         _setMemoryAddress(
           this->Aimpl.start,
           this->Aimpl.start + length,
           this->Aimpl.endOfStorage
         );
-        _uninitialiazed_copy_backwards(first, last, begin() + length, ft::false_type());
+        _uninitialiazed_copy_backwards(
+          first, last, begin() + length, ft::false_type()
+        );
       }
 
     // Access methods
@@ -199,7 +205,6 @@ template<typename T, typename Alloc = std::allocator<T> >
     void reserve(size_type new_cap)
     {
       pointer newReservedMem;
-      size_type _size;
 
       if (new_cap > max_size())
         throw std::length_error(
@@ -208,55 +213,20 @@ template<typename T, typename Alloc = std::allocator<T> >
               );
 
       if (new_cap > capacity())
-      {
-        newReservedMem = this->allocate(new_cap);
-
-        _size = size();
-
-        this->_uninitialiazed_copy_backwards(
-          begin(),
-          end(),
-          newReservedMem + _size,
-          typename is_integral::type()
-        );
-
-        _clearMemory();
-
-        _setMemoryAddress(
-          newReservedMem,
-          newReservedMem + _size,
-          newReservedMem + new_cap
-        );
-      }
+        _copy_to_new_memory(new_cap, size());
     }
 
     // modifiers methods
     void push_back(value_type const &value)
     {
-      size_type _size, newCapacity;
+      size_type _size;
       pointer newAllocatedMem;
 
 
       if (this->Aimpl.finish == this->Aimpl.endOfStorage)
       {
         _size = size();
-        newCapacity = _size > 0 ? _size * 2 : 1;
-        newAllocatedMem = this->allocate(newCapacity);
-
-        this->_uninitialiazed_copy_backwards(
-          begin(),
-          end(),
-          iterator(newAllocatedMem + _size),
-          typename is_integral::type()
-        );
-
-        _clearMemory();
-
-        _setMemoryAddress(
-            newAllocatedMem,
-            newAllocatedMem + _size,
-            newAllocatedMem + newCapacity
-        );
+        _copy_to_new_memory(_size > 0 ? _size * 2 : 1, _size);
       }
       this->construct(this->Aimpl.finish, value);
       ++this->Aimpl.finish;
@@ -274,7 +244,7 @@ template<typename T, typename Alloc = std::allocator<T> >
     {
       if (pos != --end())
       {
-        _assignmentCopy(
+        _uninitialiazed_copy(
           pos + 1, end(), pos, typename ft::is_integral<value_type>::type()
         );
       }
@@ -303,15 +273,16 @@ template<typename T, typename Alloc = std::allocator<T> >
 
       newSize = size() - ft::distance(first, last);
 
-      _assignmentCopy(
-          last, _end, first, typename ft::is_integral<value_type>::type()
+      _uninitialiazed_copy(
+        last, _end, first, typename ft::is_integral<value_type>::type()
       );
 
       internals::_Destroy(last, _end);
+
       _setMemoryAddress(
-          this->Aimpl.start,
-          this->Aimpl.start + newSize,
-          this->Aimpl.endOfStorage
+        this->Aimpl.start,
+        this->Aimpl.start + newSize,
+        this->Aimpl.endOfStorage
       );
 
       return first;
@@ -511,11 +482,27 @@ template<typename T, typename Alloc = std::allocator<T> >
       );
     }
 
-    iterator _copyAfterRange(size_type size, size_type lengthToCopy)
+    void _copy_to_new_memory(
+        size_type const &newCapacity, size_type const &_size)
     {
-      return std::copy_backward(
-              begin() + (size - lengthToCopy), begin() + size, end()
-            );
+      pointer newAllocatedMem;
+
+      newAllocatedMem = this->allocate(newCapacity);
+
+      this->_uninitialiazed_copy_backwards(
+        begin(),
+        end(),
+        iterator(newAllocatedMem + _size),
+        typename is_integral::type()
+      );
+
+      _clearMemory();
+
+      _setMemoryAddress(
+          newAllocatedMem,
+          newAllocatedMem + _size,
+          newAllocatedMem + newCapacity
+      );
     }
 
     void _clearMemory()
@@ -534,14 +521,14 @@ template<typename T, typename Alloc = std::allocator<T> >
     }
 
     template<typename InputIt, typename InputItDst>
-      void _assignmentCopy(
+      void _uninitialiazed_copy(
           InputIt begin, InputIt end, InputItDst dst, ft::false_type)
       {
         std::uninitialized_copy(begin, end, dst);
       }
 
     template<typename Integral, typename InputItDst>
-      void _assignmentCopy(
+      void _uninitialiazed_copy(
           Integral begin, Integral end, InputItDst dst, ft::true_type)
       {
         std::uninitialized_copy(&*begin, &*end, &*dst);
@@ -564,7 +551,6 @@ template<typename T, typename Alloc = std::allocator<T> >
         Iter first, Iter last, IterDst dst, ft::true_type)
     {
       std::copy_backward(&*first, &*last, &*dst);
-      // std::uninitialized_copy(&*first, &*last, &*dst);
     }
 
     template<typename Iter, typename IterDst>

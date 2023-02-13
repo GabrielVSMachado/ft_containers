@@ -1031,6 +1031,27 @@ TEST_SUITE("Acess_methods")
 
 TEST_SUITE("assign")
 {
+
+  TEST_CASE("test_destroy_when_lenght_is_less_than_current_size")
+  {
+    ft::vector<std::string> my_vector(10, "42");
+    std::vector<std::string> original(10, "43");
+
+    my_vector.assign(original.begin(), original.begin()+4);
+    original.assign(my_vector.begin(), my_vector.begin()+4);
+    CHECK_EQ(original.size(), my_vector.size());
+  }
+
+  TEST_CASE("test_destroy_when_lenght_is_less_than_current_size_first_overloagind")
+  {
+    ft::vector<std::string> my_vector(10, "42");
+    std::vector<std::string> original(10, "43");
+
+    my_vector.assign(4, "42");
+    original.assign(4, "42");
+    CHECK(ft::equal(original.begin(), original.end(), my_vector.begin()));
+  }
+
   TEST_CASE("expected_exception_std::length_error")
   {
     ft::vector<std::string> my_vector;
