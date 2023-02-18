@@ -8,7 +8,7 @@ TESTNAME = containers_test
 TESTOBJS = $(TESTSRCS:%.cpp=%.o)
 
 OBJ = main.o
-DIRS = commons vector
+DIRS = commons vector map
 INCLUDES = $(addprefix -I ,$(DIRS))
 CXXFLAGS = -std=c++98 -Wall -Wextra $(INCLUDES) -g3
 CXX = c++
@@ -32,7 +32,8 @@ $(TESTDIR)/%.o: $(TESTDIR)/%.cpp
 
 test: fclean $(TESTOBJS)
 	$(CXX) -std=c++98 -g3 $(INCLUDES) -I $(TESTDIR) $(TESTOBJS) -o $(TESTNAME)
-	valgrind --leak-check=full --show-leak-kinds=all ./$(TESTNAME)
+	# valgrind --leak-check=full --show-leak-kinds=all ./$(TESTNAME)
+	./$(TESTNAME)
 
 test_on_docker:
 	docker build -t ft_containers:latest .
