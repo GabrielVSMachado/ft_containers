@@ -14,71 +14,155 @@
 #define RBTREE_HPP
 
 #include <memory>
+#include <iostream>
 
 namespace internals
 {
-  class RBTree
+
+class RBTree
+{
+public:
+  static unsigned int const red;
+  static unsigned int const black;
+
+  RBTree() : _nill(new Node(0, 0, black)), _root(_nill) {}
+
+  /**
+   * Insert new Node with given value.
+   *
+   * @value: value which has the same type of the Node's key variable;
+   *
+  **/
+  void insert(int const &value)
   {
+    pointer current = _root;
+    pointer previous = _nill;
+    pointer newNode = new Node(value, _nill);
 
-  private:
-
-    static unsigned int const red = 1;
-    static unsigned int const black = 0;
-
-    struct Node
+    while (current != _nill)
     {
-      typedef Node* pointer;
+      previous = current;
+      current = value > current->key ? current->right : current->left;
+    }
+    newNode->parent = previous;
 
-      pointer parent;
-      pointer left;
-      pointer right;
-      int const key;
-      unsigned int color:1;
+    if (previous == _nill)
+      _root = newNode;
+    else if (newNode->key < previous->key)
+      previous->left = newNode;
+    else
+      previous->right = newNode;
+    // TODO: FIXUP_INSERT
+  }
 
-      Node(int const &value, Node* const & nill)
-        : parent(nill), left(nill), right(nill), key(value), color(black) {}
-    };
+  bool search(int const &key)
+  {
+    pointer current = _root;
 
-    typedef Node::pointer pointer;
+    while (current != _nill && current->key != key)
+      current = key > current->key ? current->right : current->left;
+    return current != _nill;
+  }
 
-    pointer const _nill;
-    pointer _root;
+  void printTree() const { printHelper(_root, "", true); }
+
+private:
+
+  /**
+   * Structure used as Node for the Red-Black Tree.
+  **/
+  struct Node
+  {
+    typedef Node* pointer;
+
+    pointer parent;
+    pointer left;
+    pointer right;
+    int const key;
+    unsigned int color:1;
+
+    Node(int const &value, pointer const & nill, unsigned int const &color = red)
+      : parent(nill), left(nill), right(nill), key(value), color(color) {}
+  };
+
+  typedef Node::pointer pointer;
+
+  // private attributes
+  pointer const _nill;
+  pointer _root;
 
 
-  public:
-    RBTree() : _nill(new Node(0, 0)), _root(_nill) {}
+  void leftRotate(pointer a)
+  {
+    pointer const rightSubTree = a->right;
 
-    void insert(int const &value)
+    a->right = rightSubTree->left;
+
+    if (rightSubTree->left != _nill)
+      rightSubTree->left->parent = a;
+
+    rightSubTree->parent = a->parent;
+
+    if (a->parent == _nill)
+      _root = rightSubTree;
+    else if (a == a->parent->left)
+      a->parent->left = rightSubTree;
+    else
+      a->parent->right = rightSubTree;
+
+    rightSubTree->left = a;
+    a->parent = rightSubTree;
+  }
+
+  void rightRotate(pointer a)
+  {
+    pointer const leftSubTree = a->left;
+
+    a->left = leftSubTree->right;
+
+    if (leftSubTree->right != _nill)
+      leftSubTree->right->parent = a;
+
+    leftSubTree->parent = a->parent;
+
+    if (a->parent == _nill)
+      _root = leftSubTree;
+    else if (a->parent->left == a)
+      a->parent->left = leftSubTree;
+    else
+      a->parent->right = leftSubTree;
+
+    a->parent = leftSubTree;
+    leftSubTree->right = a;
+  }
+
+  void printHelper(pointer root, std::string indent, bool last) const
+  {
+    if (root != _nill)
     {
-      pointer current = _root;
-      pointer previous = _root;
-      pointer newNode = new Node(value, _nill);
-
-      while (current != _nill)
-      {
-        previous = current;
-        current = value > current->key ? current->right : current->left;
+      std::cout << indent;
+      if (last) {
+        std::cout << "R----";
+        indent += "    ";
+      } else {
+        std::cout << "L----";
+        indent += "|    ";
       }
-      newNode->parent = previous;
 
-      if (previous == _nill)
-        _root = newNode;
-      else if (newNode->key < previous->key)
-        previous->left = newNode;
-      else
-        previous->right = newNode;
-      // TODO: FIXUP_INSERT
+      char const r[] = "\x1b[31mRed\033[0m";
+      char const b[] = "\x1b[34mBlack\033[0m";
+      std::string color = root->color ? r : b;
+      std::cout << root->key << "(" << color << ")" << std::endl;
+      printHelper(root->left, indent, false);
+      printHelper(root->right, indent, true);
     }
+  }
 
-    bool search(int const &key)
-    {
-      pointer current = _root;
+}; // end of RBTree
 
-      while (current != _nill && current->key != key)
-        current = key > current->key ? current->right : current->left;
-      return current != _nill;
-    }
-  }; // end of RBTree
+// Initialize RBTree's non-members atributes
+unsigned int const RBTree::red = 1ul;
+unsigned int const RBTree::black = 0ul;
 } // namespace end
 
 #endif // !RB_TREE_HPP
