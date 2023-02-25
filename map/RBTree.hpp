@@ -21,11 +21,12 @@ namespace internals
 
 class RBTree
 {
-public:
   static unsigned int const red;
   static unsigned int const black;
 
-  RBTree() : _nill(new Node(0, 0, black)), _root(_nill) {}
+public:
+
+  RBTree() : _nill(new Node(0, black)), _root(_nill) {}
 
   /**
    * Insert new Node with given value.
@@ -37,7 +38,7 @@ public:
   {
     pointer current = _root;
     pointer previous = _nill;
-    pointer newNode = new Node(value, _nill);
+    pointer newNode = new Node(value);
 
     while (current != _nill)
     {
@@ -52,7 +53,9 @@ public:
       previous->left = newNode;
     else
       previous->right = newNode;
-    // TODO: FIXUP_INSERT
+    newNode->left = _nill;
+    newNode->right = _nill;
+    insertFixup(newNode);
   }
 
   bool search(int const &key)
@@ -81,8 +84,8 @@ private:
     int const key;
     unsigned int color:1;
 
-    Node(int const &value, pointer const & nill, unsigned int const &color = red)
-      : parent(nill), left(nill), right(nill), key(value), color(color) {}
+    Node(int const &_key, unsigned int const &color = red)
+      : parent(0), left(0), right(0), key(_key), color(color) {}
   };
 
   typedef Node::pointer pointer;
@@ -90,6 +93,60 @@ private:
   // private attributes
   pointer const _nill;
   pointer _root;
+
+  void insertFixup(pointer z)
+  {
+    pointer uncle;
+
+    while (z->parent->color == red)
+    {
+      if (z->parent == z->parent->parent->left)
+      {
+        uncle = z->parent->parent->right;
+        if (uncle->color == red)
+        {
+          uncle->color = black;
+          z->parent->color = black;
+          z->parent->parent->color = red;
+          z = z->parent->parent;
+        }
+        else
+        {
+          if (z == z->parent->right)
+          {
+            z = z->parent;
+            leftRotate(z);
+          }
+          z->parent->color = black;
+          z->parent->parent->color = red;
+          rightRotate(z->parent->parent);
+        }
+      }
+      else
+      {
+        uncle = z->parent->parent->left;
+        if (uncle->color == red)
+        {
+          uncle->color = black;
+          z->parent->color = black;
+          z->parent->parent->color = red;
+          z = z->parent->parent;
+        }
+        else
+        {
+          if (z == z->parent->left)
+          {
+            z = z->parent;
+            rightRotate(z);
+          }
+          z->parent->color = black;
+          z->parent->parent->color = red;
+          leftRotate(z->parent->parent);
+        }
+      }
+    }
+    _root->color = black;
+  }
 
 
   void leftRotate(pointer a)
