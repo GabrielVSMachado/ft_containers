@@ -27,6 +27,12 @@ class RBTree
 public:
 
   RBTree() : _nill(new Node(0, black)), _root(_nill) {}
+  ~RBTree()
+  {
+    while (_root != _nill)
+      deleteKey(_root->key);
+    delete _nill;
+  }
 
   /**
    * Insert new Node with given value.
@@ -58,13 +64,22 @@ public:
     insertFixup(newNode);
   }
 
-  bool search(int const &key)
-  {
-    pointer current = _root;
+  // bool search(int const &key) const
+  // {
+  //   pointer current = _root;
+  //
+  //   while (current != _nill && current->key != key)
+  //     current = key > current->key ? current->right : current->left;
+  //   return current != _nill;
+  // }
 
-    while (current != _nill && current->key != key)
-      current = key > current->key ? current->right : current->left;
-    return current != _nill;
+  void deleteKey(int const &key)
+  {
+    pointer toDelete;
+
+    toDelete = search(key);
+    _delete(toDelete);
+    delete toDelete;
   }
 
   void printTree() const { printHelper(_root, "", true); }
@@ -93,6 +108,150 @@ private:
   // private attributes
   pointer const _nill;
   pointer _root;
+
+  pointer search(int const &key)
+  {
+    pointer current = _root;
+
+    while (current != _nill && current->key != key)
+      current = key > current->key ? current->right : current->left;
+    return current;
+  }
+
+  void _delete(pointer z)
+  {
+    pointer sucessorSubTree;
+    pointer sucessor = z;
+    unsigned int original_color = sucessor->color;
+
+    if (z->left == _nill)
+    {
+      sucessorSubTree = z->right;
+      transplant(z, z->right);
+    }
+    else if (z->right == _nill)
+    {
+      sucessorSubTree = z->left;
+      transplant(z, z->left);
+    }
+    else
+    {
+      sucessor = minimum(z->right);
+      original_color = sucessor->color;
+      sucessorSubTree = sucessor->right;
+      if (sucessor != z->right)
+      {
+        transplant(sucessor, sucessor->right);
+        sucessor->right = z->right;
+        sucessor->right->parent = sucessor;
+      }
+      else
+        sucessorSubTree->parent = sucessor;
+
+      transplant(z, sucessor);
+      sucessor->left = z->left;
+      sucessor->left->parent = sucessor;
+      sucessor->color = z->color;
+    }
+
+    if (original_color == black)
+      deleteFixup(sucessorSubTree);
+  }
+
+  void deleteFixup(pointer x)
+  {
+    pointer xSibling;
+
+    while (x != _root && x->color == black)
+    {
+      if (x == x->parent->right)
+      {
+        xSibling = x->parent->left;
+
+        if (xSibling->color == red)
+        {
+          xSibling->color = black;
+          x->parent->color = red;
+          rightRotate(x->parent);
+          xSibling = x->parent->left;
+        }
+
+        if (xSibling->left->color == black && xSibling->right->color == black)
+        {
+          xSibling->color = red;
+          x = x->parent;
+        }
+        else
+        {
+          if (xSibling->left->color == black)
+          {
+            xSibling->color = red;
+            xSibling->right->color = black;
+            leftRotate(xSibling);
+            xSibling = x->parent->left;
+          }
+          xSibling->color = x->parent->color;
+          x->parent->color = black;
+          xSibling->left->color = black;
+          rightRotate(x->parent);
+          x = _root;
+        }
+      }
+      else
+      {
+        xSibling = x->parent->right;
+
+        if (xSibling->color == red)
+        {
+          xSibling->color = black;
+          x->parent->color = red;
+          leftRotate(x->parent);
+          xSibling = x->parent->right;
+        }
+
+        if (xSibling->left->color == black && xSibling->right->color == black)
+        {
+          xSibling->color = red;
+          x = x->parent;
+        }
+        else
+        {
+          if (xSibling->right->color == black)
+          {
+            xSibling->left->color = black;
+            xSibling->color = red;
+            rightRotate(xSibling);
+            xSibling = x->parent->right;
+          }
+          xSibling->color = x->parent->color;
+          x->parent->color = black;
+          xSibling->right->color = black;
+          leftRotate(x->parent);
+          x = _root;
+        }
+      }
+    }
+    x->color = black;
+  }
+
+  void transplant(pointer from, pointer to)
+  {
+    if (from->parent == _nill)
+      _root = to;
+    else if (from == from->parent->left)
+      from->parent->left = to;
+    else
+      from->parent->right = to;
+    to->parent = from->parent;
+  }
+
+  pointer minimum(pointer subTreeRoot)
+  {
+    while (subTreeRoot->left != _nill)
+      subTreeRoot = subTreeRoot->left;
+
+    return subTreeRoot;
+  }
 
   void insertFixup(pointer z)
   {
