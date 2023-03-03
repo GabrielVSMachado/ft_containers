@@ -15,23 +15,140 @@
 
 #include <memory>
 #include <iostream>
+#include "iterator.hpp"
 
 namespace internals
 {
 
-class RBTree
+enum RBTreeColor
 {
-  static unsigned int const red;
-  static unsigned int const black;
+  red = true,
+  black = false
+};
+
+
+/**
+ * Structure used as Node for the Red-Black Tree.
+**/
+struct Node
+{
+  typedef Node* pointer;
+  typedef Node const * const_pointer;
+
+  pointer parent;
+  pointer left;
+  pointer right;
+  int key;
+  RBTreeColor color;
+  pointer const _nill;
+
+  Node(int const &_key, pointer const &leaf, RBTreeColor color = red)
+    : parent(0), left(0), right(0), key(_key), color(color), _nill(leaf) {}
+
+  static pointer getAncestor(pointer current)
+  {
+    pointer ancestor;
+
+    if (current->left != current->_nill)
+      return maximum(current->left);
+
+    ancestor = current->parent;
+    while (ancestor != current->_nill && current == ancestor->right)
+    {
+      current = ancestor;
+      ancestor = ancestor->parent;
+    }
+    return ancestor;
+  }
+
+  static pointer getSuccessor(pointer ancestor)
+  {
+    pointer successor;
+
+    if (ancestor->right != ancestor->_nill)
+      return minimum(ancestor->right);
+
+    successor = ancestor->parent;
+    while (successor != ancestor->_nill && successor->right == ancestor)
+    {
+      ancestor = successor;
+      successor = successor->parent;
+    }
+    return successor;
+  }
+
+  static pointer maximum(pointer current)
+  {
+    while (current->right != current->_nill)
+      current = current->right;
+    return current;
+  }
+
+  static pointer minimum(pointer current)
+  {
+    while (current->left != current->_nill)
+      current = current->left;
+    return current;
+  }
+};
+
+class RBTreeIterator : public ft::iterator<std::bidirectional_iterator_tag, Node>
+{
+protected:
+  pointer current;
 
 public:
 
-  RBTree() : _nill(new Node(0, black)), _root(_nill) {}
+  RBTreeIterator() : current(0) {}
+  explicit RBTreeIterator(pointer const &current) : current(current) {}
+
+  reference operator*() { return *current; }
+  pointer operator->() { return current; }
+
+  RBTreeIterator& operator++()
+  {
+    current = Node::getSuccessor(current);
+    return *this;
+  }
+
+  RBTreeIterator operator++(int)
+  {
+    RBTreeIterator prev = *this;
+    operator++();
+    return prev;
+  }
+
+  RBTreeIterator& operator--()
+  {
+    current = Node::getAncestor(current);
+    return *this;
+  }
+
+  RBTreeIterator operator--(int)
+  {
+    RBTreeIterator prev = *this;
+    operator--();
+    return prev;
+  }
+
+  bool operator==(RBTreeIterator const &other) { return current == other.current; }
+  bool operator!=(RBTreeIterator const &other) { return !(*this == other); }
+
+}; // end of RBTreeIterator
+
+
+class RBTree
+{
+
+public:
+  typedef Node::pointer pointer;
+  typedef RBTreeIterator iterator;
+
+  RBTree() : base(0, &base, black), _root(base._nill) {}
   ~RBTree()
   {
-    while (_root != _nill)
+    while (_root != base._nill)
       deleteKey(_root->key);
-    delete _nill;
   }
 
   /**
@@ -43,35 +160,27 @@ public:
   void insert(int const &value)
   {
     pointer current = _root;
-    pointer previous = _nill;
-    pointer newNode = new Node(value);
+    pointer previous = base._nill;
+    pointer newNode = new Node(value, &base);
 
-    while (current != _nill)
+    while (current != base._nill)
     {
       previous = current;
-      current = value > current->key ? current->right : current->left;
+      current = !(value < current->key) ? current->right : current->left;
     }
     newNode->parent = previous;
 
-    if (previous == _nill)
+    if (previous == base._nill)
       _root = newNode;
     else if (newNode->key < previous->key)
       previous->left = newNode;
     else
       previous->right = newNode;
-    newNode->left = _nill;
-    newNode->right = _nill;
+    newNode->left = base._nill;
+    newNode->right = base._nill;
+
     insertFixup(newNode);
   }
-
-  // bool search(int const &key) const
-  // {
-  //   pointer current = _root;
-  //
-  //   while (current != _nill && current->key != key)
-  //     current = key > current->key ? current->right : current->left;
-  //   return current != _nill;
-  // }
 
   void deleteKey(int const &key)
   {
@@ -82,39 +191,24 @@ public:
     delete toDelete;
   }
 
+  iterator begin() { return iterator(Node::minimum(_root)); }
+  iterator end() { return iterator(base._nill); }
+
+  pointer const &getLeaf() const { return base._nill; }
   void printTree() const { printHelper(_root, "", true); }
 
 private:
 
-  /**
-   * Structure used as Node for the Red-Black Tree.
-  **/
-  struct Node
-  {
-    typedef Node* pointer;
-
-    pointer parent;
-    pointer left;
-    pointer right;
-    int const key;
-    unsigned int color:1;
-
-    Node(int const &_key, unsigned int const &color = red)
-      : parent(0), left(0), right(0), key(_key), color(color) {}
-  };
-
-  typedef Node::pointer pointer;
-
   // private attributes
-  pointer const _nill;
+  Node base;
   pointer _root;
 
   pointer search(int const &key)
   {
     pointer current = _root;
 
-    while (current != _nill && current->key != key)
-      current = key > current->key ? current->right : current->left;
+    while (current != base._nill && current->key != key)
+      current = !(key < current->key) ? current->right : current->left;
     return current;
   }
 
@@ -124,19 +218,19 @@ private:
     pointer sucessor = z;
     unsigned int original_color = sucessor->color;
 
-    if (z->left == _nill)
+    if (z->left == base._nill)
     {
       sucessorSubTree = z->right;
       transplant(z, z->right);
     }
-    else if (z->right == _nill)
+    else if (z->right == base._nill)
     {
       sucessorSubTree = z->left;
       transplant(z, z->left);
     }
     else
     {
-      sucessor = minimum(z->right);
+      sucessor = Node::minimum(z->right);
       original_color = sucessor->color;
       sucessorSubTree = sucessor->right;
       if (sucessor != z->right)
@@ -236,21 +330,13 @@ private:
 
   void transplant(pointer from, pointer to)
   {
-    if (from->parent == _nill)
+    if (from->parent == base._nill)
       _root = to;
     else if (from == from->parent->left)
       from->parent->left = to;
     else
       from->parent->right = to;
     to->parent = from->parent;
-  }
-
-  pointer minimum(pointer subTreeRoot)
-  {
-    while (subTreeRoot->left != _nill)
-      subTreeRoot = subTreeRoot->left;
-
-    return subTreeRoot;
   }
 
   void insertFixup(pointer z)
@@ -314,15 +400,17 @@ private:
 
     a->right = rightSubTree->left;
 
-    if (rightSubTree->left != _nill)
+    if (rightSubTree->left != base._nill)
       rightSubTree->left->parent = a;
 
     rightSubTree->parent = a->parent;
 
-    if (a->parent == _nill)
+    if (a->parent == base._nill)
       _root = rightSubTree;
+
     else if (a == a->parent->left)
       a->parent->left = rightSubTree;
+
     else
       a->parent->right = rightSubTree;
 
@@ -336,15 +424,17 @@ private:
 
     a->left = leftSubTree->right;
 
-    if (leftSubTree->right != _nill)
+    if (leftSubTree->right != base._nill)
       leftSubTree->right->parent = a;
 
     leftSubTree->parent = a->parent;
 
-    if (a->parent == _nill)
+    if (a->parent == base._nill)
       _root = leftSubTree;
+
     else if (a->parent->left == a)
       a->parent->left = leftSubTree;
+
     else
       a->parent->right = leftSubTree;
 
@@ -354,7 +444,7 @@ private:
 
   void printHelper(pointer root, std::string indent, bool last) const
   {
-    if (root != _nill)
+    if (root != base._nill)
     {
       std::cout << indent;
       if (last) {
@@ -376,9 +466,6 @@ private:
 
 }; // end of RBTree
 
-// Initialize RBTree's non-members atributes
-unsigned int const RBTree::red = 1ul;
-unsigned int const RBTree::black = 0ul;
 } // namespace end
 
 #endif // !RB_TREE_HPP
