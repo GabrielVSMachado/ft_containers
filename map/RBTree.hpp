@@ -15,6 +15,7 @@
 
 #include <memory>
 #include <iostream>
+#include "ReverseIterator.hpp"
 #include "iterator.hpp"
 
 namespace internals
@@ -49,11 +50,14 @@ struct Node
   {
     pointer ancestor;
 
+    if (current->left == 0 && current->right == 0)
+      return current->parent;
+
     if (current->left != current->_nill)
       return maximum(current->left);
 
     ancestor = current->parent;
-    while (ancestor != current->_nill && current == ancestor->right)
+    while (ancestor != current->_nill && current == ancestor->left)
     {
       current = ancestor;
       ancestor = ancestor->parent;
@@ -100,7 +104,9 @@ protected:
 public:
 
   RBTreeIterator() : current(0) {}
-  explicit RBTreeIterator(pointer const &current) : current(current) {}
+  RBTreeIterator(pointer const &current) : current(current) {}
+
+  Node * const &base() const { return current; }
 
   reference operator*() { return *current; }
   pointer operator->() { return current; }
@@ -143,6 +149,7 @@ class RBTree
 public:
   typedef Node::pointer pointer;
   typedef RBTreeIterator iterator;
+  typedef ft::reverse_iterator<iterator> reverse_iterator;
 
   RBTree() : base(0, &base, black), _root(base._nill) {}
   ~RBTree()
@@ -180,6 +187,7 @@ public:
     newNode->right = base._nill;
 
     insertFixup(newNode);
+    base.parent = Node::maximum(_root);
   }
 
   void deleteKey(int const &key)
@@ -188,13 +196,16 @@ public:
 
     toDelete = search(key);
     _delete(toDelete);
+    if (_root != base._nill)
+      base.parent = Node::maximum(_root);
     delete toDelete;
   }
 
-  iterator begin() { return iterator(Node::minimum(_root)); }
-  iterator end() { return iterator(base._nill); }
+  iterator begin() { return Node::minimum(_root); }
+  iterator end() { return &base; }
+  reverse_iterator rbegin() { return reverse_iterator(end()); }
+  reverse_iterator rend() { return reverse_iterator(begin()); }
 
-  pointer const &getLeaf() const { return base._nill; }
   void printTree() const { printHelper(_root, "", true); }
 
 private:

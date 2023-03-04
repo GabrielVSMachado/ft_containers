@@ -32,6 +32,72 @@ TEST_SUITE("iterator")
   }
 }
 
+TEST_SUITE("reverse_iterator")
+{
+  TEST_CASE("rbegin_eq_the_maximun_value_in_the_tree")
+  {
+    internals::RBTree myRBT;
+
+    myRBT.insert(4);
+    myRBT.insert(3);
+    myRBT.insert(6);
+    myRBT.insert(1);
+    CHECK_EQ(myRBT.rbegin()->key, 6);
+  }
+
+  TEST_CASE("expected_the_lower_value_in_the_tree")
+  {
+    internals::RBTree myRBT;
+    internals::RBTree::reverse_iterator result;
+
+    myRBT.insert(4);
+    myRBT.insert(3);
+    myRBT.insert(6);
+    myRBT.insert(1);
+    result = myRBT.rbegin();
+    ++result;
+    ++result;
+    ++result;
+    CHECK_EQ(result->key, 1);
+
+  }
+
+  TEST_CASE("expected_value_eq_to_3")
+  {
+    internals::RBTree myRBT;
+    internals::RBTree::reverse_iterator result;
+
+    myRBT.insert(4);
+    myRBT.insert(3);
+    myRBT.insert(6);
+    myRBT.insert(1);
+    result = myRBT.rbegin();
+    ++result;
+    ++result;
+    ++result;
+    --result;
+    CHECK_EQ(result->key, 3);
+  }
+
+  TEST_CASE("expected_value_eq_to_6_after_delete_another_key")
+  {
+    internals::RBTree myRBT;
+    internals::RBTree::reverse_iterator result;
+
+    myRBT.insert(4);
+    myRBT.insert(7);
+    myRBT.insert(3);
+    myRBT.insert(6);
+    myRBT.insert(1);
+    result = myRBT.rbegin();
+    ++result;
+    ++result;
+    myRBT.deleteKey(4);
+    --result;
+    CHECK_EQ(result->key, 6);
+  }
+}
+
 // TEST_SUITE("insert")
 // {
 //   TEST_CASE("search_for_existents_elements")
