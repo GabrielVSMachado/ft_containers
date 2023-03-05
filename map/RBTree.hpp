@@ -13,6 +13,8 @@
 #ifndef RBTREE_HPP
 #define RBTREE_HPP
 
+#include <cstddef>
+#include <iterator>
 #include <memory>
 #include <iostream>
 #include "ReverseIterator.hpp"
@@ -65,6 +67,11 @@ struct Node
     return ancestor;
   }
 
+  static const_pointer getAncestor(const_pointer current)
+  {
+    return Node::getAncestor(const_cast<pointer>(current));
+  }
+
   static pointer getSuccessor(pointer ancestor)
   {
     pointer successor;
@@ -79,6 +86,11 @@ struct Node
       successor = successor->parent;
     }
     return successor;
+  }
+
+  static const_pointer getSuccessor(const_pointer ancestor)
+  {
+    return Node::getSuccessor(const_cast<pointer>(ancestor));
   }
 
   static pointer maximum(pointer current)
@@ -96,17 +108,19 @@ struct Node
   }
 };
 
-class RBTreeIterator : public ft::iterator<std::bidirectional_iterator_tag, Node>
+struct RBTreeIterator
 {
-protected:
-  pointer current;
 
-public:
+  typedef std::bidirectional_iterator_tag iterator_category;
+  typedef Node value_type;
+  typedef Node::pointer pointer;
+  typedef Node & reference;
+  typedef std::ptrdiff_t difference_type;
+
+  pointer current;
 
   RBTreeIterator() : current(0) {}
   RBTreeIterator(pointer const &current) : current(current) {}
-
-  Node * const &base() const { return current; }
 
   reference operator*() { return *current; }
   pointer operator->() { return current; }
@@ -137,19 +151,84 @@ public:
     return prev;
   }
 
-  bool operator==(RBTreeIterator const &other) { return current == other.current; }
-  bool operator!=(RBTreeIterator const &other) { return !(*this == other); }
-
+  bool operator==(RBTreeIterator const &other) const
+  {
+    return current == other.current;
+  }
+  bool operator!=(RBTreeIterator const &other) const { return !(*this == other); }
 }; // end of RBTreeIterator
 
+
+struct RBTreeConstIterator
+{
+  typedef Node value_type;
+  typedef Node const & reference;
+  typedef Node const * pointer;
+  typedef std::ptrdiff_t difference_type;
+  typedef std::bidirectional_iterator_tag iterator_category;
+
+  pointer current;
+
+  RBTreeConstIterator() : current(0) {}
+  RBTreeConstIterator(pointer const &__new) : current(__new) {}
+
+  reference operator*() { return *current; }
+  pointer operator->() { return current; }
+
+  RBTreeConstIterator &operator++()
+  {
+    current = Node::getSuccessor(current);
+    return  *this;
+  }
+
+  RBTreeConstIterator operator++(int)
+  {
+    RBTreeConstIterator oldValue = *this;
+    operator++();
+    return oldValue;
+  }
+
+  RBTreeConstIterator &operator--()
+  {
+    current = Node::getAncestor(current);
+    return *this;
+  }
+
+  RBTreeConstIterator operator--(int)
+  {
+    RBTreeConstIterator oldValue = *this;
+    operator--();
+    return oldValue;
+  }
+
+  bool operator==(RBTreeConstIterator const &other) const
+  {
+    return other.current == current;
+  }
+
+  bool operator!=(RBTreeConstIterator const &other) const { return !(*this == other); }
+};
+
+bool operator==(RBTreeIterator const &lhs, RBTreeConstIterator const &rhs)
+{
+  return lhs.current == rhs.current;
+}
+
+bool operator!=(RBTreeIterator const &lhs, RBTreeConstIterator const &rhs)
+{
+  return !(lhs == rhs);
+}
 
 class RBTree
 {
 
 public:
   typedef Node::pointer pointer;
+  typedef int value_type;
   typedef RBTreeIterator iterator;
+  typedef RBTreeConstIterator const_iterator;
   typedef ft::reverse_iterator<iterator> reverse_iterator;
+  typedef ft::reverse_iterator<const_iterator> const_reverse_iterator;
 
   RBTree() : base(0, &base, black), _root(base._nill) {}
   ~RBTree()
@@ -164,7 +243,7 @@ public:
    * @value: value which has the same type of the Node's key variable;
    *
   **/
-  void insert(int const &value)
+  void insert(value_type const &value)
   {
     pointer current = _root;
     pointer previous = base._nill;
@@ -190,7 +269,7 @@ public:
     base.parent = Node::maximum(_root);
   }
 
-  void deleteKey(int const &key)
+  void deleteKey(value_type const &key)
   {
     pointer toDelete;
 
@@ -206,6 +285,11 @@ public:
   reverse_iterator rbegin() { return reverse_iterator(end()); }
   reverse_iterator rend() { return reverse_iterator(begin()); }
 
+  const_iterator begin() const { return Node::minimum(_root); }
+  const_iterator end() const { return &base; }
+  const_reverse_iterator rbegin() const { return const_reverse_iterator(end()); }
+  const_reverse_iterator rend() const { return const_reverse_iterator(begin()); }
+
   void printTree() const { printHelper(_root, "", true); }
 
 private:
@@ -214,7 +298,7 @@ private:
   Node base;
   pointer _root;
 
-  pointer search(int const &key)
+  pointer search(value_type const &key)
   {
     pointer current = _root;
 

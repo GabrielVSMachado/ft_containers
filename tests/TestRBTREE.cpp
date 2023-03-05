@@ -28,7 +28,23 @@ TEST_SUITE("iterator")
     ++result;
     ++result;
     CHECK_EQ(result->key, 6);
+  }
 
+  TEST_CASE("expected_value_eq_to_1_after_delete_the_key_4")
+  {
+    internals::RBTree myRBT;
+    internals::RBTree::iterator result;
+
+    myRBT.insert(4);
+    myRBT.insert(3);
+    myRBT.insert(7);
+    myRBT.insert(6);
+    myRBT.insert(1);
+    result = myRBT.begin();
+    ++result;
+    myRBT.deleteKey(4);
+    --result;
+    CHECK_EQ(result->key, 1);
   }
 }
 
