@@ -17,6 +17,7 @@
 #include <iterator>
 #include <memory>
 #include <iostream>
+#include "utility.hpp"
 #include "ReverseIterator.hpp"
 #include "iterator.hpp"
 
@@ -33,6 +34,7 @@ enum RBTreeColor
 /**
  * Structure used as Node for the Red-Black Tree.
 **/
+template<typename T>
 struct Node
 {
   typedef Node* pointer;
@@ -41,11 +43,11 @@ struct Node
   pointer parent;
   pointer left;
   pointer right;
-  int key;
+  T key;
   RBTreeColor color;
   pointer const _nill;
 
-  Node(int const &_key, pointer const &leaf, RBTreeColor color = red)
+  Node(T const &_key, pointer const &leaf, RBTreeColor color = red)
     : parent(0), left(0), right(0), key(_key), color(color), _nill(leaf) {}
 
   static pointer getAncestor(pointer current)
@@ -69,7 +71,7 @@ struct Node
 
   static const_pointer getAncestor(const_pointer current)
   {
-    return Node::getAncestor(const_cast<pointer>(current));
+    return getAncestor(const_cast<pointer>(current));
   }
 
   static pointer getSuccessor(pointer ancestor)
@@ -90,7 +92,7 @@ struct Node
 
   static const_pointer getSuccessor(const_pointer ancestor)
   {
-    return Node::getSuccessor(const_cast<pointer>(ancestor));
+    return getSuccessor(const_cast<pointer>(ancestor));
   }
 
   static pointer maximum(pointer current)
@@ -108,26 +110,29 @@ struct Node
   }
 };
 
+template<typename T>
 struct RBTreeIterator
 {
 
   typedef std::bidirectional_iterator_tag iterator_category;
-  typedef Node value_type;
-  typedef Node::pointer pointer;
-  typedef Node & reference;
+  typedef T value_type;
+  typedef T* pointer;
+  typedef T& reference;
   typedef std::ptrdiff_t difference_type;
 
-  pointer current;
+  typedef typename Node<T>::pointer nodePointer;
+
+  nodePointer current;
 
   RBTreeIterator() : current(0) {}
-  RBTreeIterator(pointer const &current) : current(current) {}
+  RBTreeIterator(nodePointer const &current) : current(current) {}
 
-  reference operator*() { return *current; }
-  pointer operator->() { return current; }
+  reference operator*() { return current->key; }
+  pointer operator->() { return &current->key; }
 
   RBTreeIterator& operator++()
   {
-    current = Node::getSuccessor(current);
+    current = Node<T>::getSuccessor(current);
     return *this;
   }
 
@@ -140,7 +145,7 @@ struct RBTreeIterator
 
   RBTreeIterator& operator--()
   {
-    current = Node::getAncestor(current);
+    current = Node<T>::getAncestor(current);
     return *this;
   }
 
@@ -155,29 +160,36 @@ struct RBTreeIterator
   {
     return current == other.current;
   }
-  bool operator!=(RBTreeIterator const &other) const { return !(*this == other); }
+
+  bool operator!=(RBTreeIterator const &other) const
+  {
+    return !(*this == other);
+  }
 }; // end of RBTreeIterator
 
 
+template<typename T>
 struct RBTreeConstIterator
 {
-  typedef Node value_type;
-  typedef Node const & reference;
-  typedef Node const * pointer;
+  typedef T value_type;
+  typedef T const & reference;
+  typedef T const * pointer;
   typedef std::ptrdiff_t difference_type;
   typedef std::bidirectional_iterator_tag iterator_category;
 
-  pointer current;
+  typedef typename Node<T>::pointer nodePointer;
+
+  nodePointer current;
 
   RBTreeConstIterator() : current(0) {}
-  RBTreeConstIterator(pointer const &__new) : current(__new) {}
+  RBTreeConstIterator(nodePointer const &__new) : current(__new) {}
 
-  reference operator*() { return *current; }
-  pointer operator->() { return current; }
+  reference operator*() const { return current->key; }
+  pointer operator->() const { return &current->key; }
 
   RBTreeConstIterator &operator++()
   {
-    current = Node::getSuccessor(current);
+    current = Node<T>::getSuccessor(current);
     return  *this;
   }
 
@@ -190,7 +202,7 @@ struct RBTreeConstIterator
 
   RBTreeConstIterator &operator--()
   {
-    current = Node::getAncestor(current);
+    current = Node<T>::getAncestor(current);
     return *this;
   }
 
@@ -206,35 +218,66 @@ struct RBTreeConstIterator
     return other.current == current;
   }
 
-  bool operator!=(RBTreeConstIterator const &other) const { return !(*this == other); }
+  bool operator!=(RBTreeConstIterator const &other) const
+  {
+    return !(*this == other);
+  }
 };
 
-bool operator==(RBTreeIterator const &lhs, RBTreeConstIterator const &rhs)
+template<typename T>
+bool operator==(RBTreeIterator<T> const &lhs, RBTreeConstIterator<T> const &rhs)
 {
   return lhs.current == rhs.current;
 }
 
-bool operator!=(RBTreeIterator const &lhs, RBTreeConstIterator const &rhs)
+template<typename T>
+bool operator!=(RBTreeIterator<T> const &lhs, RBTreeConstIterator<T> const &rhs)
 {
   return !(lhs == rhs);
 }
 
+template<
+  class Key,
+  class T,
+  class Compare = std::less<Key>,
+  class Alloc = std::allocator<ft::pair<Key const, T> >
+>
 class RBTree
 {
 
 public:
-  typedef Node::pointer pointer;
-  typedef int value_type;
-  typedef RBTreeIterator iterator;
-  typedef RBTreeConstIterator const_iterator;
-  typedef ft::reverse_iterator<iterator> reverse_iterator;
-  typedef ft::reverse_iterator<const_iterator> const_reverse_iterator;
+  typedef ft::pair<Key const, T>                  value_type;
+  typedef value_type &                            reference;
+  typedef value_type const &                      const_reference;
+  typedef Key                                     key_type;
+  typedef Compare                                 key_compare;
+  typedef T                                       mapped_type;
+  typedef size_t                                  size_type;
+  typedef ptrdiff_t                               difference_type;
 
-  RBTree() : base(0, &base, black), _root(base._nill) {}
+  typedef Alloc                                   allocator_type;
+  typedef typename Alloc::pointer                 pointer;
+  typedef typename Alloc::const_pointer           const_pointer;
+
+  typedef RBTreeIterator<value_type>              iterator;
+  typedef RBTreeConstIterator<value_type const>   const_iterator;
+  typedef ft::reverse_iterator<iterator>          reverse_iterator;
+  typedef ft::reverse_iterator<const_iterator>    const_reverse_iterator;
+
+private:
+  typedef Node<value_type>                        node_type;
+  typedef typename node_type::pointer             nodePointer;
+
+  node_type base;
+  nodePointer _root;
+
+public:
+
+  RBTree() : base(ft::make_pair(0, 0), &base, black), _root(base._nill) {}
   ~RBTree()
   {
     while (_root != base._nill)
-      deleteKey(_root->key);
+      deleteKey(_root->key.first);
   }
 
   /**
@@ -245,14 +288,17 @@ public:
   **/
   void insert(value_type const &value)
   {
-    pointer current = _root;
-    pointer previous = base._nill;
-    pointer newNode = new Node(value, &base);
+    nodePointer current = _root;
+    nodePointer previous = base._nill;
+    nodePointer newNode = new node_type(value, &base);
 
     while (current != base._nill)
     {
       previous = current;
-      current = !(value < current->key) ? current->right : current->left;
+      if (value.second < current->key.second)
+        current = current->left;
+      else
+        current = current->right;
     }
     newNode->parent = previous;
 
@@ -266,51 +312,59 @@ public:
     newNode->right = base._nill;
 
     insertFixup(newNode);
-    base.parent = Node::maximum(_root);
+    base.parent = node_type::maximum(_root);
   }
 
-  void deleteKey(value_type const &key)
+  void deleteKey(key_type const &key)
   {
-    pointer toDelete;
+    nodePointer toDelete;
 
     toDelete = search(key);
     _delete(toDelete);
     if (_root != base._nill)
-      base.parent = Node::maximum(_root);
+      base.parent = node_type::maximum(_root);
     delete toDelete;
   }
 
-  iterator begin() { return Node::minimum(_root); }
+  iterator begin() { return node_type::minimum(_root); }
   iterator end() { return &base; }
   reverse_iterator rbegin() { return reverse_iterator(end()); }
   reverse_iterator rend() { return reverse_iterator(begin()); }
 
-  const_iterator begin() const { return Node::minimum(_root); }
+  const_iterator begin() const { return node_type::minimum(_root); }
   const_iterator end() const { return &base; }
-  const_reverse_iterator rbegin() const { return const_reverse_iterator(end()); }
-  const_reverse_iterator rend() const { return const_reverse_iterator(begin()); }
+
+  const_reverse_iterator rbegin() const
+  {
+    return const_reverse_iterator(end());
+  }
+
+  const_reverse_iterator rend() const
+  {
+    return const_reverse_iterator(begin());
+  }
 
   void printTree() const { printHelper(_root, "", true); }
 
 private:
 
   // private attributes
-  Node base;
-  pointer _root;
-
-  pointer search(value_type const &key)
+  nodePointer search(key_type const &key)
   {
-    pointer current = _root;
+    nodePointer current = _root;
 
-    while (current != base._nill && current->key != key)
-      current = !(key < current->key) ? current->right : current->left;
+    while (current != base._nill && current->key.first != key)
+      if (key_compare()(key, current->key.first))
+        current = current->left;
+      else
+        current = current->right;
     return current;
   }
 
-  void _delete(pointer z)
+  void _delete(nodePointer z)
   {
-    pointer sucessorSubTree;
-    pointer sucessor = z;
+    nodePointer sucessorSubTree;
+    nodePointer sucessor = z;
     unsigned int original_color = sucessor->color;
 
     if (z->left == base._nill)
@@ -325,7 +379,7 @@ private:
     }
     else
     {
-      sucessor = Node::minimum(z->right);
+      sucessor = node_type::minimum(z->right);
       original_color = sucessor->color;
       sucessorSubTree = sucessor->right;
       if (sucessor != z->right)
@@ -347,9 +401,9 @@ private:
       deleteFixup(sucessorSubTree);
   }
 
-  void deleteFixup(pointer x)
+  void deleteFixup(nodePointer x)
   {
-    pointer xSibling;
+    nodePointer xSibling;
 
     while (x != _root && x->color == black)
     {
@@ -423,7 +477,7 @@ private:
     x->color = black;
   }
 
-  void transplant(pointer from, pointer to)
+  void transplant(nodePointer from, nodePointer to)
   {
     if (from->parent == base._nill)
       _root = to;
@@ -434,9 +488,9 @@ private:
     to->parent = from->parent;
   }
 
-  void insertFixup(pointer z)
+  void insertFixup(nodePointer z)
   {
-    pointer uncle;
+    nodePointer uncle;
 
     while (z->parent->color == red)
     {
@@ -489,9 +543,9 @@ private:
   }
 
 
-  void leftRotate(pointer a)
+  void leftRotate(nodePointer a)
   {
-    pointer const rightSubTree = a->right;
+    nodePointer const rightSubTree = a->right;
 
     a->right = rightSubTree->left;
 
@@ -513,9 +567,9 @@ private:
     a->parent = rightSubTree;
   }
 
-  void rightRotate(pointer a)
+  void rightRotate(nodePointer a)
   {
-    pointer const leftSubTree = a->left;
+    nodePointer const leftSubTree = a->left;
 
     a->left = leftSubTree->right;
 
@@ -537,7 +591,7 @@ private:
     leftSubTree->right = a;
   }
 
-  void printHelper(pointer root, std::string indent, bool last) const
+  void printHelper(nodePointer root, std::string indent, bool last) const
   {
     if (root != base._nill)
     {

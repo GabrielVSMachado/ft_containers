@@ -26,15 +26,11 @@ namespace ft
 
       pair() {}
 
-      pair(first_type const &f, second_type const &s) {
-        first = f;
-        second = s;
-      }
+      pair(first_type const &f, second_type const &s) : first(f), second(s) {}
 
       template<typename U1, typename U2>
-        pair(ft::pair<U1, U2> const &other) {
-          *this = other;
-        }
+        pair(ft::pair<U1, U2> const &other)
+        : first(other.first), second(other.second) {}
 
       pair<T1, T2>& operator=(pair<T1, T2> const &other) {
         first = other.first;

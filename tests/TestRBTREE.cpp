@@ -1,50 +1,51 @@
 #include "doctest.h"
 #include "RBTree.hpp"
+#include "utility.hpp"
 
 TEST_SUITE("iterator")
 {
   TEST_CASE("begin_eq_the_lower_value_in_the_tree")
   {
-    internals::RBTree myRBT;
+    internals::RBTree<int, int> myRBT;
 
-    myRBT.insert(4);
-    myRBT.insert(3);
-    myRBT.insert(6);
-    myRBT.insert(1);
-    CHECK_EQ(myRBT.begin()->key, 1);
+    myRBT.insert(ft::make_pair(1, 4));
+    myRBT.insert(ft::make_pair(2, 3));
+    myRBT.insert(ft::make_pair(3, 6));
+    myRBT.insert(ft::make_pair(4, 1));
+    CHECK_EQ(myRBT.begin()->second, 1);
   }
 
   TEST_CASE("expected_value_eq_the_third_element")
   {
-    internals::RBTree myRBT;
-    internals::RBTree::iterator result;
+    internals::RBTree<int, int> myRBT;
+    internals::RBTree<int, int>::iterator result;
 
-    myRBT.insert(4);
-    myRBT.insert(3);
-    myRBT.insert(6);
-    myRBT.insert(1);
+    myRBT.insert(ft::make_pair(1, 4));
+    myRBT.insert(ft::make_pair(2, 3));
+    myRBT.insert(ft::make_pair(3, 6));
+    myRBT.insert(ft::make_pair(4, 1));
     result = myRBT.begin();
     ++result;
     ++result;
     ++result;
-    CHECK_EQ(result->key, 6);
+    CHECK_EQ(result->second, 6);
   }
 
   TEST_CASE("expected_value_eq_to_1_after_delete_the_key_4")
   {
-    internals::RBTree myRBT;
-    internals::RBTree::iterator result;
+    internals::RBTree<int, int> myRBT;
+    internals::RBTree<int, int>::iterator result;
 
-    myRBT.insert(4);
-    myRBT.insert(3);
-    myRBT.insert(7);
-    myRBT.insert(6);
-    myRBT.insert(1);
+    myRBT.insert(ft::make_pair(1, 4));
+    myRBT.insert(ft::make_pair(2, 3));
+    myRBT.insert(ft::make_pair(3, 7));
+    myRBT.insert(ft::make_pair(4, 6));
+    myRBT.insert(ft::make_pair(5, 1));
     result = myRBT.begin();
     ++result;
-    myRBT.deleteKey(4);
+    myRBT.deleteKey(1);
     --result;
-    CHECK_EQ(result->key, 1);
+    CHECK_EQ(result->second, 1);
   }
 }
 
@@ -52,93 +53,65 @@ TEST_SUITE("reverse_iterator")
 {
   TEST_CASE("rbegin_eq_the_maximun_value_in_the_tree")
   {
-    internals::RBTree myRBT;
+    internals::RBTree<int, int> myRBT;
 
-    myRBT.insert(4);
-    myRBT.insert(3);
-    myRBT.insert(6);
-    myRBT.insert(1);
-    CHECK_EQ(myRBT.rbegin()->key, 6);
+    myRBT.insert(ft::make_pair(1, 4));
+    myRBT.insert(ft::make_pair(2, 3));
+    myRBT.insert(ft::make_pair(3, 6));
+    myRBT.insert(ft::make_pair(4, 1));
+    CHECK_EQ(myRBT.rbegin()->second, 6);
   }
 
   TEST_CASE("expected_the_lower_value_in_the_tree")
   {
-    internals::RBTree myRBT;
-    internals::RBTree::reverse_iterator result;
+    internals::RBTree<int, int> myRBT;
+    internals::RBTree<int, int>::reverse_iterator result;
 
-    myRBT.insert(4);
-    myRBT.insert(3);
-    myRBT.insert(6);
-    myRBT.insert(1);
+    myRBT.insert(ft::make_pair(1, 4));
+    myRBT.insert(ft::make_pair(2, 3));
+    myRBT.insert(ft::make_pair(3, 6));
+    myRBT.insert(ft::make_pair(4, 1));
     result = myRBT.rbegin();
     ++result;
     ++result;
     ++result;
-    CHECK_EQ(result->key, 1);
+    CHECK_EQ(result->second, 1);
 
   }
 
   TEST_CASE("expected_value_eq_to_3")
   {
-    internals::RBTree myRBT;
-    internals::RBTree::reverse_iterator result;
+    internals::RBTree<int, int> myRBT;
+    internals::RBTree<int, int>::reverse_iterator result;
 
-    myRBT.insert(4);
-    myRBT.insert(3);
-    myRBT.insert(6);
-    myRBT.insert(1);
+    myRBT.insert(ft::make_pair(1, 4));
+    myRBT.insert(ft::make_pair(2, 3));
+    myRBT.insert(ft::make_pair(3, 6));
+    myRBT.insert(ft::make_pair(4, 1));
     result = myRBT.rbegin();
     ++result;
     ++result;
     ++result;
     --result;
-    CHECK_EQ(result->key, 3);
+    CHECK_EQ(result->second, 3);
   }
 
   TEST_CASE("expected_value_eq_to_6_after_delete_another_key")
   {
-    internals::RBTree myRBT;
-    internals::RBTree::reverse_iterator result;
+    internals::RBTree<int, int> myRBT;
+    internals::RBTree<int, int>::reverse_iterator result;
 
-    myRBT.insert(4);
-    myRBT.insert(7);
-    myRBT.insert(3);
-    myRBT.insert(6);
-    myRBT.insert(1);
+    myRBT.insert(ft::make_pair(1, 4));
+    myRBT.insert(ft::make_pair(2, 7));
+    myRBT.insert(ft::make_pair(3, 3));
+    myRBT.insert(ft::make_pair(4, 6));
+    myRBT.insert(ft::make_pair(5, 1));
     result = myRBT.rbegin();
     ++result;
     ++result;
-    myRBT.deleteKey(4);
+    myRBT.deleteKey(1);
     --result;
-    CHECK_EQ(result->key, 6);
+    CHECK_EQ(result->second, 6);
   }
 }
 
-// TEST_SUITE("insert")
-// {
-//   TEST_CASE("search_for_existents_elements")
-//   {
-//     internals::RBTree myRBT;
-//     bool result;
-//
-//     myRBT.insert(4);
-//     myRBT.insert(5);
-//     myRBT.insert(3);
-//     myRBT.insert(1);
-//     result = myRBT.search(3) && myRBT.search(1) && myRBT.search(5) && myRBT.search(4);
-//     CHECK(result);
-//   }
-//
-//   TEST_CASE("search_for_inexistent_element")
-//   {
-//     internals::RBTree myRBT;
-//     bool result;
-//
-//     myRBT.insert(41);
-//     myRBT.insert(43);
-//     myRBT.insert(40);
-//     myRBT.insert(45);
-//     result = myRBT.search(42);
-//     CHECK_FALSE(result);
-//   }
-// }
