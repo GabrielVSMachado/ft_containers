@@ -111,9 +111,10 @@ struct Node
 };
 
 template<typename T>
-struct RBTreeIterator
+class RBTreeIterator
 {
 
+public:
   typedef std::bidirectional_iterator_tag iterator_category;
   typedef T value_type;
   typedef T* pointer;
@@ -122,7 +123,10 @@ struct RBTreeIterator
 
   typedef typename Node<T>::pointer nodePointer;
 
+protected:
   nodePointer current;
+
+public:
 
   RBTreeIterator() : current(0) {}
   RBTreeIterator(nodePointer const &current) : current(current) {}
@@ -169,8 +173,11 @@ struct RBTreeIterator
 
 
 template<typename T>
-struct RBTreeConstIterator
+class RBTreeConstIterator
 {
+
+public:
+
   typedef T value_type;
   typedef T const & reference;
   typedef T const * pointer;
@@ -179,7 +186,10 @@ struct RBTreeConstIterator
 
   typedef typename Node<T>::pointer nodePointer;
 
-  nodePointer current;
+protected:
+    nodePointer current;
+
+public:
 
   RBTreeConstIterator() : current(0) {}
   RBTreeConstIterator(nodePointer const &__new) : current(__new) {}
@@ -270,10 +280,13 @@ private:
 
   node_type base;
   nodePointer _root;
+  key_compare fnCompare;
 
 public:
 
-  RBTree() : base(ft::make_pair(0, 0), &base, black), _root(base._nill) {}
+  RBTree()
+    : base(ft::make_pair(key_type(), mapped_type()), &base, black), _root(base._nill) {}
+
   ~RBTree()
   {
     while (_root != base._nill)
@@ -295,7 +308,7 @@ public:
     while (current != base._nill)
     {
       previous = current;
-      if (value.second < current->key.second)
+      if (fnCompare(value.first, current->key.first))
         current = current->left;
       else
         current = current->right;
@@ -304,7 +317,7 @@ public:
 
     if (previous == base._nill)
       _root = newNode;
-    else if (newNode->key < previous->key)
+    else if (fnCompare(newNode->key.first, previous->key.first))
       previous->left = newNode;
     else
       previous->right = newNode;
@@ -344,6 +357,7 @@ public:
     return const_reverse_iterator(begin());
   }
 
+  nodePointer const &getRoot() const { return _root; }
   void printTree() const { printHelper(_root, "", true); }
 
 private:
@@ -354,7 +368,7 @@ private:
     nodePointer current = _root;
 
     while (current != base._nill && current->key.first != key)
-      if (key_compare()(key, current->key.first))
+      if (fnCompare(key, current->key.first))
         current = current->left;
       else
         current = current->right;
@@ -607,7 +621,7 @@ private:
       char const r[] = "\x1b[31mRed\033[0m";
       char const b[] = "\x1b[34mBlack\033[0m";
       std::string color = root->color ? r : b;
-      std::cout << root->key << "(" << color << ")" << std::endl;
+      std::cout << root->key.second << "(" << color << ")" << std::endl;
       printHelper(root->left, indent, false);
       printHelper(root->right, indent, true);
     }
