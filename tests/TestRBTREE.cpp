@@ -1,6 +1,7 @@
 #include "doctest.h"
 #include "RBTree.hpp"
 #include "utility.hpp"
+#include <string>
 #include <vector>
 
 TEST_SUITE("iterator")
@@ -76,5 +77,33 @@ TEST_SUITE("insert_value_type_as_only_parameter")
     result.push_back((++i)->second);
     result.push_back((++i)->second);
     CHECK(result == expected);
+  }
+}
+
+TEST_SUITE("operator[]")
+{
+  TEST_CASE("search_for_existent_key_expected_it_reference")
+  {
+    internals::RBTree<std::string, std::string> myRBT;
+
+    myRBT.insert(ft::make_pair("42", "42"));
+    myRBT.insert(ft::make_pair("43", "42s"));
+    myRBT.insert(ft::make_pair("44", "42sp"));
+
+    std::string const &result = myRBT["44"];
+
+    CHECK_EQ(result, "42sp");
+  }
+
+  TEST_CASE("search_for_inexistent_key_expected_default_construct_value_returned")
+  {
+    internals::RBTree<std::string, std::string> myRBT;
+
+    myRBT.insert(ft::make_pair("42", "42"));
+    myRBT.insert(ft::make_pair("43", "42s"));
+
+    std::string const &result = myRBT["44"];
+
+    CHECK_EQ(result, "");
   }
 }

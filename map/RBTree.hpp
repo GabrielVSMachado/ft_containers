@@ -293,6 +293,19 @@ public:
       deleteKey(_root->key.first);
   }
 
+  //Element Access
+  mapped_type& operator[](key_type const &__key)
+  {
+    nodePointer matchedKey;
+
+    matchedKey = _search(__key);
+
+    if (matchedKey == base._nill)
+      insert(ft::make_pair(__key, mapped_type()));
+
+    return _search(__key)->key.second;
+  }
+
   /**
    * Insert new Node with given value.
    *
@@ -332,7 +345,7 @@ public:
   {
     nodePointer toDelete;
 
-    toDelete = search(key);
+    toDelete = _search(key);
     _delete(toDelete);
     if (_root != base._nill)
       base.parent = node_type::maximum(_root);
@@ -363,7 +376,7 @@ public:
 private:
 
   // private attributes
-  nodePointer search(key_type const &key)
+  nodePointer _search(key_type const &key)
   {
     nodePointer current = _root;
 

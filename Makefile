@@ -32,8 +32,7 @@ $(TESTDIR)/%.o: $(TESTDIR)/%.cpp
 
 test: fclean $(TESTOBJS)
 	$(CXX) -std=c++98 -g3 $(INCLUDES) -I $(TESTDIR) $(TESTOBJS) -o $(TESTNAME)
-	# valgrind --leak-check=full --show-leak-kinds=all ./$(TESTNAME)
-	./$(TESTNAME)
+	valgrind --leak-check=full --show-leak-kinds=all ./$(TESTNAME)
 
 test_on_docker:
 	docker build -t ft_containers:latest .
