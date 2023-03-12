@@ -290,43 +290,20 @@ public:
   size_type size() const { return _count; }
 
   //modifiers
-  void insert(value_type const &value)
+  ft::pair<iterator, bool> insert_unique(value_type const &value)
   {
-    nodePointer current = _root;
-    nodePointer previous = _base.nill;
-    nodePointer newNode = getAllocatorNodeType().allocate(1);
-    getAllocatorNodeType().construct(newNode, node_type(value, _base.nill));
+    iterator searchedKey = find(getKey(value));
 
-    while (current != _base.nill)
-    {
-      previous = current;
-      if (compareKeys(value, current->key))
-        current = current->left;
-      else
-        current = current->right;
-    }
-    newNode->parent = previous;
+    if (searchedKey != end())
+      return ft::make_pair(searchedKey, false);
 
-    if (previous == _base.nill)
-      _root = newNode;
-    else if (compareKeys(newNode->key, previous->key))
-      previous->left = newNode;
-    else
-      previous->right = newNode;
-    newNode->left = _base.nill;
-    newNode->right = _base.nill;
-
-    insertFixup(newNode);
-    _base.parent = node_type::maximum(_root);
-    ++_count;
+    return ft::make_pair(_insert(value), true);
   }
 
   void erase(key_type const &key)
   {
     iterator toDelete;
 
-    if (_root == _base.nill)
-      return;
     toDelete = find(key);
     if (toDelete != end())
     {
@@ -374,6 +351,44 @@ public:
   void printTree() const { printHelper(_root, "", true); }
 
 private:
+
+  iterator _insert(value_type const &value)
+  {
+    nodePointer current;
+    nodePointer previous;
+    nodePointer newNode;
+
+    current = _root;
+    previous = _base.nill;
+    newNode = getAllocatorNodeType().allocate(1);
+    getAllocatorNodeType().construct(newNode, node_type(value, _base.nill));
+
+    while (current != _base.nill)
+    {
+      previous = current;
+      if (compareKeys(value, current->key))
+        current = current->left;
+      else
+        current = current->right;
+    }
+
+    newNode->parent = previous;
+
+    if (previous == _base.nill)
+      _root = newNode;
+    else if (compareKeys(newNode->key, previous->key))
+      previous->left = newNode;
+    else
+      previous->right = newNode;
+    newNode->left = _base.nill;
+    newNode->right = _base.nill;
+
+    insertFixup(newNode);
+    _base.parent = node_type::maximum(_root);
+    ++_count;
+
+    return iterator(newNode);
+  }
 
   allocator_type getAllocatorValueType() const { return allocator_type(); }
   nodeAllocator getAllocatorNodeType() const { return nodeAllocator(); }
