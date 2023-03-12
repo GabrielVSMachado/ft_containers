@@ -24,7 +24,7 @@ namespace ft
       first_type first;
       second_type second;
 
-      pair() {}
+      pair() : first(first_type()), second(second_type()) {}
 
       pair(first_type const &f, second_type const &s) : first(f), second(s) {}
 

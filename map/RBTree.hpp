@@ -45,10 +45,10 @@ struct Node
   pointer right;
   T key;
   RBTreeColor color;
-  pointer const _nill;
+  pointer const nill;
 
   Node(T const &_key, pointer const &leaf, RBTreeColor color = red)
-    : parent(0), left(0), right(0), key(_key), color(color), _nill(leaf) {}
+    : parent(0), left(0), right(0), key(_key), color(color), nill(leaf) {}
 
   static pointer getAncestor(pointer current)
   {
@@ -57,11 +57,11 @@ struct Node
     if (current->left == 0 && current->right == 0)
       return current->parent;
 
-    if (current->left != current->_nill)
+    if (current->left != current->nill)
       return maximum(current->left);
 
     ancestor = current->parent;
-    while (ancestor != current->_nill && current == ancestor->left)
+    while (ancestor != current->nill && current == ancestor->left)
     {
       current = ancestor;
       ancestor = ancestor->parent;
@@ -78,11 +78,11 @@ struct Node
   {
     pointer successor;
 
-    if (ancestor->right != ancestor->_nill)
+    if (ancestor->right != ancestor->nill)
       return minimum(ancestor->right);
 
     successor = ancestor->parent;
-    while (successor != ancestor->_nill && successor->right == ancestor)
+    while (successor != ancestor->nill && successor->right == ancestor)
     {
       ancestor = successor;
       successor = successor->parent;
@@ -97,14 +97,14 @@ struct Node
 
   static pointer maximum(pointer current)
   {
-    while (current->right != current->_nill)
+    while (current->right != current->nill)
       current = current->right;
     return current;
   }
 
   static pointer minimum(pointer current)
   {
-    while (current->left != current->_nill)
+    while (current->left != current->nill)
       current = current->left;
     return current;
   }
@@ -260,6 +260,7 @@ public:
   typedef Alloc                                   allocator_type;
   typedef typename Alloc::pointer                 pointer;
   typedef typename Alloc::const_pointer           const_pointer;
+  typedef typename Alloc::template rebind<Node<T> >::other nodeAllocator;
 
   typedef RBTreeIterator<value_type>              iterator;
   typedef RBTreeConstIterator<value_type const>   const_iterator;
@@ -270,33 +271,33 @@ private:
   typedef Node<value_type>                        node_type;
   typedef typename node_type::pointer             nodePointer;
 
-  node_type base;
-  nodePointer _root;
-  size_type count;
-  key_compare fnCompare;
+  node_type      _base;
+  nodePointer    _root;
+  size_type      _count;
 
 public:
 
-  RBTree() : base(value_type(), &base, black), _root(base._nill), count(0) {}
+  RBTree() : _base(value_type(), &_base, black), _root(_base.nill), _count(0) {}
 
   ~RBTree()
   {
-    while (_root != base._nill)
+    while (_root != _base.nill)
       erase(getKey(_root->key));
   }
 
   //capacity
-  bool empty() const { return count == 0; }
-  size_type size() const { return count; }
+  bool empty() const { return _count == 0; }
+  size_type size() const { return _count; }
 
   //modifiers
   void insert(value_type const &value)
   {
     nodePointer current = _root;
-    nodePointer previous = base._nill;
-    nodePointer newNode = new node_type(value, &base);
+    nodePointer previous = _base.nill;
+    nodePointer newNode = getAllocatorNodeType().allocate(1);
+    getAllocatorNodeType().construct(newNode, node_type(value, _base.nill));
 
-    while (current != base._nill)
+    while (current != _base.nill)
     {
       previous = current;
       if (compareKeys(value, current->key))
@@ -306,43 +307,44 @@ public:
     }
     newNode->parent = previous;
 
-    if (previous == base._nill)
+    if (previous == _base.nill)
       _root = newNode;
     else if (compareKeys(newNode->key, previous->key))
       previous->left = newNode;
     else
       previous->right = newNode;
-    newNode->left = base._nill;
-    newNode->right = base._nill;
+    newNode->left = _base.nill;
+    newNode->right = _base.nill;
 
     insertFixup(newNode);
-    base.parent = node_type::maximum(_root);
-    ++count;
+    _base.parent = node_type::maximum(_root);
+    ++_count;
   }
 
   void erase(key_type const &key)
   {
     iterator toDelete;
 
-    if (_root == base._nill)
+    if (_root == _base.nill)
       return;
     toDelete = find(key);
     if (toDelete != end())
     {
       _delete(toDelete.current);
-      if (_root != base._nill)
-        base.parent = node_type::maximum(_root);
-      delete toDelete.current;
-      --count;
+      deleteNode(toDelete.current);
+      --_count;
+      if (_root != _base.nill)
+        _base.parent = node_type::maximum(_root);
     }
   }
 
   iterator find(key_type const &key)
   {
     nodePointer current = _root;
+    key_compare fnCompare;
 
-    while (current != base._nill && getKey(current->key) != key)
-      if (!fnCompare(key, getKey(current->key)))
+    while (current != _base.nill && getKey(current->key) != key)
+      if (fnCompare(key, getKey(current->key)))
         current = current->left;
       else
         current = current->right;
@@ -351,12 +353,12 @@ public:
 
 
   iterator begin() { return node_type::minimum(_root); }
-  iterator end() { return &base; }
+  iterator end() { return &_base; }
   reverse_iterator rbegin() { return reverse_iterator(end()); }
   reverse_iterator rend() { return reverse_iterator(begin()); }
 
   const_iterator begin() const { return node_type::minimum(_root); }
-  const_iterator end() const { return &base; }
+  const_iterator end() const { return &_base; }
 
   const_reverse_iterator rbegin() const
   {
@@ -373,6 +375,15 @@ public:
 
 private:
 
+  allocator_type getAllocatorValueType() const { return allocator_type(); }
+  nodeAllocator getAllocatorNodeType() const { return nodeAllocator(); }
+
+  void deleteNode(nodePointer toDelete)
+  {
+    getAllocatorValueType().destroy(&toDelete->key);
+    getAllocatorNodeType().deallocate(toDelete, 1);
+  }
+
   key_type const &getKey(value_type const &__key) const
   {
     return KeyOfValue()(__key);
@@ -380,7 +391,7 @@ private:
 
   bool compareKeys(value_type const &lhs, value_type const &rhs) const
   {
-    return fnCompare(getKey(lhs), getKey(rhs));
+    return key_compare()(getKey(lhs), getKey(rhs));
   }
 
   // private attributes
@@ -388,14 +399,14 @@ private:
   {
     nodePointer sucessorSubTree;
     nodePointer sucessor = z;
-    unsigned int original_color = sucessor->color;
+    RBTreeColor original_color = sucessor->color;
 
-    if (z->left == base._nill)
+    if (z->left == _base.nill)
     {
       sucessorSubTree = z->right;
       transplant(z, z->right);
     }
-    else if (z->right == base._nill)
+    else if (z->right == _base.nill)
     {
       sucessorSubTree = z->left;
       transplant(z, z->left);
@@ -502,7 +513,7 @@ private:
 
   void transplant(nodePointer from, nodePointer to)
   {
-    if (from->parent == base._nill)
+    if (from->parent == _base.nill)
       _root = to;
     else if (from == from->parent->left)
       from->parent->left = to;
@@ -572,12 +583,12 @@ private:
 
     a->right = rightSubTree->left;
 
-    if (rightSubTree->left != base._nill)
+    if (rightSubTree->left != _base.nill)
       rightSubTree->left->parent = a;
 
     rightSubTree->parent = a->parent;
 
-    if (a->parent == base._nill)
+    if (a->parent == _base.nill)
       _root = rightSubTree;
 
     else if (a == a->parent->left)
@@ -596,12 +607,12 @@ private:
 
     a->left = leftSubTree->right;
 
-    if (leftSubTree->right != base._nill)
+    if (leftSubTree->right != _base.nill)
       leftSubTree->right->parent = a;
 
     leftSubTree->parent = a->parent;
 
-    if (a->parent == base._nill)
+    if (a->parent == _base.nill)
       _root = leftSubTree;
 
     else if (a->parent->left == a)
@@ -616,7 +627,7 @@ private:
 
   void printHelper(nodePointer root, std::string indent, bool last) const
   {
-    if (root != base._nill)
+    if (root != _base.nill)
     {
       std::cout << indent;
       if (last) {
