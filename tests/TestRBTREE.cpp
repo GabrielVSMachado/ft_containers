@@ -20,10 +20,10 @@ TEST_SUITE("iterator")
   {
     myRBT my_rbt;
 
-    my_rbt.insert_unique(ft::make_pair(1, 4));
-    my_rbt.insert_unique(ft::make_pair(2, 3));
-    my_rbt.insert_unique(ft::make_pair(3, 6));
-    my_rbt.insert_unique(ft::make_pair(4, 1));
+    my_rbt.insert(ft::make_pair(1, 4));
+    my_rbt.insert(ft::make_pair(2, 3));
+    my_rbt.insert(ft::make_pair(3, 6));
+    my_rbt.insert(ft::make_pair(4, 1));
     CHECK_EQ(my_rbt.begin()->second, 4);
   }
 
@@ -32,10 +32,10 @@ TEST_SUITE("iterator")
     myRBT my_rbt;
     myRBT::iterator result;
 
-    my_rbt.insert_unique(ft::make_pair(1, 4));
-    my_rbt.insert_unique(ft::make_pair(2, 3));
-    my_rbt.insert_unique(ft::make_pair(3, 6));
-    my_rbt.insert_unique(ft::make_pair(4, 1));
+    my_rbt.insert(ft::make_pair(1, 4));
+    my_rbt.insert(ft::make_pair(2, 3));
+    my_rbt.insert(ft::make_pair(3, 6));
+    my_rbt.insert(ft::make_pair(4, 1));
     result = my_rbt.begin();
     ++result;
     ++result;
@@ -47,11 +47,11 @@ TEST_SUITE("iterator")
     myRBT my_rbt;
     myRBT::iterator result;
 
-    my_rbt.insert_unique(ft::make_pair(4, 4));
-    my_rbt.insert_unique(ft::make_pair(3, 3));
-    my_rbt.insert_unique(ft::make_pair(7, 7));
-    my_rbt.insert_unique(ft::make_pair(6, 6));
-    my_rbt.insert_unique(ft::make_pair(1, 1));
+    my_rbt.insert(ft::make_pair(4, 4));
+    my_rbt.insert(ft::make_pair(3, 3));
+    my_rbt.insert(ft::make_pair(7, 7));
+    my_rbt.insert(ft::make_pair(6, 6));
+    my_rbt.insert(ft::make_pair(1, 1));
     result = my_rbt.begin();
     ++result;
     ++result;
@@ -62,14 +62,14 @@ TEST_SUITE("iterator")
   }
 }
 
-TEST_SUITE("insert_unique")
+TEST_SUITE("insert_only_one_parameter")
 {
   TEST_CASE("expected_the_element_inserted")
   {
     mySRBT my_rbt;
     ft::pair<mySRBT::iterator, bool> result;
 
-    result = my_rbt.insert_unique(ft::make_pair("42", 42));
+    result = my_rbt.insert(ft::make_pair("42", 42));
     CHECK_EQ(result.second, true);
   }
 
@@ -78,8 +78,8 @@ TEST_SUITE("insert_unique")
     mySRBT my_rbt;
     ft::pair<mySRBT::iterator, bool> result;
 
-    my_rbt.insert_unique(ft::make_pair("42", 42));
-    result = my_rbt.insert_unique(ft::make_pair("42", 43));
+    my_rbt.insert(ft::make_pair("42", 42));
+    result = my_rbt.insert(ft::make_pair("42", 43));
     CHECK_EQ(result.second, false);
   }
 
@@ -93,10 +93,10 @@ TEST_SUITE("insert_unique")
     expected.push_back(11);
     expected.push_back(1097);
 
-    my_rbt.insert_unique(ft::make_pair(3, 11));
-    my_rbt.insert_unique(ft::make_pair(1, 21));
-    my_rbt.insert_unique(ft::make_pair(1, 32));
-    my_rbt.insert_unique(ft::make_pair(4, 1097));
+    my_rbt.insert(ft::make_pair(3, 11));
+    my_rbt.insert(ft::make_pair(1, 21));
+    my_rbt.insert(ft::make_pair(1, 32));
+    my_rbt.insert(ft::make_pair(4, 1097));
 
     myRBT::iterator i = my_rbt.begin();
 
@@ -105,4 +105,38 @@ TEST_SUITE("insert_unique")
     result.push_back((++i)->second);
     CHECK(result == expected);
   }
-};
+}
+
+TEST_SUITE("insert_hint_overloading")
+{
+  TEST_CASE("expected_insertion_in_the_indicated_position")
+  {
+    myRBT my_rbt;
+
+    my_rbt.insert(ft::make_pair(1, 42));
+    my_rbt.insert(ft::make_pair(3, 44));
+    my_rbt.insert(ft::make_pair(4, 45));
+    my_rbt.insert(ft::make_pair(5, 47));
+
+    myRBT::iterator position = my_rbt.begin();
+    ++position;
+    myRBT::iterator result = my_rbt.insert(position, ft::make_pair(2, 43));
+    CHECK_EQ(result->second, 43);
+  }
+
+  TEST_CASE("expected_not_insert_element")
+  {
+    myRBT my_rbt;
+
+    my_rbt.insert(ft::make_pair(1, 42));
+    my_rbt.insert(ft::make_pair(3, 44));
+    my_rbt.insert(ft::make_pair(4, 45));
+    my_rbt.insert(ft::make_pair(5, 47));
+
+    myRBT::iterator position = my_rbt.begin();
+    ++position;
+    ++position;
+    myRBT::iterator result = my_rbt.insert(position, ft::make_pair(3, 43));
+    CHECK_EQ(result->second, 44);
+  }
+}

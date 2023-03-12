@@ -129,7 +129,7 @@ struct RBTreeIterator
   RBTreeIterator(nodePointer const &current) : current(current) {}
 
   reference operator*() { return current->key; }
-  pointer operator->() { return &current->key; }
+  pointer operator->() { return &(operator*()); }
 
   RBTreeIterator& operator++()
   {
@@ -187,7 +187,7 @@ struct RBTreeConstIterator
   RBTreeConstIterator(nodePointer const &__new) : current(__new) {}
 
   reference operator*() const { return current->key; }
-  pointer operator->() const { return &current->key; }
+  pointer operator->() const { return &(operator*()); }
 
   RBTreeConstIterator &operator++()
   {
@@ -290,7 +290,7 @@ public:
   size_type size() const { return _count; }
 
   //modifiers
-  ft::pair<iterator, bool> insert_unique(value_type const &value)
+  ft::pair<iterator, bool> insert(value_type const &value)
   {
     iterator searchedKey = find(getKey(value));
 
@@ -298,6 +298,30 @@ public:
       return ft::make_pair(searchedKey, false);
 
     return ft::make_pair(_insert(value), true);
+  }
+
+  iterator insert(iterator position, value_type const &value)
+  {
+    iterator rightMost = node_type::maximum(_root);
+
+    if (position == end() || position == rightMost)
+    {
+      if (size() > 0 && compareKeys(*rightMost, value))
+        return _insert(0, rightMost.current, value);
+      return insert(value).first;
+    }
+
+    iterator after = position;
+    ++after;
+
+    if (compareKeys(*position, value) && compareKeys(value, *after))
+    {
+      if (position.current->right == _base.nill)
+        return _insert(0, position.current, value);
+      return _insert(after.current, after.current, value);
+    }
+
+    return insert(value).first;
   }
 
   void erase(key_type const &key)
@@ -352,16 +376,32 @@ public:
 
 private:
 
+  iterator _insert(nodePointer x, nodePointer parent, value_type const &value)
+  {
+    bool insertLeft = x != 0 && parent == &_base && compareKeys(parent->key, value);
+    nodePointer newNode = createNode(value);
+
+    newNode->parent = parent;
+    newNode->left = _base.nill;
+    newNode->right = _base.nill;
+
+    if (insertLeft)
+      parent->left = newNode;
+    else
+      parent->right = newNode;
+
+    insertFixup(newNode);
+    _base.parent = node_type::maximum(_root);
+    ++_count;
+
+    return iterator(newNode);
+  }
+
   iterator _insert(value_type const &value)
   {
-    nodePointer current;
-    nodePointer previous;
-    nodePointer newNode;
-
-    current = _root;
-    previous = _base.nill;
-    newNode = getAllocatorNodeType().allocate(1);
-    getAllocatorNodeType().construct(newNode, node_type(value, _base.nill));
+    nodePointer current = _root;
+    nodePointer previous = _base.nill;
+    nodePointer newNode = createNode(value);
 
     while (current != _base.nill)
     {
@@ -392,6 +432,13 @@ private:
 
   allocator_type getAllocatorValueType() const { return allocator_type(); }
   nodeAllocator getAllocatorNodeType() const { return nodeAllocator(); }
+
+  nodePointer createNode(value_type const &value)
+  {
+    nodePointer newNode = getAllocatorNodeType().allocate(1);
+    getAllocatorNodeType().construct(newNode, node_type(value, &_base));
+    return newNode;
+  }
 
   void deleteNode(nodePointer toDelete)
   {
