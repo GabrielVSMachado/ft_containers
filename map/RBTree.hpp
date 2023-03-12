@@ -111,10 +111,9 @@ struct Node
 };
 
 template<typename T>
-class RBTreeIterator
+struct RBTreeIterator
 {
 
-public:
   typedef std::bidirectional_iterator_tag iterator_category;
   typedef T value_type;
   typedef T* pointer;
@@ -123,10 +122,8 @@ public:
 
   typedef typename Node<T>::pointer nodePointer;
 
-protected:
   nodePointer current;
 
-public:
 
   RBTreeIterator() : current(0) {}
   RBTreeIterator(nodePointer const &current) : current(current) {}
@@ -173,10 +170,8 @@ public:
 
 
 template<typename T>
-class RBTreeConstIterator
+struct RBTreeConstIterator
 {
-
-public:
 
   typedef T value_type;
   typedef T const & reference;
@@ -186,10 +181,7 @@ public:
 
   typedef typename Node<T>::pointer nodePointer;
 
-protected:
-    nodePointer current;
-
-public:
+  nodePointer current;
 
   RBTreeConstIterator() : current(0) {}
   RBTreeConstIterator(nodePointer const &__new) : current(__new) {}
@@ -249,19 +241,19 @@ bool operator!=(RBTreeIterator<T> const &lhs, RBTreeConstIterator<T> const &rhs)
 template<
   class Key,
   class T,
+  class KeyOfValue,
   class Compare = std::less<Key>,
-  class Alloc = std::allocator<ft::pair<Key const, T> >
+  class Alloc = std::allocator<T>
 >
 class RBTree
 {
 
 public:
-  typedef ft::pair<Key const, T>                  value_type;
+  typedef T                                       value_type;
   typedef value_type &                            reference;
   typedef value_type const &                      const_reference;
   typedef Key                                     key_type;
   typedef Compare                                 key_compare;
-  typedef T                                       mapped_type;
   typedef size_t                                  size_type;
   typedef ptrdiff_t                               difference_type;
 
@@ -280,38 +272,24 @@ private:
 
   node_type base;
   nodePointer _root;
+  size_type count;
   key_compare fnCompare;
 
 public:
 
-  RBTree()
-    : base(ft::make_pair(key_type(), mapped_type()), &base, black), _root(base._nill) {}
+  RBTree() : base(value_type(), &base, black), _root(base._nill), count(0) {}
 
   ~RBTree()
   {
     while (_root != base._nill)
-      deleteKey(_root->key.first);
+      erase(getKey(_root->key));
   }
 
-  //Element Access
-  mapped_type& operator[](key_type const &__key)
-  {
-    nodePointer matchedKey;
+  //capacity
+  bool empty() const { return count == 0; }
+  size_type size() const { return count; }
 
-    matchedKey = _search(__key);
-
-    if (matchedKey == base._nill)
-      insert(ft::make_pair(__key, mapped_type()));
-
-    return _search(__key)->key.second;
-  }
-
-  /**
-   * Insert new Node with given value.
-   *
-   * @value: value which has the same type of the Node's key variable;
-   *
-  **/
+  //modifiers
   void insert(value_type const &value)
   {
     nodePointer current = _root;
@@ -321,7 +299,7 @@ public:
     while (current != base._nill)
     {
       previous = current;
-      if (fnCompare(value.first, current->key.first))
+      if (compareKeys(value, current->key))
         current = current->left;
       else
         current = current->right;
@@ -330,7 +308,7 @@ public:
 
     if (previous == base._nill)
       _root = newNode;
-    else if (fnCompare(newNode->key.first, previous->key.first))
+    else if (compareKeys(newNode->key, previous->key))
       previous->left = newNode;
     else
       previous->right = newNode;
@@ -339,18 +317,38 @@ public:
 
     insertFixup(newNode);
     base.parent = node_type::maximum(_root);
+    ++count;
   }
 
-  void deleteKey(key_type const &key)
+  void erase(key_type const &key)
   {
-    nodePointer toDelete;
+    iterator toDelete;
 
-    toDelete = _search(key);
-    _delete(toDelete);
-    if (_root != base._nill)
-      base.parent = node_type::maximum(_root);
-    delete toDelete;
+    if (_root == base._nill)
+      return;
+    toDelete = find(key);
+    if (toDelete != end())
+    {
+      _delete(toDelete.current);
+      if (_root != base._nill)
+        base.parent = node_type::maximum(_root);
+      delete toDelete.current;
+      --count;
+    }
   }
+
+  iterator find(key_type const &key)
+  {
+    nodePointer current = _root;
+
+    while (current != base._nill && getKey(current->key) != key)
+      if (!fnCompare(key, getKey(current->key)))
+        current = current->left;
+      else
+        current = current->right;
+    return current;
+  }
+
 
   iterator begin() { return node_type::minimum(_root); }
   iterator end() { return &base; }
@@ -375,19 +373,17 @@ public:
 
 private:
 
-  // private attributes
-  nodePointer _search(key_type const &key)
+  key_type const &getKey(value_type const &__key) const
   {
-    nodePointer current = _root;
-
-    while (current != base._nill && current->key.first != key)
-      if (fnCompare(key, current->key.first))
-        current = current->left;
-      else
-        current = current->right;
-    return current;
+    return KeyOfValue()(__key);
   }
 
+  bool compareKeys(value_type const &lhs, value_type const &rhs) const
+  {
+    return fnCompare(getKey(lhs), getKey(rhs));
+  }
+
+  // private attributes
   void _delete(nodePointer z)
   {
     nodePointer sucessorSubTree;

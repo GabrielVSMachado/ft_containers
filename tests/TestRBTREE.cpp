@@ -4,29 +4,37 @@
 #include <string>
 #include <vector>
 
+template<typename T>
+struct getFirst
+{
+  typename T::first_type const &operator()(T const &__value) const { return __value.first; }
+};
+
+typedef internals::RBTree<int, ft::pair<int, int>, getFirst<ft::pair<int, int> > > myRBT;
+
 TEST_SUITE("iterator")
 {
   TEST_CASE("begin_eq_the_lower_key_in_the_tree")
   {
-    internals::RBTree<int, int> myRBT;
+    myRBT my_rbt;
 
-    myRBT.insert(ft::make_pair(1, 4));
-    myRBT.insert(ft::make_pair(2, 3));
-    myRBT.insert(ft::make_pair(3, 6));
-    myRBT.insert(ft::make_pair(4, 1));
-    CHECK_EQ(myRBT.begin()->second, 4);
+    my_rbt.insert(ft::make_pair(1, 4));
+    my_rbt.insert(ft::make_pair(2, 3));
+    my_rbt.insert(ft::make_pair(3, 6));
+    my_rbt.insert(ft::make_pair(4, 1));
+    CHECK_EQ(my_rbt.begin()->second, 4);
   }
 
   TEST_CASE("expected_value_eq_the_third_element")
   {
-    internals::RBTree<int, int> myRBT;
-    internals::RBTree<int, int>::iterator result;
+    myRBT my_rbt;
+    myRBT::iterator result;
 
-    myRBT.insert(ft::make_pair(1, 4));
-    myRBT.insert(ft::make_pair(2, 3));
-    myRBT.insert(ft::make_pair(3, 6));
-    myRBT.insert(ft::make_pair(4, 1));
-    result = myRBT.begin();
+    my_rbt.insert(ft::make_pair(1, 4));
+    my_rbt.insert(ft::make_pair(2, 3));
+    my_rbt.insert(ft::make_pair(3, 6));
+    my_rbt.insert(ft::make_pair(4, 1));
+    result = my_rbt.begin();
     ++result;
     ++result;
     CHECK_EQ(result->second, 6);
@@ -34,19 +42,19 @@ TEST_SUITE("iterator")
 
   TEST_CASE("expected_value_eq_to_3_after_delete_the_key_4")
   {
-    internals::RBTree<int, int> myRBT;
-    internals::RBTree<int, int>::iterator result;
+    myRBT my_rbt;
+    myRBT::iterator result;
 
-    myRBT.insert(ft::make_pair(4, 4));
-    myRBT.insert(ft::make_pair(3, 3));
-    myRBT.insert(ft::make_pair(7, 7));
-    myRBT.insert(ft::make_pair(6, 6));
-    myRBT.insert(ft::make_pair(1, 1));
-    result = myRBT.begin();
+    my_rbt.insert(ft::make_pair(4, 4));
+    my_rbt.insert(ft::make_pair(3, 3));
+    my_rbt.insert(ft::make_pair(7, 7));
+    my_rbt.insert(ft::make_pair(6, 6));
+    my_rbt.insert(ft::make_pair(1, 1));
+    result = my_rbt.begin();
     ++result;
     ++result;
     ++result;
-    myRBT.deleteKey(4);
+    my_rbt.erase(4);
     --result;
     CHECK_EQ(result->second, 3);
   }
@@ -56,7 +64,7 @@ TEST_SUITE("insert_value_type_as_only_parameter")
 {
   TEST_CASE("expected_the_right_sequence_of_keys")
   {
-    internals::RBTree<int, int> myRBT;
+    myRBT my_rbt;
     std::vector<int> expected;
     std::vector<int> result;
 
@@ -65,45 +73,17 @@ TEST_SUITE("insert_value_type_as_only_parameter")
     expected.push_back(11);
     expected.push_back(1097);
 
-    myRBT.insert(ft::make_pair(3, 11));
-    myRBT.insert(ft::make_pair(2, 21));
-    myRBT.insert(ft::make_pair(1, 32));
-    myRBT.insert(ft::make_pair(4, 1097));
+    my_rbt.insert(ft::make_pair(3, 11));
+    my_rbt.insert(ft::make_pair(2, 21));
+    my_rbt.insert(ft::make_pair(1, 32));
+    my_rbt.insert(ft::make_pair(4, 1097));
 
-    internals::RBTree<int, int>::iterator i = myRBT.begin();
+    myRBT::iterator i = my_rbt.begin();
 
     result.push_back(i->second);
     result.push_back((++i)->second);
     result.push_back((++i)->second);
     result.push_back((++i)->second);
     CHECK(result == expected);
-  }
-}
-
-TEST_SUITE("operator[]")
-{
-  TEST_CASE("search_for_existent_key_expected_it_reference")
-  {
-    internals::RBTree<std::string, std::string> myRBT;
-
-    myRBT.insert(ft::make_pair("42", "42"));
-    myRBT.insert(ft::make_pair("43", "42s"));
-    myRBT.insert(ft::make_pair("44", "42sp"));
-
-    std::string const &result = myRBT["44"];
-
-    CHECK_EQ(result, "42sp");
-  }
-
-  TEST_CASE("search_for_inexistent_key_expected_default_construct_value_returned")
-  {
-    internals::RBTree<std::string, std::string> myRBT;
-
-    myRBT.insert(ft::make_pair("42", "42"));
-    myRBT.insert(ft::make_pair("43", "42s"));
-
-    std::string const &result = myRBT["44"];
-
-    CHECK_EQ(result, "");
   }
 }
