@@ -140,3 +140,23 @@ TEST_SUITE("insert_hint_overloading")
     CHECK_EQ(result->second, 44);
   }
 }
+
+TEST_SUITE("insert_range_iterators")
+{
+  TEST_CASE("expected_begin_eq_2")
+  {
+    std::vector<ft::pair<int const, int> > __v;
+    myRBT my_rbt;
+
+    __v.push_back(ft::make_pair(4, 43));
+    __v.push_back(ft::make_pair(2, 1));
+    __v.push_back(ft::make_pair(1, 2));
+    __v.push_back(ft::make_pair(3, 51));
+    __v.push_back(ft::make_pair(5, 44));
+    __v.push_back(ft::make_pair(6, 45));
+    __v.push_back(ft::make_pair(7, 47));
+
+    my_rbt.insert(__v.begin(), __v.end());
+    CHECK_EQ(my_rbt.begin()->second, 2);
+  }
+}

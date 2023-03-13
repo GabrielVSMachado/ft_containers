@@ -37,8 +37,8 @@ enum RBTreeColor
 template<typename T>
 struct Node
 {
-  typedef Node* pointer;
-  typedef Node const * const_pointer;
+  typedef Node<T> * pointer;
+  typedef Node<T> const * const_pointer;
 
   pointer parent;
   pointer left;
@@ -120,13 +120,13 @@ struct RBTreeIterator
   typedef T& reference;
   typedef std::ptrdiff_t difference_type;
 
-  typedef typename Node<T>::pointer nodePointer;
+  typedef Node<T> node_type;
 
-  nodePointer current;
+  node_type * current;
 
 
   RBTreeIterator() : current(0) {}
-  RBTreeIterator(nodePointer const &current) : current(current) {}
+  RBTreeIterator(node_type * const &current) : current(current) {}
 
   reference operator*() { return current->key; }
   pointer operator->() { return &(operator*()); }
@@ -179,12 +179,12 @@ struct RBTreeConstIterator
   typedef std::ptrdiff_t difference_type;
   typedef std::bidirectional_iterator_tag iterator_category;
 
-  typedef typename Node<T>::pointer nodePointer;
+  typedef Node<T> node_type;
 
-  nodePointer current;
+  node_type * current;
 
   RBTreeConstIterator() : current(0) {}
-  RBTreeConstIterator(nodePointer const &__new) : current(__new) {}
+  RBTreeConstIterator(node_type * const &__new) : current(__new) {}
 
   reference operator*() const { return current->key; }
   pointer operator->() const { return &(operator*()); }
@@ -269,10 +269,10 @@ public:
 
 private:
   typedef Node<value_type>                        node_type;
-  typedef typename node_type::pointer             nodePointer;
+  typedef node_type *                             node_pointer;
 
   node_type      _base;
-  nodePointer    _root;
+  node_pointer   _root;
   size_type      _count;
 
 public:
@@ -302,7 +302,10 @@ public:
 
   iterator insert(iterator position, value_type const &value)
   {
-    iterator rightMost = node_type::maximum(_root);
+    iterator rightMost;
+
+    if (_root != _base.nill)
+      rightMost = node_type::maximum(_root);
 
     if (position == end() || position == rightMost)
     {
@@ -324,6 +327,13 @@ public:
     return insert(value).first;
   }
 
+  template<class InputIterator>
+    void insert(InputIterator first, InputIterator last)
+    {
+      for (; first != last; ++first, ++_count)
+        insert(end(), *first);
+    }
+
   void erase(key_type const &key)
   {
     iterator toDelete;
@@ -341,7 +351,7 @@ public:
 
   iterator find(key_type const &key)
   {
-    nodePointer current = _root;
+    node_pointer current = _root;
     key_compare fnCompare;
 
     while (current != _base.nill && getKey(current->key) != key)
@@ -371,19 +381,20 @@ public:
     return const_reverse_iterator(begin());
   }
 
-  nodePointer const &getRoot() const { return _root; }
+  node_type * const &getRoot() const { return _root; }
   void printTree() const { printHelper(_root, "", true); }
 
 private:
 
-  iterator _insert(nodePointer x, nodePointer parent, value_type const &value)
+  iterator _insert(node_pointer x, node_pointer parent, value_type const &value)
   {
     bool insertLeft = x != 0 && parent == &_base && compareKeys(parent->key, value);
-    nodePointer newNode = createNode(value);
+    node_pointer newNode = createNode(value);
 
     newNode->parent = parent;
     newNode->left = _base.nill;
     newNode->right = _base.nill;
+    newNode->color = red;
 
     if (insertLeft)
       parent->left = newNode;
@@ -399,9 +410,9 @@ private:
 
   iterator _insert(value_type const &value)
   {
-    nodePointer current = _root;
-    nodePointer previous = _base.nill;
-    nodePointer newNode = createNode(value);
+    node_pointer current = _root;
+    node_pointer previous = _base.nill;
+    node_pointer newNode = createNode(value);
 
     while (current != _base.nill)
     {
@@ -433,14 +444,14 @@ private:
   allocator_type getAllocatorValueType() const { return allocator_type(); }
   nodeAllocator getAllocatorNodeType() const { return nodeAllocator(); }
 
-  nodePointer createNode(value_type const &value)
+  node_type * createNode(value_type const &value)
   {
-    nodePointer newNode = getAllocatorNodeType().allocate(1);
+    node_type * newNode = getAllocatorNodeType().allocate(1);
     getAllocatorNodeType().construct(newNode, node_type(value, &_base));
     return newNode;
   }
 
-  void deleteNode(nodePointer toDelete)
+  void deleteNode(node_pointer toDelete)
   {
     getAllocatorValueType().destroy(&toDelete->key);
     getAllocatorNodeType().deallocate(toDelete, 1);
@@ -457,10 +468,10 @@ private:
   }
 
   // private attributes
-  void _delete(nodePointer z)
+  void _delete(node_pointer z)
   {
-    nodePointer sucessorSubTree;
-    nodePointer sucessor = z;
+    node_pointer sucessorSubTree;
+    node_pointer sucessor = z;
     RBTreeColor original_color = sucessor->color;
 
     if (z->left == _base.nill)
@@ -497,9 +508,9 @@ private:
       deleteFixup(sucessorSubTree);
   }
 
-  void deleteFixup(nodePointer x)
+  void deleteFixup(node_pointer x)
   {
-    nodePointer xSibling;
+    node_pointer xSibling;
 
     while (x != _root && x->color == black)
     {
@@ -573,7 +584,7 @@ private:
     x->color = black;
   }
 
-  void transplant(nodePointer from, nodePointer to)
+  void transplant(node_type * from, node_type * to)
   {
     if (from->parent == _base.nill)
       _root = to;
@@ -584,9 +595,9 @@ private:
     to->parent = from->parent;
   }
 
-  void insertFixup(nodePointer z)
+  void insertFixup(node_type * z)
   {
-    nodePointer uncle;
+    node_type * uncle;
 
     while (z->parent->color == red)
     {
@@ -639,9 +650,9 @@ private:
   }
 
 
-  void leftRotate(nodePointer a)
+  void leftRotate(node_type * a)
   {
-    nodePointer const rightSubTree = a->right;
+    node_type * const rightSubTree = a->right;
 
     a->right = rightSubTree->left;
 
@@ -663,9 +674,9 @@ private:
     a->parent = rightSubTree;
   }
 
-  void rightRotate(nodePointer a)
+  void rightRotate(node_type * a)
   {
-    nodePointer const leftSubTree = a->left;
+    node_type * const leftSubTree = a->left;
 
     a->left = leftSubTree->right;
 
@@ -687,7 +698,7 @@ private:
     leftSubTree->right = a;
   }
 
-  void printHelper(nodePointer root, std::string indent, bool last) const
+  void printHelper(node_type * root, std::string indent, bool last) const
   {
     if (root != _base.nill)
     {
