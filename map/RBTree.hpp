@@ -334,19 +334,20 @@ public:
         insert(end(), *first);
     }
 
-  void erase(key_type const &key)
+  size_type erase(key_type const &key)
   {
     iterator toDelete;
 
     toDelete = find(key);
     if (toDelete != end())
-    {
-      _delete(toDelete.current);
-      deleteNode(toDelete.current);
-      --_count;
-      if (_root != _base.nill)
-        _base.parent = node_type::maximum(_root);
-    }
+      deleteWithRebalancing(toDelete.current);
+    return _count;
+  }
+
+  void erase(iterator pos)
+  {
+    if (pos != end())
+      deleteWithRebalancing(pos.current);
   }
 
   iterator find(key_type const &key)
@@ -385,6 +386,15 @@ public:
   void printTree() const { printHelper(_root, "", true); }
 
 private:
+
+  void deleteWithRebalancing(node_pointer toDelete)
+  {
+    _delete(toDelete);
+    deleteNode(toDelete);
+    --_count;
+    if (_root != _base.nill)
+      _base.parent = node_type::maximum(_root);
+  }
 
   iterator _insert(node_pointer x, node_pointer parent, value_type const &value)
   {

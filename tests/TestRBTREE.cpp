@@ -160,3 +160,29 @@ TEST_SUITE("insert_range_iterators")
     CHECK_EQ(my_rbt.begin()->second, 2);
   }
 }
+
+TEST_SUITE("erase_iterator_overload")
+{
+  TEST_CASE("expected_element_deleted")
+  {
+    mySRBT my_rbt;
+    std::vector<ft::pair<std::string const, int> > __v;
+
+    __v.push_back(ft::make_pair("14", 43));
+    __v.push_back(ft::make_pair("23", 1));
+    __v.push_back(ft::make_pair("12", 2));
+    __v.push_back(ft::make_pair("3", 51));
+    __v.push_back(ft::make_pair("45", 44));
+    __v.push_back(ft::make_pair("60", 45));
+    __v.push_back(ft::make_pair("17", 47));
+
+    my_rbt.insert(__v.begin(), __v.end());
+    mySRBT::iterator pos = my_rbt.begin();
+    ++pos;
+    ++pos;
+    ++pos;
+    std::string const key = pos->first;
+    my_rbt.erase(pos);
+    CHECK(my_rbt.find(key) == my_rbt.end());
+  }
+}
