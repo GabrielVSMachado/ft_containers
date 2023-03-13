@@ -186,3 +186,46 @@ TEST_SUITE("erase_iterator_overload")
     CHECK(my_rbt.find(key) == my_rbt.end());
   }
 }
+
+TEST_SUITE("erase_range_iterator")
+{
+  TEST_CASE("expected_on_two_elements_left")
+  {
+    mySRBT my_rbt;
+    std::vector<ft::pair<std::string const, int> > __v;
+
+    __v.push_back(ft::make_pair("14", 43));
+    __v.push_back(ft::make_pair("23", 1));
+    __v.push_back(ft::make_pair("12", 2));
+    __v.push_back(ft::make_pair("3", 51));
+    __v.push_back(ft::make_pair("45", 44));
+    __v.push_back(ft::make_pair("60", 45));
+    __v.push_back(ft::make_pair("17", 47));
+
+    my_rbt.insert(__v.begin(), __v.end());
+    mySRBT::iterator pos = my_rbt.begin();
+    ++pos;
+    ++pos;
+    ++pos;
+    my_rbt.erase(pos, my_rbt.end());
+    CHECK(my_rbt.size() == 3);
+  }
+
+  TEST_CASE("expected_non_element_left")
+  {
+    mySRBT my_rbt;
+    std::vector<ft::pair<std::string const, int> > __v;
+
+    __v.push_back(ft::make_pair("14", 43));
+    __v.push_back(ft::make_pair("23", 1));
+    __v.push_back(ft::make_pair("12", 2));
+    __v.push_back(ft::make_pair("3", 51));
+    __v.push_back(ft::make_pair("45", 44));
+    __v.push_back(ft::make_pair("60", 45));
+    __v.push_back(ft::make_pair("17", 47));
+
+    my_rbt.insert(__v.begin(), __v.end());
+    my_rbt.erase(my_rbt.begin(), my_rbt.end());
+    CHECK(my_rbt.empty());
+  }
+}

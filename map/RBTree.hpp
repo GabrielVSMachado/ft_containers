@@ -279,11 +279,7 @@ public:
 
   RBTree() : _base(value_type(), &_base, black), _root(_base.nill), _count(0) {}
 
-  ~RBTree()
-  {
-    while (_root != _base.nill)
-      erase(getKey(_root->key));
-  }
+  ~RBTree() { clear(); }
 
   //capacity
   bool empty() const { return _count == 0; }
@@ -330,7 +326,7 @@ public:
   template<class InputIterator>
     void insert(InputIterator first, InputIterator last)
     {
-      for (; first != last; ++first, ++_count)
+      for (; first != last; ++first)
         insert(end(), *first);
     }
 
@@ -340,8 +336,11 @@ public:
 
     toDelete = find(key);
     if (toDelete != end())
+    {
       deleteWithRebalancing(toDelete.current);
-    return _count;
+      return 1;
+    }
+    return 0;
   }
 
   void erase(iterator pos)
@@ -350,16 +349,29 @@ public:
       deleteWithRebalancing(pos.current);
   }
 
+  void erase(iterator first, iterator last)
+  {
+    if (first == begin() && last == end())
+      clear();
+    else
+    {
+      while (first != last)
+        erase(first++);
+    }
+  }
+
   iterator find(key_type const &key)
   {
     node_pointer current = _root;
     key_compare fnCompare;
 
     while (current != _base.nill && getKey(current->key) != key)
+    {
       if (fnCompare(key, getKey(current->key)))
         current = current->left;
       else
         current = current->right;
+    }
     return current;
   }
 
@@ -386,6 +398,26 @@ public:
   void printTree() const { printHelper(_root, "", true); }
 
 private:
+
+  void deleteWithoutRebalancing(node_pointer x)
+  {
+    node_pointer y;
+
+    while (x != _base.nill)
+    {
+      deleteWithoutRebalancing(x->right);
+      y = x->left;
+      deleteNode(x);
+      x = y;
+    }
+  }
+
+  void clear()
+  {
+    deleteWithoutRebalancing(_root);
+    _root = _base.nill;
+    _count = 0;
+  }
 
   void deleteWithRebalancing(node_pointer toDelete)
   {
