@@ -346,3 +346,40 @@ TEST_SUITE("upper_bound")
     CHECK_EQ(result, my_rbt.end());
   }
 }
+
+TEST_SUITE("count")
+{
+  TEST_CASE("expected_0")
+  {
+    myRBT my_rbt;
+    std::vector<ft::pair<int const, int> > __v;
+
+    __v.push_back(ft::make_pair(4, 43));
+    __v.push_back(ft::make_pair(2, 1));
+    __v.push_back(ft::make_pair(1, 2));
+    __v.push_back(ft::make_pair(3, 51));
+    __v.push_back(ft::make_pair(5, 44));
+    __v.push_back(ft::make_pair(6, 45));
+    __v.push_back(ft::make_pair(7, 47));
+
+    my_rbt.insert(__v.begin(), __v.end());
+    CHECK_EQ(my_rbt.count(100), 0);
+  }
+
+  TEST_CASE("expected_1")
+  {
+    myRBT my_rbt;
+    std::vector<ft::pair<int const, int> > __v;
+
+    __v.push_back(ft::make_pair(4, 43));
+    __v.push_back(ft::make_pair(2, 1));
+    __v.push_back(ft::make_pair(1, 2));
+    __v.push_back(ft::make_pair(3, 51));
+    __v.push_back(ft::make_pair(5, 44));
+    __v.push_back(ft::make_pair(6, 45));
+    __v.push_back(ft::make_pair(7, 47));
+
+    my_rbt.insert(__v.begin(), __v.end());
+    CHECK_EQ(my_rbt.count(5), 1);
+  }
+}

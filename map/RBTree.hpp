@@ -13,9 +13,6 @@
 #ifndef RBTREE_HPP
 #define RBTREE_HPP
 
-#include <cstddef>
-#include <iterator>
-#include <memory>
 #include <iostream>
 #include "utility.hpp"
 #include "ReverseIterator.hpp"
@@ -180,10 +177,10 @@ struct RBTreeConstIterator
 
   typedef Node<T> node_type;
 
-  node_type * current;
+  node_type const * current;
 
   RBTreeConstIterator() : current(0) {}
-  RBTreeConstIterator(node_type * const &__new) : current(__new) {}
+  RBTreeConstIterator(node_type const * const &__new) : current(__new) {}
 
   reference operator*() const { return current->key; }
   pointer operator->() const { return &(operator*()); }
@@ -284,6 +281,7 @@ public:
   //capacity
   bool empty() const { return _count == 0; }
   size_type size() const { return _count; }
+  size_type count(key_type const &key) const { return find(key) != end(); }
 
   //modifiers
   ft::pair<iterator, bool> insert(value_type const &value)
