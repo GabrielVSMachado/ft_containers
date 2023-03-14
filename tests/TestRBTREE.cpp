@@ -250,3 +250,99 @@ TEST_SUITE("find")
     CHECK_EQ(result->second, 45);
   }
 }
+
+TEST_SUITE("lower_bound")
+{
+  TEST_CASE("expected_the_next_key")
+  {
+    myRBT my_rbt;
+    std::vector<ft::pair<int const, int> > __v;
+
+    __v.push_back(ft::make_pair(4, 43));
+    // __v.push_back(ft::make_pair(2, 1));
+    __v.push_back(ft::make_pair(1, 2));
+    __v.push_back(ft::make_pair(3, 51));
+    __v.push_back(ft::make_pair(5, 44));
+    __v.push_back(ft::make_pair(6, 45));
+    __v.push_back(ft::make_pair(7, 47));
+
+    my_rbt.insert(__v.begin(), __v.end());
+    myRBT::iterator result = my_rbt.lower_bound(2);
+    CHECK_EQ(result->second, 51);
+  }
+
+  TEST_CASE("expected_the_same_key")
+  {
+    myRBT my_rbt;
+    std::vector<ft::pair<int const, int> > __v;
+
+    __v.push_back(ft::make_pair(4, 43));
+    __v.push_back(ft::make_pair(2, 1));
+    __v.push_back(ft::make_pair(1, 2));
+    __v.push_back(ft::make_pair(3, 51));
+    __v.push_back(ft::make_pair(5, 44));
+    __v.push_back(ft::make_pair(6, 45));
+    __v.push_back(ft::make_pair(7, 47));
+
+    my_rbt.insert(__v.begin(), __v.end());
+    myRBT::iterator result = my_rbt.lower_bound(2);
+    CHECK_EQ(result->second, 1);
+  }
+
+  TEST_CASE("expected_end")
+  {
+    myRBT my_rbt;
+    std::vector<ft::pair<int const, int> > __v;
+
+    __v.push_back(ft::make_pair(4, 43));
+    __v.push_back(ft::make_pair(2, 1));
+    __v.push_back(ft::make_pair(1, 2));
+    __v.push_back(ft::make_pair(3, 51));
+    __v.push_back(ft::make_pair(5, 44));
+    __v.push_back(ft::make_pair(6, 45));
+    __v.push_back(ft::make_pair(7, 47));
+
+    my_rbt.insert(__v.begin(), __v.end());
+    myRBT::iterator result = my_rbt.lower_bound(8);
+    CHECK_EQ(result, my_rbt.end());
+  }
+}
+
+TEST_SUITE("upper_bound")
+{
+  TEST_CASE("expected_the_next_key")
+  {
+    myRBT my_rbt;
+    std::vector<ft::pair<int const, int> > __v;
+
+    __v.push_back(ft::make_pair(4, 43));
+    __v.push_back(ft::make_pair(2, 1));
+    __v.push_back(ft::make_pair(1, 2));
+    __v.push_back(ft::make_pair(3, 51));
+    __v.push_back(ft::make_pair(5, 44));
+    __v.push_back(ft::make_pair(6, 45));
+    __v.push_back(ft::make_pair(7, 47));
+
+    my_rbt.insert(__v.begin(), __v.end());
+    myRBT::iterator result = my_rbt.upper_bound(2);
+    CHECK_EQ(result->second, 51);
+  }
+
+  TEST_CASE("expected_end")
+  {
+    myRBT my_rbt;
+    std::vector<ft::pair<int const, int> > __v;
+
+    __v.push_back(ft::make_pair(4, 43));
+    __v.push_back(ft::make_pair(2, 1));
+    __v.push_back(ft::make_pair(1, 2));
+    __v.push_back(ft::make_pair(3, 51));
+    __v.push_back(ft::make_pair(5, 44));
+    __v.push_back(ft::make_pair(6, 45));
+    __v.push_back(ft::make_pair(7, 47));
+
+    my_rbt.insert(__v.begin(), __v.end());
+    myRBT::iterator result = my_rbt.upper_bound(8);
+    CHECK_EQ(result, my_rbt.end());
+  }
+}

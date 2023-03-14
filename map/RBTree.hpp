@@ -273,6 +273,7 @@ private:
   node_type      _base;
   node_pointer   _root;
   size_type      _count;
+  key_compare    fnCompare;
 
 public:
 
@@ -377,7 +378,6 @@ public:
   const_iterator find(key_type const &key) const
   {
     node_pointer current = _root;
-    key_compare fnCompare;
 
     while (current != _base.nill && getKey(current->key) != key)
     {
@@ -387,6 +387,50 @@ public:
         current = current->right;
     }
     return current;
+  }
+
+  iterator lower_bound(key_type const &key)
+  {
+    iterator keyIt = begin();
+
+    while (keyIt != end())
+    {
+      iterator before = ++keyIt;
+      if (!fnCompare(getKey(*before), key))
+        return before;
+    }
+    return end();
+  }
+
+  const_iterator lower_bound(key_type const &key) const
+  {
+    const_iterator after = begin();
+
+    while (after != end())
+    {
+      const_iterator before = ++after;
+      if (!fnCompare(getKey(*before), key))
+        return before;
+    }
+    return end();
+  }
+
+  iterator upper_bound(key_type const &key)
+  {
+    iterator after = begin();
+
+    while (after != end() && (fnCompare(getKey(*after), key) || getKey(*after) == key))
+      ++after;
+    return after;
+  }
+
+  const_iterator upper_bound(key_type const &key) const
+  {
+    const_iterator after = begin();
+
+    while (after != end() && (fnCompare(getKey(*after), key) || getKey(*after) == key))
+      ++after;
+    return after;
   }
 
 
