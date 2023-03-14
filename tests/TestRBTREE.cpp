@@ -229,3 +229,24 @@ TEST_SUITE("erase_range_iterator")
     CHECK(my_rbt.empty());
   }
 }
+
+TEST_SUITE("find")
+{
+  TEST_CASE("check_if_element_exist")
+  {
+    mySRBT my_rbt;
+    std::vector<ft::pair<std::string const, int> > __v;
+
+    __v.push_back(ft::make_pair("14", 43));
+    __v.push_back(ft::make_pair("23", 1));
+    __v.push_back(ft::make_pair("12", 2));
+    __v.push_back(ft::make_pair("3", 51));
+    __v.push_back(ft::make_pair("45", 44));
+    __v.push_back(ft::make_pair("60", 45));
+    __v.push_back(ft::make_pair("17", 47));
+
+    my_rbt.insert(__v.begin(), __v.end());
+    mySRBT::iterator result = my_rbt.find("60");
+    CHECK_EQ(result->second, 45);
+  }
+}

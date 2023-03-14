@@ -124,7 +124,6 @@ struct RBTreeIterator
 
   node_type * current;
 
-
   RBTreeIterator() : current(0) {}
   RBTreeIterator(node_type * const &current) : current(current) {}
 
@@ -263,7 +262,7 @@ public:
   typedef typename Alloc::template rebind<Node<T> >::other nodeAllocator;
 
   typedef RBTreeIterator<value_type>              iterator;
-  typedef RBTreeConstIterator<value_type const>   const_iterator;
+  typedef RBTreeConstIterator<value_type>         const_iterator;
   typedef ft::reverse_iterator<iterator>          reverse_iterator;
   typedef ft::reverse_iterator<const_iterator>    const_reverse_iterator;
 
@@ -361,6 +360,21 @@ public:
   }
 
   iterator find(key_type const &key)
+  {
+    node_pointer current = _root;
+    key_compare fnCompare;
+
+    while (current != _base.nill && getKey(current->key) != key)
+    {
+      if (fnCompare(key, getKey(current->key)))
+        current = current->left;
+      else
+        current = current->right;
+    }
+    return current;
+  }
+
+  const_iterator find(key_type const &key) const
   {
     node_pointer current = _root;
     key_compare fnCompare;
