@@ -175,9 +175,9 @@ struct RBTreeConstIterator
   typedef std::ptrdiff_t difference_type;
   typedef std::bidirectional_iterator_tag iterator_category;
 
-  typedef Node<T> node_type;
+  typedef Node<T> const node_type;
 
-  node_type const * current;
+  node_type * current;
 
   RBTreeConstIterator() : current(0) {}
   RBTreeConstIterator(node_type const * const &__new) : current(__new) {}
@@ -389,11 +389,11 @@ public:
 
   iterator lower_bound(key_type const &key)
   {
-    iterator keyIt = begin();
+    iterator after = begin();
 
-    while (keyIt != end())
+    while (after != end())
     {
-      iterator before = ++keyIt;
+      iterator before = after++;
       if (!fnCompare(getKey(*before), key))
         return before;
     }
@@ -406,7 +406,7 @@ public:
 
     while (after != end())
     {
-      const_iterator before = ++after;
+      const_iterator before = after++;
       if (!fnCompare(getKey(*before), key))
         return before;
     }
@@ -429,6 +429,16 @@ public:
     while (after != end() && (fnCompare(getKey(*after), key) || getKey(*after) == key))
       ++after;
     return after;
+  }
+
+  ft::pair<iterator, iterator> equal_range(key_type const &key)
+  {
+    return ft::make_pair(lower_bound(key), upper_bound(key));
+  }
+
+  ft::pair<const_iterator, const_iterator> equal_range(key_type const &key) const
+  {
+    return ft::make_pair(lower_bound(key), upper_bound(key));
   }
 
 

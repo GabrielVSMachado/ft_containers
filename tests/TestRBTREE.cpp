@@ -285,8 +285,8 @@ TEST_SUITE("lower_bound")
     __v.push_back(ft::make_pair(7, 47));
 
     my_rbt.insert(__v.begin(), __v.end());
-    myRBT::iterator result = my_rbt.lower_bound(2);
-    CHECK_EQ(result->second, 1);
+    myRBT::iterator result = my_rbt.lower_bound(1);
+    CHECK_EQ(result->second, 2);
   }
 
   TEST_CASE("expected_end")
@@ -381,5 +381,65 @@ TEST_SUITE("count")
 
     my_rbt.insert(__v.begin(), __v.end());
     CHECK_EQ(my_rbt.count(5), 1);
+  }
+}
+
+TEST_SUITE("equal_range")
+{
+  TEST_CASE("expected_element_of_key_and_the_next")
+  {
+    myRBT my_rbt;
+    std::vector<ft::pair<int const, int> > __v;
+
+    __v.push_back(ft::make_pair(4, 43));
+    __v.push_back(ft::make_pair(2, 1));
+    __v.push_back(ft::make_pair(1, 2));
+    __v.push_back(ft::make_pair(3, 51));
+    __v.push_back(ft::make_pair(5, 44));
+    __v.push_back(ft::make_pair(6, 45));
+    __v.push_back(ft::make_pair(7, 47));
+
+    my_rbt.insert(__v.begin(), __v.end());
+    myRBT::iterator second = my_rbt.begin();
+    ++second;
+    myRBT::iterator first = second++;
+    ft::pair<myRBT::iterator, myRBT::iterator> result = my_rbt.equal_range(2);
+    CHECK_EQ(result, ft::make_pair(first, second));
+  }
+
+  TEST_CASE("expected_end")
+  {
+    myRBT my_rbt;
+    std::vector<ft::pair<int const, int> > __v;
+
+    __v.push_back(ft::make_pair(4, 43));
+    __v.push_back(ft::make_pair(2, 1));
+    __v.push_back(ft::make_pair(1, 2));
+    __v.push_back(ft::make_pair(3, 51));
+    __v.push_back(ft::make_pair(5, 44));
+    __v.push_back(ft::make_pair(6, 45));
+    __v.push_back(ft::make_pair(7, 47));
+
+    my_rbt.insert(__v.begin(), __v.end());
+    ft::pair<myRBT::iterator, myRBT::iterator> result = my_rbt.equal_range(8);
+    CHECK_EQ(result, ft::make_pair(my_rbt.end(), my_rbt.end()));
+  }
+
+  TEST_CASE("expected_the_key_and_next_beound")
+  {
+    myRBT my_rbt;
+    std::vector<ft::pair<int const, int> > __v;
+
+    __v.push_back(ft::make_pair(4, 43));
+    __v.push_back(ft::make_pair(1, 2));
+    __v.push_back(ft::make_pair(5, 44));
+    __v.push_back(ft::make_pair(6, 45));
+    __v.push_back(ft::make_pair(7, 47));
+
+    my_rbt.insert(__v.begin(), __v.end());
+    myRBT::iterator first = my_rbt.begin();
+    myRBT::iterator second = my_rbt.find(4);
+    ft::pair<myRBT::iterator, myRBT::iterator> result = my_rbt.equal_range(1);
+    CHECK_EQ(result, ft::make_pair(first, second));
   }
 }
