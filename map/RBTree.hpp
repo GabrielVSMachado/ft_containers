@@ -417,7 +417,8 @@ public:
   {
     iterator after = begin();
 
-    while (after != end() && (fnCompare(getKey(*after), key) || getKey(*after) == key))
+    while (after != end()
+        && (fnCompare(getKey(*after), key) || getKey(*after) == key))
       ++after;
     return after;
   }
@@ -426,7 +427,8 @@ public:
   {
     const_iterator after = begin();
 
-    while (after != end() && (fnCompare(getKey(*after), key) || getKey(*after) == key))
+    while (after != end()
+        && (fnCompare(getKey(*after), key) || getKey(*after) == key))
       ++after;
     return after;
   }
@@ -436,7 +438,8 @@ public:
     return ft::make_pair(lower_bound(key), upper_bound(key));
   }
 
-  ft::pair<const_iterator, const_iterator> equal_range(key_type const &key) const
+  ft::pair<const_iterator, const_iterator>
+  equal_range(key_type const &key) const
   {
     return ft::make_pair(lower_bound(key), upper_bound(key));
   }
@@ -496,7 +499,9 @@ private:
 
   iterator _insert(node_pointer x, node_pointer parent, value_type const &value)
   {
-    bool insertLeft = x != 0 && parent == &_base && compareKeys(parent->key, value);
+    bool insertLeft = (
+      x != 0 && parent == &_base && compareKeys(parent->key, value)
+    );
     node_pointer newNode = createNode(value);
 
     newNode->parent = parent;
