@@ -561,7 +561,7 @@ private:
     newNode->right = _base.nill;
     newNode->color = red;
 
-    if (compareKeys(parent->key, value) && parent == _base.nill)
+    if (compareKeys(value, parent->key))
       parent->left = newNode;
     else
       parent->right = newNode;
