@@ -14,6 +14,7 @@
 #define RBTREE_HPP
 
 #include <iostream>
+#include "algorithms.hpp"
 #include "utility.hpp"
 #include "ReverseIterator.hpp"
 #include "iterator.hpp"
@@ -282,6 +283,7 @@ public:
   bool empty() const { return _count == 0; }
   size_type size() const { return _count; }
   size_type count(key_type const &key) const { return find(key) != end(); }
+  size_type max_size() const { return getAllocatorNodeType().max_size(); }
 
   //modifiers
   ft::pair<iterator, bool> insert(value_type const &value)
@@ -304,7 +306,7 @@ public:
     if (position == end() || position == rightMost)
     {
       if (size() > 0 && compareKeys(*rightMost, value))
-        return _insert(0, rightMost.current, value);
+        return _insert(rightMost.current, value);
       return insert(value).first;
     }
 
@@ -314,8 +316,8 @@ public:
     if (compareKeys(*position, value) && compareKeys(value, *after))
     {
       if (position.current->right == _base.nill)
-        return _insert(0, position.current, value);
-      return _insert(after.current, after.current, value);
+        return _insert(position.current, value);
+      return _insert(after.current, value);
     }
 
     return insert(value).first;
@@ -444,6 +446,37 @@ public:
     return ft::make_pair(lower_bound(key), upper_bound(key));
   }
 
+  bool operator==(RBTree<Key, T, KeyOfValue, Compare, Alloc> const &rhs) const
+  {
+    return size() == rhs.size() && ft::equal(begin(), end(), rhs.begin());
+  }
+
+  bool operator<(RBTree<Key, T, KeyOfValue, Compare, Alloc> const &rhs) const
+  {
+    return ft::equal<const_iterator, const_iterator, bool (*)(T const&, T const &)>
+          (begin(), end(), rhs.begin(), ft::cmp_less);
+  }
+
+  bool operator!=(RBTree<Key, T, KeyOfValue, Compare, Alloc> const &rhs) const
+  {
+    return !(*this == rhs);
+  }
+
+  bool operator>(RBTree<Key, T, KeyOfValue, Compare, Alloc> const &rhs) const
+  {
+    return rhs < *this;
+  }
+
+  bool operator<=(RBTree<Key, T, KeyOfValue, Compare, Alloc> const &rhs) const
+  {
+    return !(rhs < *this);
+  }
+
+  bool operator>=(RBTree<Key, T, KeyOfValue, Compare, Alloc> const &rhs) const
+  {
+    return !(*this < rhs);
+  }
+
 
   iterator begin() { return node_type::minimum(_root); }
   iterator end() { return &_base; }
@@ -497,11 +530,8 @@ private:
       _base.parent = node_type::maximum(_root);
   }
 
-  iterator _insert(node_pointer x, node_pointer parent, value_type const &value)
+  iterator _insert(node_pointer parent, value_type const &value)
   {
-    bool insertLeft = (
-      x != 0 && parent == &_base && compareKeys(parent->key, value)
-    );
     node_pointer newNode = createNode(value);
 
     newNode->parent = parent;
@@ -509,7 +539,7 @@ private:
     newNode->right = _base.nill;
     newNode->color = red;
 
-    if (insertLeft)
+    if (compareKeys(parent->key, value) && parent == _base.nill)
       parent->left = newNode;
     else
       parent->right = newNode;
@@ -827,7 +857,7 @@ private:
       char const r[] = "\x1b[31mRed\033[0m";
       char const b[] = "\x1b[34mBlack\033[0m";
       std::string color = root->color ? r : b;
-      std::cout << root->key.second << "(" << color << ")" << std::endl;
+      std::cout << root->key.first << "(" << color << ")" << std::endl;
       printHelper(root->left, indent, false);
       printHelper(root->right, indent, true);
     }

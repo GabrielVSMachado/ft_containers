@@ -32,7 +32,8 @@ namespace ft
         pair(ft::pair<U1, U2> const &other)
         : first(other.first), second(other.second) {}
 
-      pair<T1, T2>& operator=(pair<T1, T2> const &other) {
+      pair<T1, T2>& operator=(pair<T1, T2> const &other)
+      {
         first = other.first;
         second = other.second;
         return *this;
@@ -40,37 +41,44 @@ namespace ft
     };
 
   template<typename T1, typename T2>
-    pair<T1, T2> make_pair(T1 first, T2 second) {
+    pair<T1, T2> make_pair(T1 first, T2 second)
+    {
       return pair<T1, T2>(first, second);
     }
 
   template<typename T1, typename T2>
-    bool operator==(pair<T1, T2> const &lhs, pair<T1, T2> const &rhs) {
+    bool operator==(pair<T1, T2> const &lhs, pair<T1, T2> const &rhs)
+    {
       return lhs.first == rhs.first && lhs.second == rhs.second;
     }
   
   template<typename T1, typename T2>
-    bool operator<(pair<T1, T2> const &lhs, pair<T1, T2> const &rhs) {
+    bool operator<(pair<T1, T2> const &lhs, pair<T1, T2> const &rhs)
+    {
       return lhs.first < rhs.first && lhs.second < rhs.second;
     }
 
   template<typename T1, typename T2>
-    bool operator!=(pair<T1, T2> const &lhs, pair<T1, T2> const &rhs) {
+    bool operator!=(pair<T1, T2> const &lhs, pair<T1, T2> const &rhs)
+    {
       return !(lhs == rhs);
     }
 
   template<typename T1, typename T2>
-    bool operator>(pair<T1, T2> const &lhs, pair<T1, T2> const &rhs) {
+    bool operator>(pair<T1, T2> const &lhs, pair<T1, T2> const &rhs)
+    {
       return rhs < lhs;
     }
 
   template<typename T1, typename T2>
-    bool operator<=(pair<T1, T2> const &lhs, pair<T1, T2> const &rhs) {
-      return !(lhs > rhs);
+    bool operator<=(pair<T1, T2> const &lhs, pair<T1, T2> const &rhs)
+    {
+      return !(rhs < lhs);
     }
 
   template<typename T1, typename T2>
-    bool operator>=(pair<T1, T2> const &lhs, pair<T1, T2> const &rhs) {
+    bool operator>=(pair<T1, T2> const &lhs, pair<T1, T2> const &rhs)
+    {
       return !(lhs < rhs);
     }
 

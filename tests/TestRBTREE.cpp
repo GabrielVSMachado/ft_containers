@@ -3,6 +3,7 @@
 #include "utility.hpp"
 #include <string>
 #include <vector>
+#include <map>
 
 template<typename T>
 struct getFirst
@@ -441,5 +442,131 @@ TEST_SUITE("equal_range")
     myRBT::iterator second = my_rbt.find(4);
     ft::pair<myRBT::iterator, myRBT::iterator> result = my_rbt.equal_range(1);
     CHECK_EQ(result, ft::make_pair(first, second));
+  }
+}
+
+TEST_SUITE("booleans_operators")
+{
+  TEST_CASE("operator==_expected_true")
+  {
+    myRBT my_rbt;
+    myRBT my_rbt2;
+    std::vector<ft::pair<int const, int> > __v;
+
+    __v.push_back(ft::make_pair(4, 43));
+    __v.push_back(ft::make_pair(1, 2));
+    __v.push_back(ft::make_pair(5, 44));
+    __v.push_back(ft::make_pair(6, 45));
+    __v.push_back(ft::make_pair(7, 47));
+
+    my_rbt.insert(__v.begin(), __v.end());
+    my_rbt2.insert(__v.begin(), __v.end());
+    CHECK(my_rbt == my_rbt2);
+  }
+
+  TEST_CASE("operator==_expected_false_by_size")
+  {
+    myRBT my_rbt;
+    myRBT my_rbt2;
+    std::vector<ft::pair<int const, int> > __v;
+
+    __v.push_back(ft::make_pair(4, 43));
+    __v.push_back(ft::make_pair(1, 2));
+    __v.push_back(ft::make_pair(5, 44));
+    __v.push_back(ft::make_pair(6, 45));
+    __v.push_back(ft::make_pair(7, 47));
+
+    my_rbt.insert(__v.begin(), --__v.end());
+    my_rbt2.insert(__v.begin(), __v.end());
+    CHECK_FALSE(my_rbt == my_rbt2);
+  }
+
+  TEST_CASE("operator==_expected_false_by_values")
+  {
+    myRBT my_rbt;
+    myRBT my_rbt2;
+    std::vector<ft::pair<int const, int> > __v;
+
+    __v.push_back(ft::make_pair(4, 43));
+    __v.push_back(ft::make_pair(1, 2));
+    __v.push_back(ft::make_pair(5, 44));
+    __v.push_back(ft::make_pair(6, 45));
+    __v.push_back(ft::make_pair(7, 47));
+
+    my_rbt.insert(__v.begin(), --__v.end());
+    my_rbt.insert(ft::make_pair(7, 55));
+    my_rbt2.insert(__v.begin(), __v.end());
+    CHECK_FALSE(my_rbt == my_rbt2);
+  }
+
+  TEST_CASE("operator<_expected_true")
+  {
+    myRBT my_rbt;
+    myRBT my_rbt2;
+    std::vector<ft::pair<int const, int> > __v;
+    std::vector<ft::pair<int const, int> > __v2;
+
+    __v2.push_back(ft::make_pair(4, 41));
+    __v2.push_back(ft::make_pair(1, 42));
+    __v2.push_back(ft::make_pair(5, 43));
+    __v2.push_back(ft::make_pair(6, 44));
+    __v2.push_back(ft::make_pair(7, 46));
+
+    __v.push_back(ft::make_pair(8, 43));
+    __v.push_back(ft::make_pair(9, 42));
+    __v.push_back(ft::make_pair(10, 44));
+    __v.push_back(ft::make_pair(11, 45));
+    __v.push_back(ft::make_pair(12, 47));
+
+    my_rbt.insert(__v.begin(), __v.end());
+    my_rbt2.insert(__v2.begin(), __v2.end());
+    CHECK(my_rbt2 < my_rbt);
+  }
+
+  TEST_CASE("operator<_expected_true_by_size")
+  {
+    myRBT my_rbt;
+    myRBT my_rbt2;
+    std::vector<ft::pair<int const, int> > __v;
+    std::vector<ft::pair<int const, int> > __v2;
+
+    __v2.push_back(ft::make_pair(4, 2));
+    __v2.push_back(ft::make_pair(1, 1));
+    __v2.push_back(ft::make_pair(5, 3));
+    __v2.push_back(ft::make_pair(6, 4));
+
+    __v.push_back(ft::make_pair(8, 43));
+    __v.push_back(ft::make_pair(9, 42));
+    __v.push_back(ft::make_pair(10, 44));
+    __v.push_back(ft::make_pair(11, 45));
+    __v.push_back(ft::make_pair(12, 47));
+
+    my_rbt.insert(__v.begin(), __v.end());
+    my_rbt2.insert(__v2.begin(), __v2.end());
+    CHECK(my_rbt2 < my_rbt);
+  }
+
+  TEST_CASE("operator<_expected_false_by_values")
+  {
+    myRBT my_rbt;
+    myRBT my_rbt2;
+    std::vector<ft::pair<int const, int> > __v;
+    std::vector<ft::pair<int const, int> > __v2;
+
+    __v2.push_back(ft::make_pair(4, 41));
+    __v2.push_back(ft::make_pair(1, 42));
+    __v2.push_back(ft::make_pair(5, 43));
+    __v2.push_back(ft::make_pair(6, 44));
+    __v2.push_back(ft::make_pair(7, 47));
+
+    __v.push_back(ft::make_pair(8, 43));
+    __v.push_back(ft::make_pair(9, 42));
+    __v.push_back(ft::make_pair(10, 44));
+    __v.push_back(ft::make_pair(11, 45));
+    __v.push_back(ft::make_pair(12, 47));
+
+    my_rbt.insert(__v.begin(), __v.end());
+    my_rbt2.insert(__v2.begin(), __v2.end());
+    CHECK_FALSE(my_rbt2 < my_rbt);
   }
 }
