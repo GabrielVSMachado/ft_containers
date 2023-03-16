@@ -95,14 +95,14 @@ struct Node
 
   static pointer maximum(pointer current)
   {
-    while (current->right != current->nill)
+    while (current->nill && current->right != current->nill)
       current = current->right;
     return current;
   }
 
   static pointer minimum(pointer current)
   {
-    while ( current != current->nill && current->left != current->nill)
+    while (current != current->nill && current->left != current->nill)
       current = current->left;
     return current;
   }
@@ -270,6 +270,7 @@ private:
   typedef RBTree<Key, T, KeyOfValue, Compare, Alloc>  Self;
 
   node_type      _base;
+  allocator_type alloc;
   node_pointer   _root;
   size_type      _count;
   key_compare    fnCompare;
@@ -277,6 +278,26 @@ private:
 public:
 
   RBTree() : _base(value_type(), &_base, black), _root(_base.nill), _count(0) {}
+
+  RBTree(key_compare const &comp)
+    : _base(value_type(), &_base, black), fnCompare(comp)
+  {
+    _root = _base.nill;
+    _count = 0;
+  }
+
+  RBTree(key_compare const &comp, allocator_type const &__alloc)
+    : _base(value_type(), &_base, black), alloc(__alloc), fnCompare(comp)
+  {
+    _root = _base.nill;
+    _count = 0;
+  }
+
+  RBTree(Self const &other)
+    : _base(value_type(), &_base, black), _root(_base.nill), _count(0)
+  {
+    *this = other;
+  }
 
   ~RBTree() { clear(); }
 
@@ -585,7 +606,7 @@ private:
     return iterator(newNode);
   }
 
-  allocator_type getAllocatorValueType() const { return allocator_type(); }
+  allocator_type getAllocatorValueType() const { return alloc; }
   nodeAllocator getAllocatorNodeType() const { return nodeAllocator(); }
 
   node_type * createNode(value_type const &value)
