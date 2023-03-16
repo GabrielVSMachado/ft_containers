@@ -570,3 +570,49 @@ TEST_SUITE("booleans_operators")
     CHECK_FALSE(my_rbt2 < my_rbt);
   }
 }
+
+TEST_SUITE("assign_operator")
+{
+  TEST_CASE("expected_the_same_size")
+  {
+    mySRBT my_rbt;
+    mySRBT my_rbt2;
+
+    my_rbt2.insert(ft::make_pair("1", 1));
+    my_rbt2.insert(ft::make_pair("3", 3));
+    my_rbt2.insert(ft::make_pair("5", 5));
+    my_rbt2.insert(ft::make_pair("6", 6));
+
+    my_rbt = my_rbt2;
+    CHECK_EQ(my_rbt.size(), my_rbt2.size());
+  }
+
+  TEST_CASE("expected_the_same_values")
+  {
+    mySRBT my_rbt;
+    mySRBT my_rbt2;
+
+    my_rbt2.insert(ft::make_pair("1", 1));
+    my_rbt2.insert(ft::make_pair("3", 3));
+    my_rbt2.insert(ft::make_pair("5", 5));
+    my_rbt2.insert(ft::make_pair("6", 6));
+
+    my_rbt = my_rbt2;
+    CHECK(my_rbt == my_rbt2);
+  }
+
+  TEST_CASE("expected_deep_copy")
+  {
+    mySRBT my_rbt;
+    mySRBT my_rbt2;
+
+    my_rbt2.insert(ft::make_pair("1", 1));
+    my_rbt2.insert(ft::make_pair("3", 3));
+    my_rbt2.insert(ft::make_pair("5", 5));
+    my_rbt2.insert(ft::make_pair("6", 6));
+
+    my_rbt = my_rbt2;
+    my_rbt.begin()->second = 42;
+    CHECK_EQ(my_rbt2.begin()->second, 1);
+  }
+}

@@ -102,7 +102,7 @@ struct Node
 
   static pointer minimum(pointer current)
   {
-    while (current->left != current->nill)
+    while ( current != current->nill && current->left != current->nill)
       current = current->left;
     return current;
   }
@@ -265,8 +265,9 @@ public:
   typedef ft::reverse_iterator<const_iterator>    const_reverse_iterator;
 
 private:
-  typedef Node<value_type>                        node_type;
-  typedef node_type *                             node_pointer;
+  typedef Node<value_type>                            node_type;
+  typedef node_type *                                 node_pointer;
+  typedef RBTree<Key, T, KeyOfValue, Compare, Alloc>  Self;
 
   node_type      _base;
   node_pointer   _root;
@@ -446,35 +447,35 @@ public:
     return ft::make_pair(lower_bound(key), upper_bound(key));
   }
 
-  bool operator==(RBTree<Key, T, KeyOfValue, Compare, Alloc> const &rhs) const
+  bool operator==(Self const &rhs) const
   {
     return size() == rhs.size() && ft::equal(begin(), end(), rhs.begin());
   }
 
-  bool operator<(RBTree<Key, T, KeyOfValue, Compare, Alloc> const &rhs) const
+  bool operator<(Self const &rhs) const
   {
     return ft::equal<const_iterator, const_iterator, bool (*)(T const&, T const &)>
           (begin(), end(), rhs.begin(), ft::cmp_less);
   }
 
-  bool operator!=(RBTree<Key, T, KeyOfValue, Compare, Alloc> const &rhs) const
-  {
-    return !(*this == rhs);
-  }
+  bool operator!=(Self const &rhs) const { return !(*this == rhs); }
 
-  bool operator>(RBTree<Key, T, KeyOfValue, Compare, Alloc> const &rhs) const
-  {
-    return rhs < *this;
-  }
+  bool operator>(Self const &rhs) const { return rhs < *this; }
 
-  bool operator<=(RBTree<Key, T, KeyOfValue, Compare, Alloc> const &rhs) const
-  {
-    return !(rhs < *this);
-  }
+  bool operator<=(Self const &rhs) const { return !(rhs < *this); }
 
-  bool operator>=(RBTree<Key, T, KeyOfValue, Compare, Alloc> const &rhs) const
+  bool operator>=(Self const &rhs) const { return !(*this < rhs); }
+
+  Self &operator=(Self const &other)
   {
-    return !(*this < rhs);
+    if (this != &other)
+    {
+      clear();
+      fnCompare = other.fnCompare;
+      if (other.size() > 0)
+        insert(other.begin(), other.end());
+    }
+    return *this;
   }
 
 
@@ -590,7 +591,15 @@ private:
   node_type * createNode(value_type const &value)
   {
     node_type * newNode = getAllocatorNodeType().allocate(1);
-    getAllocatorNodeType().construct(newNode, node_type(value, &_base));
+    try
+    {
+      getAllocatorNodeType().construct(newNode, node_type(value, &_base));
+    }
+    catch (...)
+    {
+      getAllocatorNodeType().deallocate(newNode, 1);
+      throw;
+    }
     return newNode;
   }
 
