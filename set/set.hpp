@@ -78,6 +78,12 @@ public:
 
   ~set() {}
 
+  Self &operator=(Self const &other)
+  {
+    tree = other.tree;
+    return *this;
+  }
+
   iterator begin() { return tree.begin(); }
   const_iterator begin() const { return tree.begin(); }
   iterator end() { return tree.end(); }
@@ -135,8 +141,43 @@ public:
   allocator_type get_allocator() { return allocator_type(); }
   key_compare key_comp() { return key_compare(); }
   value_compare value_comp() const { return value_compare(); }
+
+  template<typename K, typename C, typename A>
+    friend bool operator==(set<K, C, A> const &lhs, set<K, C, A> const &rhs)
+    {
+      return lhs.tree == rhs.tree;
+    }
+
+  template<typename K, typename C, typename A>
+    friend bool operator<(set<K, C, A> const &lhs, set<K, C, A> const &rhs)
+    {
+      return lhs.tree < rhs.tree;
+    }
 };
 
+template<typename K, typename C, typename A>
+  bool operator!=(set<K, C, A> const &lhs, set<K, C, A> const &rhs)
+  {
+    return !(lhs == rhs);
+  }
+
+template<typename K, typename C, typename A>
+  bool operator>(set<K, C, A> const &lhs, set<K, C, A> const &rhs)
+  {
+    return rhs < lhs;
+  }
+
+template<typename K, typename C, typename A>
+  bool operator>=(set<K, C, A> const &lhs, set<K, C, A> const &rhs)
+  {
+    return !(lhs < rhs);
+  }
+
+template<typename K, typename C, typename A>
+  bool operator<=(set<K, C, A> const &lhs, set<K, C, A> const &rhs)
+  {
+    return !(rhs < lhs);
+  }
 }
 
 #endif // !SET_HPP
