@@ -616,3 +616,66 @@ TEST_SUITE("assign_operator")
     CHECK_EQ(my_rbt2.begin()->second, 1);
   }
 }
+
+TEST_SUITE("swap")
+{
+  TEST_CASE("when_both_are_empty")
+  {
+    myRBT first;
+    myRBT second;
+
+    first.swap(second);
+    CHECK(ft::make_pair(first.empty(), second.empty()) == ft::make_pair(true, true));
+  }
+
+  TEST_CASE("when_only_the_first_is_empty")
+  {
+    mySRBT first;
+    mySRBT second;
+
+    second.insert(ft::make_pair("1", 2));
+    second.insert(ft::make_pair("2", 3));
+    second.insert(ft::make_pair("3", 4));
+    second.insert(ft::make_pair("4", 5));
+
+    first.swap(second);
+    ft::pair<myRBT::size_type, bool> result(first.size(), second.empty());
+    CHECK(ft::make_pair(4lu, true) == result);
+  }
+
+  TEST_CASE("when_both_have_elements_expected_no_key_3_in_second")
+  {
+    mySRBT first;
+    mySRBT second;
+
+    second.insert(ft::make_pair("1", 2));
+    second.insert(ft::make_pair("2", 3));
+    second.insert(ft::make_pair("3", 4));
+    second.insert(ft::make_pair("4", 5));
+
+    first.insert(ft::make_pair("1", 2));
+    first.insert(ft::make_pair("2", 3));
+    first.insert(ft::make_pair("4", 5));
+
+    first.swap(second);
+    CHECK(second.find("3") == second.end());
+  }
+
+  TEST_CASE("when_both_have_elements_expected_first_size_eq_4")
+  {
+    mySRBT first;
+    mySRBT second;
+
+    second.insert(ft::make_pair("1", 2));
+    second.insert(ft::make_pair("2", 3));
+    second.insert(ft::make_pair("3", 4));
+    second.insert(ft::make_pair("4", 5));
+
+    first.insert(ft::make_pair("1", 2));
+    first.insert(ft::make_pair("2", 3));
+    first.insert(ft::make_pair("4", 5));
+
+    first.swap(second);
+    CHECK(first.size() == 4lu);
+  }
+}
