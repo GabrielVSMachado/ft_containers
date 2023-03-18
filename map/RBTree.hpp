@@ -6,7 +6,7 @@
 /*   By: gvitor-s <gvitor-s@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/18 13:56:27 by gvitor-s          #+#    #+#             */
-/*   Updated: 2023/02/18 13:56:36 by gvitor-s         ###   ########.fr       */
+/*   Updated: 2023/03/18 13:44:15 by gvitor-s         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -301,7 +301,9 @@ public:
     _count = 0;
   }
 
-  RBTree(Self const &other) : _base(createNode(value_type())), _count(0)
+  RBTree(Self const &other)
+    : _base(createNode(value_type())), alloc(other.getAllocatorValueType()),
+    _count(0), fnCompare(other.fnCompare)
   {
     _base->color = black;
     _base->nill = _base;
@@ -309,7 +311,7 @@ public:
     *this = other;
   }
 
-  ~RBTree() { clear(); delete _base; }
+  ~RBTree() { clear(); deleteNode(_base); }
 
   //capacity
   bool empty() const { return _count == 0; }
@@ -536,9 +538,14 @@ public:
     return const_reverse_iterator(begin());
   }
 
-  node_type * const &getRoot() const { return _root; }
   void printTree() const { printHelper(_root, "", true); }
 
+  void clear()
+  {
+    deleteWithoutRebalancing(_root);
+    _root = _base->nill;
+    _count = 0;
+  }
 private:
 
   void deleteWithoutRebalancing(node_pointer x)
@@ -552,13 +559,6 @@ private:
       deleteNode(x);
       x = y;
     }
-  }
-
-  void clear()
-  {
-    deleteWithoutRebalancing(_root);
-    _root = _base->nill;
-    _count = 0;
   }
 
   void deleteWithRebalancing(node_pointer toDelete)
@@ -910,7 +910,6 @@ private:
       printHelper(root->right, indent, true);
     }
   }
-
 }; // end of RBTree
 
 } // namespace end
