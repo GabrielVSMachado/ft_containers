@@ -100,7 +100,7 @@ public:
 
   mapped_type &operator[](key_type const &key) 
   {
-    return *(tree.insert(ft::make_pair(key, mapped_type()))).second;
+    return (*(insert(make_pair(key, mapped_type())).first)).second;
   }
 
   ft::pair<iterator, bool> insert(value_type const &value)

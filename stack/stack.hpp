@@ -16,11 +16,14 @@
 #include "vector.hpp"
 #include <cstddef>
 
+namespace ft
+{
+
 template<typename T, typename Container = ft::vector<T> >
 class stack
 {
 protected:
-  Container ctrn;
+  Container c;
 
 public:
   typedef T value_type;
@@ -29,22 +32,24 @@ public:
   typedef typename container_type::reference reference;
   typedef typename container_type::const_reference const_reference;
 
-  explicit stack(container_type const &__c = container_type()) : ctrn(__c) {}
+  explicit stack(container_type const &__c = container_type()) : c(__c) {}
 
-  bool empty() const { return ctrn.empty(); }
-  size_type size() const { return ctrn.size(); }
+  bool empty() const { return c.empty(); }
+  size_type size() const { return c.size(); }
 
-  value_type &top() { return ctrn.back(); }
-  value_type const &top() const { return ctrn.back(); }
-  void push(value_type const &value) { ctrn.push_back(value); }
-  void pop() { ctrn.pop_back(); }
+  value_type &top() { return c.back(); }
+  value_type const &top() const { return c.back(); }
+  void push(value_type const &value) { c.push_back(value); }
+  void pop() { c.pop_back(); }
 
-  bool operator==(stack<T, Container> const &rhs) { return ctrn == rhs.ctrn; }
-  bool operator!=(stack<T, Container> const &rhs) { return ctrn != rhs.ctrn; }
-  bool operator<(stack<T, Container> const &rhs) { return ctrn < rhs.ctrn; }
-  bool operator<=(stack<T, Container> const &rhs) { return ctrn <= rhs.ctrn; }
-  bool operator>(stack<T, Container> const &rhs) { return ctrn > rhs.ctrn; }
-  bool operator>=(stack<T, Container> const &rhs) { return ctrn >= rhs.ctrn; }
+  bool operator==(stack<T, Container> const &rhs) { return c == rhs.c; }
+  bool operator!=(stack<T, Container> const &rhs) { return c != rhs.c; }
+  bool operator<(stack<T, Container> const &rhs) { return c < rhs.c; }
+  bool operator<=(stack<T, Container> const &rhs) { return c <= rhs.c; }
+  bool operator>(stack<T, Container> const &rhs) { return c > rhs.c; }
+  bool operator>=(stack<T, Container> const &rhs) { return c >= rhs.c; }
 };
+  
+}
 
 #endif // !STACK_HPP
