@@ -1,6 +1,7 @@
 core
 *.o
 my_containers
+my_containers_performance
 original_containers
 containers_test
 unittests

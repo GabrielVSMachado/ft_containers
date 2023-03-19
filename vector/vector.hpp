@@ -201,8 +201,6 @@ template<typename T, typename Alloc = std::allocator<T> >
 
     void reserve(size_type new_cap)
     {
-      pointer newReservedMem;
-
       if (new_cap > max_size())
         throw std::length_error(
                 "std::allocator<T>::allocate(size_t n) 'n' "
@@ -217,8 +215,6 @@ template<typename T, typename Alloc = std::allocator<T> >
     void push_back(value_type const &value)
     {
       size_type _size;
-      pointer newAllocatedMem;
-
 
       if (this->Aimpl.finish == this->Aimpl.endOfStorage)
       {
