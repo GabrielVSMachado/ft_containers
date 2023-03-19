@@ -14,6 +14,7 @@
 #define VECTOR_HPP
 
 // std implementation
+#include <functional>
 #include <memory>
 #include <stdexcept>
 
@@ -579,11 +580,8 @@ template<typename T, typename Alloc = std::allocator<T> >
     bool operator<(
         ft::vector<T, Alloc> const &lhs, ft::vector<T, Alloc> const &rhs)
     {
-      typedef typename ft::vector<T, Alloc>::const_iterator const_iterator;
-
-      return ft::equal<
-              const_iterator, const_iterator, bool (*)(T const &, T const &)
-              >(lhs.begin(), lhs.end(), rhs.begin(), ft::cmp_less);
+      return ft::lexicographical_compare(
+          lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
     }
 
   template<typename T, typename Alloc>

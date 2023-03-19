@@ -13,6 +13,8 @@ struct getFirst
 
 typedef internals::RBTree<int const, ft::pair<int const, int>, getFirst<ft::pair<int const, int> > > myRBT;
 
+typedef internals::RBTree<int const, ft::pair<int const, std::string>, getFirst<ft::pair<int const, std::string> > > myISRBT;
+
 typedef internals::RBTree<std::string const, ft::pair<std::string const, int>, getFirst<ft::pair<std::string const, int> > > mySRBT;
 
 TEST_SUITE("iterator")
@@ -548,25 +550,25 @@ TEST_SUITE("booleans_operators")
 
   TEST_CASE("operator<_expected_false_by_values")
   {
-    myRBT my_rbt;
-    myRBT my_rbt2;
-    std::vector<ft::pair<int const, int> > __v;
-    std::vector<ft::pair<int const, int> > __v2;
+    myISRBT my_rbt;
+    myISRBT my_rbt2;
+    std::vector<ft::pair<int const, std::string> > __v;
+    std::vector<ft::pair<int const, std::string> > __v2;
 
-    __v2.push_back(ft::make_pair(4, 41));
-    __v2.push_back(ft::make_pair(1, 42));
-    __v2.push_back(ft::make_pair(5, 43));
-    __v2.push_back(ft::make_pair(6, 44));
-    __v2.push_back(ft::make_pair(7, 47));
+    __v2.push_back(ft::make_pair(4, "41"));
+    __v2.push_back(ft::make_pair(1, "42"));
+    __v2.push_back(ft::make_pair(5, "43"));
+    __v2.push_back(ft::make_pair(6, "44"));
+    __v2.push_back(ft::make_pair(7, "47"));
 
-    __v.push_back(ft::make_pair(8, 43));
-    __v.push_back(ft::make_pair(9, 42));
-    __v.push_back(ft::make_pair(10, 44));
-    __v.push_back(ft::make_pair(11, 45));
-    __v.push_back(ft::make_pair(12, 47));
+    __v.push_back(ft::make_pair(8, "43"));
+    __v.push_back(ft::make_pair(9, "42"));
+    __v.push_back(ft::make_pair(10, "44"));
+    __v.push_back(ft::make_pair(11, "45"));
+    __v.push_back(ft::make_pair(12, "47"));
 
-    my_rbt.insert(__v.begin(), __v.end());
-    my_rbt2.insert(__v2.begin(), __v2.end());
+    my_rbt.insert(__v2.begin(), __v2.end());
+    my_rbt2.insert(__v.begin(), __v.end());
     CHECK_FALSE(my_rbt2 < my_rbt);
   }
 }

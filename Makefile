@@ -8,7 +8,7 @@ TESTNAME = containers_test
 TESTOBJS = $(TESTSRCS:%.cpp=%.o)
 
 OBJ = main.o
-DIRS = commons vector map
+DIRS = commons vector map stack set
 INCLUDES = $(addprefix -I ,$(DIRS))
 CXXFLAGS = -std=c++98 -Wall -Wextra $(INCLUDES) -g3
 CXX = c++

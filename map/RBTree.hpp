@@ -182,6 +182,7 @@ struct RBTreeConstIterator
 
   RBTreeConstIterator() : current(0) {}
   RBTreeConstIterator(node_type const * const &__new) : current(__new) {}
+  RBTreeConstIterator(RBTreeIterator<T> const &other) : current(other.current) {}
 
   reference operator*() const { return current->key; }
   pointer operator->() const { return &(operator*()); }
@@ -487,8 +488,7 @@ public:
 
   bool operator<(Self const &rhs) const
   {
-    return ft::equal<const_iterator, const_iterator, bool (*)(T const&, T const &)>
-          (begin(), end(), rhs.begin(), ft::cmp_less);
+    return ft::lexicographical_compare(begin(), end(), rhs.begin(), rhs.end());
   }
 
   bool operator!=(Self const &rhs) const { return !(*this == rhs); }

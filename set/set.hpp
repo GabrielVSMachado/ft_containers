@@ -42,10 +42,11 @@ public:
   typedef typename Alloc::const_pointer    const_pointer;
 
 protected:
-  struct getValue { T const &operator()(T const &value) const { return value; } };
+  template<typename U>
+  struct getValue { U const &operator()(U const &value) const { return value; } };
 
   typedef
-  internals::RBTree<key_type, value_type, getValue, key_compare, Alloc>
+  internals::RBTree<key_type, value_type, getValue<value_type>, key_compare, Alloc>
   RBTree;
 
   RBTree tree;
@@ -142,42 +143,13 @@ public:
   key_compare key_comp() { return key_compare(); }
   value_compare value_comp() const { return value_compare(); }
 
-  template<typename K, typename C, typename A>
-    friend bool operator==(set<K, C, A> const &lhs, set<K, C, A> const &rhs)
-    {
-      return lhs.tree == rhs.tree;
-    }
-
-  template<typename K, typename C, typename A>
-    friend bool operator<(set<K, C, A> const &lhs, set<K, C, A> const &rhs)
-    {
-      return lhs.tree < rhs.tree;
-    }
+  inline bool operator==(Self const &rhs) const { return tree == rhs.tree; }
+  inline bool operator<(Self const &rhs) const { return tree < rhs.tree; }
+  inline bool operator!=(Self const &rhs) const { return !(*this == rhs); }
+  inline bool operator>(Self const &rhs) const { return rhs < *this; }
+  inline bool operator>=(Self const &rhs) const { return !(*this < rhs); }
+  inline bool operator<=(Self const &rhs) const { return !(rhs < *this); }
 };
-
-template<typename K, typename C, typename A>
-  bool operator!=(set<K, C, A> const &lhs, set<K, C, A> const &rhs)
-  {
-    return !(lhs == rhs);
-  }
-
-template<typename K, typename C, typename A>
-  bool operator>(set<K, C, A> const &lhs, set<K, C, A> const &rhs)
-  {
-    return rhs < lhs;
-  }
-
-template<typename K, typename C, typename A>
-  bool operator>=(set<K, C, A> const &lhs, set<K, C, A> const &rhs)
-  {
-    return !(lhs < rhs);
-  }
-
-template<typename K, typename C, typename A>
-  bool operator<=(set<K, C, A> const &lhs, set<K, C, A> const &rhs)
-  {
-    return !(rhs < lhs);
-  }
 }
 
 #endif // !SET_HPP

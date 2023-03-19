@@ -13,6 +13,7 @@
 #ifndef UTILITY_HPP
 #define UTILITY_HPP
 
+#include <iostream>
 namespace ft
 {
   template<typename T1, typename T2>
@@ -81,9 +82,6 @@ namespace ft
     {
       return !(lhs < rhs);
     }
-
-  template<typename T>
-    bool cmp_less(T const &a, T const &b) { return a < b; }
 }
 
 #endif // !UTILITY_HPP

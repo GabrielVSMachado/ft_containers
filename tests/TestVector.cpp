@@ -1335,7 +1335,7 @@ TEST_SUITE("boolean_operators")
     my_vector2.push_back(24);
     my_vector2.push_back(25);
 
-    CHECK_FALSE(my_vector < my_vector2);
+    CHECK_FALSE(my_vector > my_vector2);
   }
 
   TEST_CASE("operator>_expected_false")
