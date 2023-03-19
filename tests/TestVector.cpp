@@ -1,6 +1,6 @@
+#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include <cstdlib>
 #include <string>
-#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include "iterator.hpp"
 #include "type_traits.hpp"
 #include "vector.hpp"

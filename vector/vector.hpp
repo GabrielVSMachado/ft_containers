@@ -14,9 +14,6 @@
 #define VECTOR_HPP
 
 // std implementation
-#include <functional>
-#include <memory>
-#include <stdexcept>
 
 //My implementation
 #include "ReverseIterator.hpp"
@@ -26,7 +23,6 @@
 #include "my_stl_construct.hpp"
 #include "type_traits.hpp"
 #include "algorithms.hpp"
-#include "utility.hpp"
 
 namespace ft
 {

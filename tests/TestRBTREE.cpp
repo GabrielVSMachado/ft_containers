@@ -3,7 +3,6 @@
 #include "utility.hpp"
 #include <string>
 #include <vector>
-#include <map>
 
 template<typename T>
 struct getFirst

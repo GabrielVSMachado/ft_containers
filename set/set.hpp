@@ -13,12 +13,7 @@
 #ifndef SET_HPP
 #define SET_HPP
 
-
-#include "iterator.hpp"
-#include "utility.hpp"
 #include "RBTree.hpp"
-#include <cstddef>
-#include <functional>
 
 namespace ft
 {

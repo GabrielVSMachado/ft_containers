@@ -13,7 +13,6 @@
 #ifndef UTILITY_HPP
 #define UTILITY_HPP
 
-#include <iostream>
 namespace ft
 {
   template<typename T1, typename T2>

@@ -13,7 +13,6 @@
 #ifndef RBTREE_HPP
 #define RBTREE_HPP
 
-#include <iostream>
 #include "algorithms.hpp"
 #include "utility.hpp"
 #include "ReverseIterator.hpp"
@@ -538,14 +537,13 @@ public:
     return const_reverse_iterator(begin());
   }
 
-  void printTree() const { printHelper(_root, "", true); }
-
   void clear()
   {
     deleteWithoutRebalancing(_root);
     _root = _base->nill;
     _count = 0;
   }
+
 private:
 
   void deleteWithoutRebalancing(node_pointer x)
@@ -887,28 +885,6 @@ private:
 
     a->parent = leftSubTree;
     leftSubTree->right = a;
-  }
-
-  void printHelper(node_type * root, std::string indent, bool last) const
-  {
-    if (root != _base->nill)
-    {
-      std::cout << indent;
-      if (last) {
-        std::cout << "R----";
-        indent += "    ";
-      } else {
-        std::cout << "L----";
-        indent += "|    ";
-      }
-
-      char const r[] = "\x1b[31mRed\033[0m";
-      char const b[] = "\x1b[34mBlack\033[0m";
-      std::string color = root->color ? r : b;
-      std::cout << root->key.first << "(" << color << ")" << std::endl;
-      printHelper(root->left, indent, false);
-      printHelper(root->right, indent, true);
-    }
   }
 }; // end of RBTree
 
