@@ -1,31 +1,19 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   vector.cpp                                         :+:      :+:    :+:   */
+/*   tests.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gvitor-s <gvitor-s>                        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/03/19 23:21:23 by gvitor-s          #+#    #+#             */
-/*   Updated: 2023/03/19 23:21:25 by gvitor-s         ###   ########.fr       */
+/*   Created: 2023/03/19 23:20:57 by gvitor-s          #+#    #+#             */
+/*   Updated: 2023/03/19 23:21:15 by gvitor-s         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "vector.hpp"
+#ifndef TESTS_HPP
+#define TESTS_HPP
 
-void insert_1000000_integral_constant_at_begin()
-{
-  ft::vector<unsigned int> __v;
+void insert_1000000_integral_constant_at_begin();
+void insert_1000000000_integral_constant_at_end();
 
-  for (unsigned int i = 0; i < 1000000; ++i)
-    __v.insert(__v.begin(), i);
-}
-
-void insert_1000000000_integral_constant_at_end()
-{
-  ft::vector<unsigned int> __v;
-
-  for (unsigned int i = 0; i < 1000000000; ++i)
-    __v.insert(__v.end(), i);
-}
-
-// void insert_
+#endif // !TESTS_HPP

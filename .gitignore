@@ -1,7 +1,8 @@
+ft_containers_unit_tests
 core
 *.o
+*.d
 my_containers
-my_containers_performance
 original_containers
 containers_test
 unittests

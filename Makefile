@@ -1,51 +1,55 @@
-NAME = my_containers
+NAME = test_main
+SRCS = $(wildcard *.cpp)
+OBJS = $(SRCS:%.cpp=%.o)
 
-SRC = main.cpp
-
-TESTDIR = tests
-TESTSRCS = $(wildcard $(TESTDIR)/*.cpp)
-TESTNAME = containers_test
-TESTOBJS = $(TESTSRCS:%.cpp=%.o)
-
-PERFORMANCEDIR = tests/performance
-PERFORMANCESRCS = $(wildcard $(PERFORMANCEDIR)/*.cpp)
-PERFORMANCE_NAME = my_containers_performance
-PERFORMANCEOBJS = $(PERFORMANCESRCS:%.cpp=%.o)
-
-OBJ = main.o
-DIRS = commons vector map stack set tests
+DIRS = commons vector map stack set
 INCLUDES = $(addprefix -I ,$(DIRS))
-CXXFLAGS = -std=c++98 -Wall -Wextra -Werror $(INCLUDES)
+CXXFLAGS = -std=c++98 -Wall -Wextra -Werror
 CXX = c++
+RM = rm -rf
 
+TESTNAME = ft_containers_unit_tests
+TESTDIR = tests
+
+TEST_FT_PERFORMANCE = ft_containers_performance
+TEST_STL_PERFORMANCE = stl_containers_performance
+
+PERFORMANCE_FT_DIR = $(TESTDIR)/performance
+PERFORMANCE_STL_DIR = $(TESTDIR)/original_performance
 
 all: $(NAME)
 
-$(NAME): $(OBJ)
-	$(CXX) $(CXXFLAGS) $< -o $@
+%.o: %.cpp
+	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
+
+$(NAME): $(OBJS)
+	$(CXX) $(CXXFLAGS) $^ -o $@
 
 clean:
-	$(RM) $(OBJ) $(TESTOBJS) $(PERFORMANCEOBJS)
+	$(RM) $(OBJS)
+	$(MAKE) clean -C $(TESTDIR)
+	$(MAKE) clean -C $(PERFORMANCE_FT_DIR)
 
 fclean: clean
-	$(RM) $(NAME) $(TESTNAME) $(PERFORMANCE_NAME)
+	$(RM) $(NAME)
+	$(MAKE) fclean -C $(TESTDIR)
+	$(MAKE) fclean -C $(PERFORMANCE_FT_DIR)
 
 re: fclean all
 
-performance: $(PERFORMANCE_NAME)
+test:
+	$(MAKE) -C $(TESTDIR)
+	./$(TESTDIR)/$(TESTNAME)
 
-test: $(TESTNAME)
+test_ft_performance:
+	$(MAKE) -C $(PERFORMANCE_FT_DIR)
+	./$(PERFORMANCE_FT_DIR)/$(TEST_FT_PERFORMANCE)
 
-$(PERFORMANCE_NAME): $(PERFORMANCEOBJS)
-	$(CXX) $(CXXFLAGS) $< -o $@
-
-
-$(TESTNAME): fclean $(TESTOBJS)
-	$(CXX) $(CXXFLAGS) $(TESTOBJS) -o $@
-	valgrind --leak-check=full --show-leak-kinds=all ./$(TESTNAME)
+test_with_valgrind:
+	valgrind --leak-check=full --show-leak-kinds=all ./$(TESTDIR)/$(TESTNAME)
 
 test_on_docker:
 	docker build -t ft_containers:latest .
 	docker run --rm ft_containers:latest
 
-.PHONY: all clean fclean re test test_on_docker
+.PHONY: all clean fclean re test test_on_docker test_with_valgrind
