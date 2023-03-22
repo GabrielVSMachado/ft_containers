@@ -53,16 +53,17 @@ template<typename T, typename Alloc = std::allocator<T> >
     explicit vector(allocator_type const &alloc = allocator_type())
       : _Base(alloc) {}
 
-    vector(vector_type const &other) : _Base(other.get_allocator())
+    vector(vector_type const &other) : _Base(other.size(), other.get_allocator())
     {
-      *this = other;
+      std::uninitialized_copy(other.begin(), other.end(), this->Aimpl.start);
     }
 
     explicit vector(size_type n, value_type const &value = value_type(),
         allocator_type const &alloc = allocator_type())
       : _Base(n, alloc)
     {
-      insert(end(), n, value);
+      std::uninitialized_fill_n(this->Aimpl.start, n, value);
+      this->Aimpl.finish = this->Aimpl.start + n;
     }
 
     template<typename Iter>
@@ -402,8 +403,8 @@ template<typename T, typename Alloc = std::allocator<T> >
         iterator(newMemory + firstPartSize),
         typename IIntegral::type()
       );
-      std::uninitialized_fill_n(
-        iterator(newMemory + firstPartSize), count, value
+      _uninitialiazed_fill_n(
+        iterator(newMemory + firstPartSize), count, value, typename IIntegral::type()
       );
       _uninitialiazed_copy_backwards(
         pos,
@@ -432,7 +433,7 @@ template<typename T, typename Alloc = std::allocator<T> >
         begin() + newSize,
         typename IIntegral::type()
       );
-      std::uninitialized_fill_n(pos, count, value);
+      _uninitialiazed_fill_n(pos, count, value, typename IIntegral::type());
       _setMemoryAddress(
         this->Aimpl.start,
         this->Aimpl.start + newSize,
@@ -463,6 +464,22 @@ template<typename T, typename Alloc = std::allocator<T> >
         this->Aimpl.start + newSize,
         this->Aimpl.endOfStorage
       );
+    }
+
+    void _uninitialiazed_fill_n(
+        iterator pos, size_type count, value_type const &value, ft::true_type)
+    {
+      while (count)
+      {
+        *pos++ = value;
+        --count;
+      }
+    }
+
+    void _uninitialiazed_fill_n(
+        iterator pos, size_type count, value_type const &value, ft::false_type)
+    {
+      std::uninitialized_fill_n(pos, count, value);
     }
 
     void _copy_to_new_memory(

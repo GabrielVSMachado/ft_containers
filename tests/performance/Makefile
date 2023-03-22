@@ -1,4 +1,4 @@
-NAME = ft_containers_performance
+NAME = containers_performance
 SRCS = $(wildcard *.cpp)
 OBJS = $(SRCS:%.cpp=%.o)
 
@@ -20,10 +20,10 @@ fclean: clean
 -include $(DEP)
 
 %.o: %.cpp
-	$(CXX) $(CXXFLAGS) $(INCLUDES) -MMD -c $< -o $@
+	$(CXX) -DSTD=$(STD) $(CXXFLAGS) $(INCLUDES) -MMD -c $< -o $@
 
 $(NAME): $(OBJS)
-	$(CXX) $(CXXFLAGS) $^ -o $@
+	$(CXX) -DSTD=$(STD) $(CXXFLAGS) $^ -o $@
 
 re: fclean all
 

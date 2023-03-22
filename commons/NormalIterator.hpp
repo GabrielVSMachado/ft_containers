@@ -50,7 +50,7 @@ namespace internals
 
       //Operators
       reference operator*() { return *current; }
-      pointer operator->() const { return current; }
+      pointer operator->() { return current; }
       normal_iterator& operator++() { ++current; return *this; }
       normal_iterator operator++(int) { return normal_iterator(current++); }
       normal_iterator& operator--() { --current; return *this; }

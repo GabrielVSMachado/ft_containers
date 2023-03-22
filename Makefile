@@ -11,11 +11,10 @@ RM = rm -rf
 TESTNAME = ft_containers_unit_tests
 TESTDIR = tests
 
-TEST_FT_PERFORMANCE = ft_containers_performance
-TEST_STL_PERFORMANCE = stl_containers_performance
+TEST_PERFORMANCE = containers_performance
 
-PERFORMANCE_FT_DIR = $(TESTDIR)/performance
-PERFORMANCE_STL_DIR = $(TESTDIR)/original_performance
+PERFORMANCE_DIR = $(TESTDIR)/performance
+STD = 0
 
 all: $(NAME)
 
@@ -28,12 +27,12 @@ $(NAME): $(OBJS)
 clean:
 	$(RM) $(OBJS)
 	$(MAKE) clean -C $(TESTDIR)
-	$(MAKE) clean -C $(PERFORMANCE_FT_DIR)
+	$(MAKE) clean -C $(PERFORMANCE_DIR)
 
 fclean: clean
 	$(RM) $(NAME)
 	$(MAKE) fclean -C $(TESTDIR)
-	$(MAKE) fclean -C $(PERFORMANCE_FT_DIR)
+	$(MAKE) fclean -C $(PERFORMANCE_DIR)
 
 re: fclean all
 
@@ -41,9 +40,9 @@ test:
 	$(MAKE) -C $(TESTDIR)
 	./$(TESTDIR)/$(TESTNAME)
 
-test_ft_performance:
-	$(MAKE) -C $(PERFORMANCE_FT_DIR)
-	./$(PERFORMANCE_FT_DIR)/$(TEST_FT_PERFORMANCE)
+test_performance: fclean
+	$(MAKE) STD=$(STD) -C $(PERFORMANCE_DIR)
+	./$(PERFORMANCE_DIR)/$(TEST_PERFORMANCE)
 
 test_with_valgrind:
 	valgrind --leak-check=full --show-leak-kinds=all ./$(TESTDIR)/$(TESTNAME)
