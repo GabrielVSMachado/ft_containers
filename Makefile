@@ -45,6 +45,7 @@ test_performance: fclean
 	./$(PERFORMANCE_DIR)/$(TEST_PERFORMANCE)
 
 test_with_valgrind:
+	$(MAKE) -C $(TESTDIR)
 	valgrind --leak-check=full --show-leak-kinds=all ./$(TESTDIR)/$(TESTNAME)
 
 test_on_docker:

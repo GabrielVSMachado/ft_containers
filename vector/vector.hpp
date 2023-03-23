@@ -234,11 +234,7 @@ template<typename T, typename Alloc = std::allocator<T> >
     iterator erase(iterator pos)
     {
       if (pos != --end())
-      {
-        _uninitialiazed_copy(
-          pos + 1, end(), pos, typename ft::is_integral<value_type>::type()
-        );
-      }
+        std::uninitialized_copy(pos + 1, end(), pos);
       pop_back();
 
       return pos;
@@ -519,20 +515,6 @@ template<typename T, typename Alloc = std::allocator<T> >
       this->Aimpl.finish = newFinish;
       this->Aimpl.endOfStorage = newEndOfStorage;
     }
-
-    template<typename InputIt, typename InputItDst>
-      void _uninitialiazed_copy(
-          InputIt begin, InputIt end, InputItDst dst, ft::false_type)
-      {
-        std::uninitialized_copy(begin, end, dst);
-      }
-
-    template<typename Integral, typename InputItDst>
-      void _uninitialiazed_copy(
-          Integral begin, Integral end, InputItDst dst, ft::true_type)
-      {
-        std::uninitialized_copy(&*begin, &*end, &*dst);
-      }
 
     template<typename Iter, typename IterDst>
     void _uninitialiazed_copy_backwards(

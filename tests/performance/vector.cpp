@@ -125,4 +125,46 @@ void insert_10000_with_count_eq_10_at_position()
     __v.insert(it, 10, "42sp");
   }
 }
-// void insert_
+
+void insert_100000000_integral_constant_with_range_II()
+{
+  ft::vector<int> __v(100000000, 42);
+
+  __v.insert(__v.begin() + 5, __v.begin(), __v.end());
+}
+
+
+void insert_10000000_with_range_II()
+{
+  ft::vector<std::string> __v(10000000, "42");
+
+  __v.insert(__v.begin() + 5, __v.begin(), __v.end());
+}
+
+void erase_1_element_in_the_middle_of_1000000000_integral_constant()
+{
+  ft::vector<int> __v(1000000000, 42);
+
+  __v.erase(__v.begin() + 100);
+}
+
+void erase_1_element_in_the_middle_of_100000000()
+{
+  ft::vector<std::string> __v(100000000, "42");
+
+  __v.erase(__v.begin() + 100);
+}
+
+void erase_range_element_in_the_middle_of_1000000000_integral_constant()
+{
+  ft::vector<int> __v(1000000000, 42);
+
+  __v.erase(__v.begin() + 10, __v.begin() + 100);
+}
+
+void erase_range_element_in_the_middle_of_100000000()
+{
+  ft::vector<std::string> __v(100000000, "42");
+
+  __v.erase(__v.begin() + 10, __v.begin() + 100);
+}

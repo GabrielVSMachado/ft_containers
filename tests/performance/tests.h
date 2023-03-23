@@ -25,5 +25,10 @@ void insert_10000_at_position();
 void insert_10000__with_count_eq_10_at_begin();
 void insert_1000000_with_count_eq_10_at_end();
 void insert_10000_with_count_eq_10_at_position();
-
+void insert_100000000_integral_constant_with_range_II();
+void insert_10000000_with_range_II();
+void erase_1_element_in_the_middle_of_1000000000_integral_constant();
+void erase_1_element_in_the_middle_of_100000000();
+void erase_range_element_in_the_middle_of_1000000000_integral_constant();
+void erase_range_element_in_the_middle_of_100000000();
 #endif // !TESTS_HPP

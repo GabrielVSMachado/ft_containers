@@ -42,5 +42,11 @@ int main ()
   print_time("insert_10000__with_count_eq_10_at_begin", insert_10000__with_count_eq_10_at_begin);
   print_time("insert_1000000_with_count_eq_10_at_end", insert_1000000_with_count_eq_10_at_end);
   print_time("insert_10000_with_count_eq_10_at_position", insert_10000_with_count_eq_10_at_position);
+  print_time("insert_100000000_integral_constant_with_range_II", insert_100000000_integral_constant_with_range_II);
+  print_time("insert_10000000_with_range_II", insert_10000000_with_range_II);
+  print_time("erase_1_element_in_the_middle_of_1000000000_integral_constant", erase_1_element_in_the_middle_of_1000000000_integral_constant);
+  print_time("erase_1_element_in_the_middle_of_100000000", erase_1_element_in_the_middle_of_100000000);
+  print_time("erase_range_element_in_the_middle_of_1000000000_integral_constant", erase_range_element_in_the_middle_of_1000000000_integral_constant);
+  print_time("erase_range_element_in_the_middle_of_100000000", erase_range_element_in_the_middle_of_100000000);
   return 0;
 }
