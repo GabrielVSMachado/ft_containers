@@ -31,4 +31,8 @@ void erase_1_element_in_the_middle_of_1000000000_integral_constant();
 void erase_1_element_in_the_middle_of_100000000();
 void erase_range_element_in_the_middle_of_1000000000_integral_constant();
 void erase_range_element_in_the_middle_of_100000000();
+void clear_100000000_integral_constant();
+void clear_10000000();
+void reserve_1000000000_integral_constant();
+void reserve_100000000();
 #endif // !TESTS_HPP

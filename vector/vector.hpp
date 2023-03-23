@@ -72,7 +72,7 @@ template<typename T, typename Alloc = std::allocator<T> >
         allocator_type const &alloc = allocator_type())
         : _Base(ft::distance(first, last), alloc)
       {
-        insert(end(), first, last);
+        std::uninitialized_copy(first, last, this->Aimpl.start);
       }
 
     ~vector()  { internals::_Destroy(begin(), end()); }

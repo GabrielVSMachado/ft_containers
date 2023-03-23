@@ -48,5 +48,9 @@ int main ()
   print_time("erase_1_element_in_the_middle_of_100000000", erase_1_element_in_the_middle_of_100000000);
   print_time("erase_range_element_in_the_middle_of_1000000000_integral_constant", erase_range_element_in_the_middle_of_1000000000_integral_constant);
   print_time("erase_range_element_in_the_middle_of_100000000", erase_range_element_in_the_middle_of_100000000);
+  print_time("clear_100000000_integral_constant", clear_100000000_integral_constant);
+  print_time("clear_10000000", clear_10000000);
+  print_time("reserve_1000000000_integral_constant", reserve_1000000000_integral_constant);
+  print_time("reserve_100000000", reserve_100000000);
   return 0;
 }

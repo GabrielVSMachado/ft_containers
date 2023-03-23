@@ -168,3 +168,31 @@ void erase_range_element_in_the_middle_of_100000000()
 
   __v.erase(__v.begin() + 10, __v.begin() + 100);
 }
+
+void clear_100000000_integral_constant()
+{
+  ft::vector<int> __v(1000000000, 42);
+
+  __v.clear();
+}
+
+void clear_10000000()
+{
+  ft::vector<std::string> __v(100000000, "42");
+
+  __v.clear();
+}
+
+void reserve_1000000000_integral_constant()
+{
+  ft::vector<int> __v;
+
+  __v.reserve(1000000000);
+}
+
+void reserve_100000000()
+{
+  ft::vector<std::string> __v;
+
+  __v.reserve(100000000);
+}

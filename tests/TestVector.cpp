@@ -8,6 +8,33 @@
 #include "algorithms.hpp"
 #include "doctest.h"
 
+TEST_SUITE("constructors")
+{
+  TEST_CASE("size")
+  {
+    ft::vector<std::string> const __v(10, "42");
+    std::vector<std::string> const __v2(10, "42");
+
+    CHECK(ft::equal(__v2.begin(), __v2.end(), __v.begin()));
+  }
+
+  TEST_CASE("range")
+  {
+    std::vector<std::string> const __v2(10, "42");
+    ft::vector<std::string> const __v(__v2.begin(), __v2.end());
+
+    CHECK(ft::equal(__v2.begin(), __v2.end(), __v.begin()));
+  }
+
+  TEST_CASE("copy")
+  {
+    ft::vector<std::string> const __v2(10, "42");
+    ft::vector<std::string> const __v(__v2);
+
+    CHECK(ft::equal(__v2.begin(), __v2.end(), __v.begin()));
+  }
+}
+
 TEST_SUITE("Capacity")
 {
   TEST_CASE("expected_capacity_eq_2")
