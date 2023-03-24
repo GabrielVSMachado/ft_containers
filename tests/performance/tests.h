@@ -6,7 +6,7 @@
 /*   By: gvitor-s <gvitor-s>                        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/19 23:20:57 by gvitor-s          #+#    #+#             */
-/*   Updated: 2023/03/19 23:21:15 by gvitor-s         ###   ########.fr       */
+/*   Updated: 2023/03/23 23:59:10 by gvitor-s         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,4 +35,13 @@ void clear_100000000_integral_constant();
 void clear_10000000();
 void reserve_1000000000_integral_constant();
 void reserve_100000000();
+void insert_10000000_values();
+void insert_10000000_values_string();
+void insert_10000000_range();
+void insert_10000000_range_string();
+void erase_1_element_at_position();
+void erase_key();
+void erase_range();
+void find_by_key();
+void equal_range_key();
 #endif // !TESTS_HPP

@@ -6,7 +6,7 @@
 /*   By: gvitor-s <gvitor-s@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/18 13:56:27 by gvitor-s          #+#    #+#             */
-/*   Updated: 2023/03/18 13:44:15 by gvitor-s         ###   ########.fr       */
+/*   Updated: 2023/03/23 21:46:30 by gvitor-s         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,7 +101,7 @@ struct Node
 
   static pointer minimum(pointer current)
   {
-    while (current != current->nill && current->left != current->nill)
+    while (current && current != current->nill && current->left != current->nill)
       current = current->left;
     return current;
   }
