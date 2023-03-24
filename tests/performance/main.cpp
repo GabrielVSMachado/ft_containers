@@ -25,7 +25,7 @@ void print_time(std::string const &fnName, fn f)
   f();
   end = clock();
   double const diff = static_cast<double>(end - begging) / CLOCKS_PER_SEC;
-  std::cout << "Time of Execution in Miliseconds: " << diff << "ms" << std::endl;
+  std::cout << "Time_of_Execution_in_Miliseconds: " << diff << "ms" << std::endl;
 }
 
 int main ()
@@ -57,7 +57,7 @@ int main ()
     std::cout << std::endl;
   }
   {
-    std::cout << "Map_Test: " << std::endl;
+    std::cout << "Map_Test " << std::endl;
     print_time("insert_10000000_values", insert_10000000_values);
     print_time("insert_10000000_values_string", insert_10000000_values_string);
     print_time("insert_10000000_range", insert_10000000_range);

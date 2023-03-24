@@ -1,4 +1,5 @@
 ft_containers_unit_tests
+*.txt
 core
 *.o
 *.d
