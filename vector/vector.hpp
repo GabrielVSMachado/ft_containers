@@ -67,8 +67,9 @@ template<typename T, typename Alloc = std::allocator<T> >
     }
 
     template<typename Iter>
-      vector(Iter first,
-        typename ft::enable_if<!ft::is_integral<Iter>::value, Iter>::type last,
+      vector(
+        typename ft::enable_if<!ft::is_integral<Iter>::value, Iter>::type first,
+        Iter last,
         allocator_type const &alloc = allocator_type())
         : _Base(ft::distance(first, last), alloc)
       {

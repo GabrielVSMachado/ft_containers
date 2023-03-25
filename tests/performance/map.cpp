@@ -22,28 +22,28 @@
 #endif
 
 
-void insert_10000000_values()
+void insert_1e7_values()
 {
   ft::map<int, int> __m;
 
-  for (unsigned int i = 0; i < 10000000; ++i) {
+  for (unsigned int i = 0; i < 1e7; ++i) {
     __m.insert(ft::make_pair(i, i));
   }
 }
 
-void insert_10000000_values_string()
+void insert_1e7_values_string()
 {
   ft::map<int, std::string> __m;
 
-  for (unsigned int i = 0; i < 10000000; ++i) {
+  for (unsigned int i = 0; i < 1e7; ++i) {
     __m.insert(ft::make_pair(i, "42sp"));
   }
 }
 
-void insert_10000000_range()
+void insert_1e7_range()
 {
   ft::map<unsigned int, unsigned int> __m;
-  std::vector<ft::pair<unsigned int, unsigned int> > __v(10000000);
+  std::vector<ft::pair<unsigned int, unsigned int> > __v(1e7);
 
   std::vector<ft::pair<unsigned int, unsigned int> >::iterator it(__v.begin());
   for (unsigned int i = 0; it != __v.end(); ++it, ++i)
@@ -52,10 +52,10 @@ void insert_10000000_range()
   __m.insert(__v.begin(), __v.end());
 }
 
-void insert_10000000_range_string()
+void insert_1e7_range_string()
 {
   ft::map<unsigned int, std::string> __m;
-  std::vector<ft::pair<unsigned int, std::string> > __v(10000000);
+  std::vector<ft::pair<unsigned int, std::string> > __v(1e7);
 
   std::vector<ft::pair<unsigned int, std::string> >::iterator it(__v.begin());
   for (unsigned int i = 0; it != __v.end(); ++it, ++i)
