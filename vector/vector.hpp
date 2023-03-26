@@ -56,6 +56,7 @@ template<typename T, typename Alloc = std::allocator<T> >
     vector(vector_type const &other) : _Base(other.size(), other.get_allocator())
     {
       std::uninitialized_copy(other.begin(), other.end(), this->Aimpl.start);
+      this->Aimpl.finish = this->Aimpl.start + other.size();
     }
 
     explicit vector(size_type n, value_type const &value = value_type(),
@@ -149,8 +150,8 @@ template<typename T, typename Alloc = std::allocator<T> >
     reference front() { return *begin(); }
     const_reference front() const { return *begin(); }
 
-    reference back() { return *--end(); }
-    const_reference back() const { return *--end(); }
+    reference back() { return *rbegin(); }
+    const_reference back() const { return *rbegin(); }
 
     reference operator[](size_type pos) { return *(begin() + pos); }
     const_reference operator[](size_type pos) const { return *(begin() + pos); }

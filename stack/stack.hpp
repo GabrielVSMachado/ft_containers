@@ -26,13 +26,15 @@ protected:
   Container c;
 
 public:
-  typedef T value_type;
   typedef Container container_type;
+  typedef typename container_type::value_type value_type;
   typedef typename container_type::size_type size_type;
   typedef typename container_type::reference reference;
   typedef typename container_type::const_reference const_reference;
 
   explicit stack(container_type const &__c = container_type()) : c(__c) {}
+
+  ~stack() {}
 
   bool empty() const { return c.empty(); }
   size_type size() const { return c.size(); }
@@ -42,12 +44,21 @@ public:
   void push(value_type const &value) { c.push_back(value); }
   void pop() { c.pop_back(); }
 
-  bool operator==(stack<T, Container> const &rhs) { return c == rhs.c; }
-  bool operator!=(stack<T, Container> const &rhs) { return c != rhs.c; }
-  bool operator<(stack<T, Container> const &rhs) { return c < rhs.c; }
-  bool operator<=(stack<T, Container> const &rhs) { return c <= rhs.c; }
-  bool operator>(stack<T, Container> const &rhs) { return c > rhs.c; }
-  bool operator>=(stack<T, Container> const &rhs) { return c >= rhs.c; }
+  bool operator==(stack<T, Container> const &rhs) const { return c == rhs.c; }
+  bool operator<(stack<T, Container> const &rhs) const { return c < rhs.c; }
+  bool operator!=(stack<T, Container> const &rhs) const
+  {
+    return !(*this == rhs);
+  }
+  bool operator>(stack<T, Container> const &rhs) const { return rhs < *this; }
+  bool operator<=(stack<T, Container> const &rhs) const
+  {
+    return !(rhs < *this);
+  }
+  bool operator>=(stack<T, Container> const &rhs) const
+  {
+    return !(*this < rhs);
+  }
 };
   
 }

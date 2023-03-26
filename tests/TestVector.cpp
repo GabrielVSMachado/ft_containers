@@ -8,6 +8,59 @@
 #include "algorithms.hpp"
 #include "doctest.h"
 
+TEST_SUITE("iterators")
+{
+  TEST_CASE("expected_element_eq_42")
+  {
+    ft::vector<int> __v;
+
+    __v.push_back(43);
+    __v.push_back(43);
+    __v.push_back(43);
+    __v.push_back(43);
+
+    ft::vector<int>::iterator it(__v.begin());
+    ++it;
+    ++it;
+    *it = 42;
+    CHECK_EQ(__v[2], 42);
+  }
+
+  TEST_CASE("expected_element_eq_43")
+  {
+    ft::vector<std::string> const __v(10, "43");
+
+    ft::vector<std::string>::const_iterator it(__v.begin());
+
+    ++it;
+    ++it;
+    CHECK_EQ(__v[2], "43");
+  }
+
+  TEST_CASE("expected_same_values_for_vectors_using_reverse_iterator")
+  {
+    ft::vector<std::string> my_vector;
+    std::vector<std::string> original(4, "42sp");
+
+    my_vector.push_back("42sp");
+    my_vector.push_back("42sp");
+    my_vector.push_back("42sp");
+    my_vector.push_back("42sp");
+
+    original.pop_back();
+    my_vector.pop_back();
+
+    CHECK(ft::equal(original.rbegin(), original.rend(), my_vector.rbegin()));
+  }
+
+  TEST_CASE("const_reverse_iterator")
+  {
+    ft::vector<unsigned int> const __v(4, 43);
+
+    CHECK(__v.back() == *(--__v.end()));
+  }
+}
+
 TEST_SUITE("constructors")
 {
   TEST_CASE("size")
@@ -302,21 +355,6 @@ TEST_SUITE("pop_back_vector_method")
     CHECK(ft::equal(original.begin(), original.end(), my_vector.begin()));
   }
 
-  TEST_CASE("expected_same_values_for_vectors_using_reverse_iterator")
-  {
-    ft::vector<std::string> my_vector;
-    std::vector<std::string> original(4, "42sp");
-
-    my_vector.push_back("42sp");
-    my_vector.push_back("42sp");
-    my_vector.push_back("42sp");
-    my_vector.push_back("42sp");
-
-    original.pop_back();
-    my_vector.pop_back();
-
-    CHECK(ft::equal(original.begin(), original.end(), my_vector.begin()));
-  }
 }
 
 TEST_SUITE("clear_vector_method")

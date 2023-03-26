@@ -162,6 +162,12 @@ public:
 
   value_compare value_comp() const { return value_compare(key_compare()); }
 
+  inline bool operator==(Self const &rhs) const{ return tree == rhs.tree; }
+  inline bool operator<(Self const &rhs) const {return tree < rhs.tree; }
+  inline bool operator>(Self const &rhs) const { return rhs < *this; }
+  inline bool operator!=(Self const &rhs) const{ return !(*this == rhs); }
+  inline bool operator<=(Self const &rhs) const{ return !(rhs < *this); }
+  inline bool operator>=(Self const &rhs) const{ return !(*this < rhs); }
 };
 
 template<typename Key, typename T, typename Comp, typename Alloc>

@@ -19,15 +19,15 @@ namespace ft
 {
 
 template<
-  typename T,
-  typename Compare = std::less<T>,
-  typename Alloc = std::allocator<T>
+  typename Key,
+  typename Compare = std::less<Key>,
+  typename Alloc = std::allocator<Key>
 >
 class set
 {
 public:
-  typedef T                                         key_type;
-  typedef T                                         value_type;
+  typedef Key                                         key_type;
+  typedef Key                                         value_type;
   typedef Compare                                   key_compare;
   typedef Compare                                   value_compare;
 
@@ -36,7 +36,7 @@ public:
   typedef typename Alloc::pointer          pointer;
   typedef typename Alloc::const_pointer    const_pointer;
 
-protected:
+private:
   template<typename U>
   struct getValue { U const &operator()(U const &value) const { return value; } };
 
@@ -46,7 +46,7 @@ protected:
 
   RBTree tree;
 
-  typedef set<T, Compare, Alloc> Self;
+  typedef set<Key, Compare, Alloc> Self;
 
 public:
 
