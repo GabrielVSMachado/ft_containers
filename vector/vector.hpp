@@ -75,6 +75,7 @@ template<typename T, typename Alloc = std::allocator<T> >
         : _Base(ft::distance(first, last), alloc)
       {
         std::uninitialized_copy(first, last, this->Aimpl.start);
+        this->Aimpl.finish = this->Aimpl.start + ft::distance(first, last);
       }
 
     ~vector()  { internals::_Destroy(begin(), end()); }
@@ -104,8 +105,8 @@ template<typename T, typename Alloc = std::allocator<T> >
 
     template<typename It>
       void assign(
-        It first,
-        typename ft::enable_if<!ft::is_integral<It>::value, It>::type last)
+        typename ft::enable_if<!ft::is_integral<It>::value, It>::type first,
+        It last)
       {
         size_type length = ft::distance(first, last);
 
@@ -581,6 +582,12 @@ template<typename T, typename Alloc = std::allocator<T> >
         ft::vector<T, Alloc> const &lhs, ft::vector<T, Alloc> const &rhs)
     {
       return !(rhs < lhs);
+    }
+
+  template<typename T, typename Alloc>
+    inline void swap(ft::vector<T, Alloc> &lhs, ft::vector<T, Alloc> &rhs)
+    {
+      lhs.swap(rhs);
     }
 }
 
